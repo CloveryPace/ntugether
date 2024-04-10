@@ -1,13 +1,13 @@
 import './App.css';
 import HeaderBar from "./components/HeaderBar";
-import ActivityList from "./page/ActivityList";
+import ActivityPage from "./page/ActivityPage";
 
 function App() {
   return (
     <div>
       <HeaderBar />
       <main>
-        <ActivityList/>
+        <ActivityPage/>
       </main>
     </div>
   );
