@@ -118,7 +118,7 @@ router.get("/get-list-infos", (req, res) => {
  * ROUTES: /activity/edit
  * FUNCTION: edit activity data
  */
-router.patch("/edit", (req, res) => {
+router.patch("/edit", (req, res) => { // FIXME: error might occurs
     const { activity_id, ...newData } = req.body;
 
     // Generate the SET clause for the SQL query
