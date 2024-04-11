@@ -33,11 +33,12 @@ def verify_application():
     print(res.status_code)
 
 
-def create_one_time():
+def create():
     payload = json.dumps({
         "name": "Say hello to your mom",
         "introduction": "you should always say hello to our mom!",
         "date": "2021-03-21",
+        "is_one_time": True,
         "location": "your place",
         "max_participants": 10,
         "need_reviewed": False,

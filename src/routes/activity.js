@@ -28,17 +28,16 @@ connection.connect((err) => {
  * ROUTES: /activity/create
  * FUNCTION: creaet a new activity
  */
-router.post("/create-one-time", (req, res) => {
+router.post("/create", (req, res) => {
 
     const query =
         'INSERT INTO \
     Activities(name, introduction, date, location, max_participants, need_reviewed, is_one_time, created_user_id, check_by_organizer) \
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
-    var is_one_time = true;
     var created_user_id = 1; // TODO: get it from token
 
-    var { name, introduction, date, location, max_participants, need_reviewed, is_one_time, created_user_id, check_by_organizer } = req.body;
+    var { name, introduction, date, location, max_participants, need_reviewed, is_one_time, check_by_organizer } = req.body;
 
     // NOTE: the applicant_id is set as 1 tempororily
     connection.query(
@@ -79,6 +78,28 @@ router.post("/get-info", (req, res) => {
             // Check if any rows were affected by the update
             if (results.affectedRows === 0) {
                 return res.status(404).send('activity does not exist');
+            }
+
+            // Send success response
+            res.json(results);
+        });
+
+});
+
+/**
+ * ROUTES: /activity/filter-with-location
+ * FUNCTION: get activities with location specified
+ */
+router.post("/filter-with-location", (req, res) => {
+    var { location } = req.body; // TODO: get user from token
+
+    connection.query(
+        'SELECT * FROM Activities WHERE location = ?',
+        [location],
+        (error, results, fields) => {
+            if (error) {
+                console.error('Error executing MySQL query: ' + error.stack);
+                return res.status(500).send('Error executing MySQL query');
             }
 
             // Send success response
