@@ -6,6 +6,13 @@ var router = express.Router();
 
 router.use(bodyParser.json());
 
+// TODO: join and leave an activity
+// TODO: type table
+// TODO: long term activity
+// TODO: filter type
+// TODO: authorization
+
+
 // Create a connection pool to the MySQL server
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -57,6 +64,30 @@ router.post("/create", (req, res) => {
             // Send success response
             res.send('activity created');
         });
+
+    // add applicant to ActivityParticipantStatus
+});
+
+/**
+ * ROUTES: /activity/leave
+ * FUNCTION: leave from an activity 
+ */
+router.post("/leave", function (req, res) {
+
+    var activity_id = req.body.activity_id; // Assuming activity_id and value are sent in the POST body
+    var long_term_activity_id = req.body?.long_term_activity_id;
+    var participant_id = req.body.participant_id;
+    connection.query('DELETE FROM ActivityParticipantStatus WHERE participant_id = ? AND activity_id = ? AND long_term_activity_id = ?;',
+        [participant_id, activity_id, long_term_activity_id],
+        (error, results, fields) => {
+            if (error) {
+                console.error('Error executing MySQL query: ' + error.stack);
+                return res.status(500).send('Error executing MySQL query');
+            }
+            // Send success response
+            res.send('leaved');
+        });
+
 });
 
 /**

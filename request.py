@@ -97,4 +97,21 @@ def edit_activity():  # FIXME: fail
     print(res.status_code)
 
 
-edit_activity()
+def leave_activity():
+    payload = json.dumps({
+        "activity_id": 2,
+        "long_term_activity_id": 1,
+        "participant_id": 3,
+    })
+
+    res = requests.post(
+        url="http://localhost:4000/activity/leave",
+        headers={"content-type": "application/json", },
+        data=payload
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+leave_activity()

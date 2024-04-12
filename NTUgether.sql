@@ -45,7 +45,7 @@ CREATE TABLE LongTermActivities (
     activity_id INT NOT NULL,
     date DATETIME NOT NULL,
     last_activity_id INT,
-    check_by_organizer BOOLEAN,
+    -- check_by_organizer BOOLEAN,
     FOREIGN KEY (activity_id) REFERENCES Activities(activity_id),
     FOREIGN KEY (last_activity_id) REFERENCES LongTermActivities(long_term_activity_id)
 ) ENGINE=InnoDB;
