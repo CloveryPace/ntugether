@@ -2,6 +2,7 @@
 
 import Stack from '@mui/material/Stack';
 import ActivityComponent from "../components/ActivityComponent";
+import HeaderBar from '../components/HeaderBar';
 
 function ActivityList() {
 
@@ -13,16 +14,20 @@ function ActivityList() {
   };
 
   return (
-    <div style={style}>
 
-      <Stack direction="row" spacing={1.5} className='m-16'>
-        <h3> 活動列表 </h3> 
-      </Stack>
+    <div>
+      <HeaderBar></HeaderBar>
+      <div style={style}>
 
-      <div style={instyle}>
-        <ActivityComponent></ActivityComponent>
+        <Stack direction="row" spacing={1.5} className='m-16'>
+          <h3> 活動列表 </h3> 
+        </Stack>
+
+        <div style={instyle}>
+          <ActivityComponent></ActivityComponent>
+        </div>
+
       </div>
-
     </div>
   );
 }

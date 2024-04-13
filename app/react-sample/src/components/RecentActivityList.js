@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
 import RecentActivityItem from './RecentActivityItem';
-import {useTheme} from '@mui/material';
 
 
 export default function RecentActivityList() {
-  const theme = useTheme();
 
   const initialDisplayCount = 2;
   const incrementCount = 3;

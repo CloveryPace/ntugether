@@ -8,6 +8,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { cyan, yellow, orange } from '@mui/material/colors';
 import { Divider, Grid, Paper } from "@material-ui/core";
 import TextField from "@mui/material/TextField";
+import HeaderBar from '../components/HeaderBar';
 
 const tagTheme = createTheme({
   palette: {
@@ -35,6 +36,8 @@ function ActivityPage() {
   };
 
   return (
+    <div>
+    <HeaderBar/>
     <div style={style}>
 
       <Stack direction="row" spacing={2}>
@@ -130,7 +133,6 @@ function ActivityPage() {
                     fullWidth
                     variant="outlined"
                     sx={{ mt: 1}}
-                    autoFocus
                     label="Add comment"
                   />
                 </Grid>
@@ -142,6 +144,7 @@ function ActivityPage() {
       <div style={instyle}>
       </div>
 
+    </div>
     </div>
   );
 }
