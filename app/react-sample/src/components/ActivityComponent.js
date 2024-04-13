@@ -4,24 +4,23 @@ import { useState } from "react";
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { pink } from '@mui/material/colors';
+import Typography from '@mui/material/Typography';
+import {useTheme} from '@mui/material';
 
-const outerTheme = createTheme({
-  palette: {
-    primary: {
-      main: pink[100],
-    },
-  },
-});
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PeopleIcon from '@mui/icons-material/People';
+
+import { Grid } from '@mui/material';
 
 export default function ActivityComponent() {
+  const theme = useTheme();
+
     const [openContent, setOpenContent] = useState(false);
 
     const style = { 
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-      width: '20rem',
-      padding: '1rem'
+      border: '1.5px solid rgba(0, 0, 0, 0.1)',
+      padding: '2rem'
     };
 
     //  打開 Activity 頁面
@@ -35,22 +34,24 @@ export default function ActivityComponent() {
       };
 
     return (
+      <Grid item xs={12} md={4}>
         <div className="box" style={style} onClick={handleOpen}>
           <Stack direction="column">
             <div> 
-              <h3> Activity name </h3> 
+            <Typography variant="h6" gutterBottom>Activity name</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip color="primary" label="type"/>
                 <Chip color="primary" label="一次性"/>
+              </Stack >
+              <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
+              <ScheduleIcon color="icon"/>
+              <LocationOnIcon color="icon"/>
+              <PeopleIcon color="icon"/>
               </Stack>
-              <p> 🕰️ </p> 
-              <p> 📍 </p>
-              <p> 參加者 </p>
             </div>
-            <ThemeProvider theme={outerTheme}>
-              <Button variant="contained" color="primary"> 參加 </Button> 
-            </ThemeProvider>
+              <Button variant="contained" color="secondary"> 參加 </Button> 
           </Stack>
         </div>
+      </Grid>
     );
 }
