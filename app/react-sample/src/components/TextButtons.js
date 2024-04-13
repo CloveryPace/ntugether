@@ -2,10 +2,7 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
-import {useTheme} from '@mui/material';
-
 export default function TextButtons() {
-  const theme = useTheme();
 
   return (
     <Stack direction="row" justifyContent="center" spacing={2}>
