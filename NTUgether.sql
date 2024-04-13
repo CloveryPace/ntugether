@@ -12,7 +12,9 @@ CREATE TABLE Users (
     gender VARCHAR(50),
     photo BLOB,
     self_introduction TEXT,
-    interests TEXT -- JSON array to store list of interests
+    oauthProvider VARCHAR(255),
+    oauthId VARCHAR(255),
+    verified boolean
 );
 
 CREATE TABLE Userinterests (
