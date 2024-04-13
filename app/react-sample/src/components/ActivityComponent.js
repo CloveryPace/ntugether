@@ -32,7 +32,6 @@ const buttonTheme = createTheme({
 
 export default function ActivityComponent() {
     const navigate = useNavigate();
-
     const style = { 
       border: '1px solid rgba(0, 0, 0, 0.1)',
       width: '20rem',
@@ -42,6 +41,7 @@ export default function ActivityComponent() {
       padding: '1rem'
     };
 
+    // TODO: navigate到特定活動頁面（參數：ID）
     return (
         <div className="box" style={style}>
             <Stack direction="column">
