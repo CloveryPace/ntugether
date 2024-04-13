@@ -11,12 +11,13 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { useRef } from "react";
 import { useState} from "react";
-
+import HeaderBar from '../components/HeaderBar';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { useNavigate } from 'react-router-dom';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: yellow[400],
@@ -42,8 +43,10 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-function NewActivity() {
+// TODO: 按新增按鈕，到活動頁面（透過活動ID）
 
+function NewActivity() {
+    const navigate = useNavigate();
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
     // current 後面接?，避免未輸入值時出現error
@@ -90,6 +93,7 @@ function NewActivity() {
 
   return (
     <div>
+        <HeaderBar></HeaderBar>
         <div style={style}>
 
             <Stack direction="row" spacing={2}>
@@ -210,7 +214,7 @@ function NewActivity() {
               <Grid item>
                 <Stack direction="row" spacing={2}>
                     <Button variant="contained" color="primary" onClick={handleSubmit}> 新增 </Button>
-                    <Button variant="contained" color="error"> 取消 </Button>
+                    <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> 取消 </Button>
                 </Stack>
               </Grid>
             </Grid>

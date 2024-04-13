@@ -24,9 +24,11 @@ const tagTheme = createTheme({
   },
 });
 
-function ActivityPage() {
+// TODO: 加入活動ID作為參數
+function ActivityPage() {  
+  window.scrollTo(0, 0); //讓進入畫面在上方
   const style = { 
-    padding: "5rem 0 10rem 10rem",
+    padding: "6rem 15rem 10rem 15rem",
   };
   const style2 = { 
     padding: "1rem 0 0 0" 
@@ -37,77 +39,64 @@ function ActivityPage() {
 
   return (
     <div>
-    <HeaderBar/>
-    <div style={style}>
+      <HeaderBar></HeaderBar>
+      <div style={style}>
 
-      <Stack direction="row" spacing={2}>
-        <h2> 活動名稱 </h2> 
-        <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="secondary" label="type"/>
-        </ThemeProvider>
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="primary" label="一次性"/>
-        </ThemeProvider>
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="warning" label="需審核"/>
-        </ThemeProvider>
-        <Button variant="contained" color="primary"> 編輯活動 </Button> 
-      </Stack>
-
-      <Stack direction="row" spacing={1.5} style={style2}>
-        <h3> 活動簡介 </h3>
-      </Stack>
-
-      <Stack direction="row" spacing={10} style={style2}>
-        <Stack direction="column" spacing={3} style={instyle}>
-          <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 📅 </h4>
+        <Stack direction="row" spacing={2} justifyContent="space-between">
+          <Stack direction="row" spacing={3}>
+            <h2> 活動名稱 </h2> 
+            <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
+            <ThemeProvider theme={tagTheme}>
+              <Chip color="secondary" label="type"/>
+            </ThemeProvider>
+            <ThemeProvider theme={tagTheme}>
+              <Chip color="primary" label="一次性"/>
+            </ThemeProvider>
+            <ThemeProvider theme={tagTheme}>
+              <Chip color="warning" label="需審核"/>
+            </ThemeProvider>
           </Stack>
-          <Stack direction="row" spacing={6} style={style2}> 
-            <h4> 📍 </h4>
-          </Stack>
-          <Stack direction="row" spacing={6} style={style2}> 
-            <h4> 人數上限 </h4>
-          </Stack>
-          <Stack direction="row" spacing={7} style={style2}> 
-            <h4> 參加者 </h4>
-          </Stack>
-          <Stack direction="row" spacing={7} style={style2}> 
-            <h4> 討論串 </h4>
-          </Stack>
+          <Button variant="contained" color="primary"> 編輯活動 </Button> 
         </Stack>
-        <Stack direction="column" spacing={3} style={instyle}>
-          <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 2024/01/01 20:00 </h4>
+
+        <Stack direction="row" spacing={5} style={style2}>
+          <h3> 活動簡介 </h3>
+          <p> XXXXX </p>
+        </Stack>
+
+        <Stack direction="row" spacing={10} style={style2}>
+          <Stack direction="column" spacing={3} style={instyle}>
+            <Stack direction="row" spacing={10} style={style2}> 
+              <h4> 📅 </h4>
+            </Stack>
+            <Stack direction="row" spacing={6} style={style2}> 
+              <h4> 📍 </h4>
+            </Stack>
+            <Stack direction="row" spacing={6} style={style2}> 
+              <h4> 人數上限 </h4>
+            </Stack>
+            <Stack direction="row" spacing={7} style={style2}> 
+              <h4> 參加者 </h4>
+            </Stack>
+            <Stack direction="row" spacing={7} style={style2}> 
+              <h4> 討論串 </h4>
+            </Stack>
           </Stack>
-          <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 台大門口 </h4>
-          </Stack>
-          <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 5 </h4>
-          </Stack>
-          <Stack direction="row" spacing={7} style={style2}> 
-          <Avatar alt="Remy Sharp"/>
-          </Stack>
-          <Paper style={{ padding: "30px 30px", width: "50rem" }}>
-            <Grid container wrap="nowrap" spacing={2}>
-              <Grid item>
-                <Avatar alt="Remy Sharp"/>
-              </Grid>
-              <Grid justifyContent="left" item xs zeroMinWidth>
-                <h4 style={{ margin: 0, textAlign: "left" }}> name </h4>
-                <p style={{ textAlign: "left" }}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
-                  luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-                  Suspendisse congue vulputate lobortis. Pellentesque at interdum
-                  tortor. Quisque arcu quam, malesuada vel mauris et, posuere
-                  sagittis ipsum. Aliquam ultricies a ligula nec faucibus.{" "}
-                </p>
-              </Grid>
-            </Grid>
-          <Divider variant="fullWidth" style={{ margin: "20px 0" }} />
-            <Grid container wrap="nowrap" spacing={2}>
+          <Stack direction="column" spacing={3} style={instyle}>
+            <Stack direction="row" spacing={10} style={style2}> 
+              <h4> 2024/01/01 20:00 </h4>
+            </Stack>
+            <Stack direction="row" spacing={10} style={style2}> 
+              <h4> 台大門口 </h4>
+            </Stack>
+            <Stack direction="row" spacing={10} style={style2}> 
+              <h4> 5 </h4>
+            </Stack>
+            <Stack direction="row" spacing={7} style={style2}> 
+            <Avatar alt="Remy Sharp"/>
+            </Stack>
+            <Paper style={{ padding: "30px 30px", width: "50rem" }}>
+              <Grid container wrap="nowrap" spacing={2}>
                 <Grid item>
                   <Avatar alt="Remy Sharp"/>
                 </Grid>
@@ -116,35 +105,44 @@ function ActivityPage() {
                   <p style={{ textAlign: "left" }}>
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
                     luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
-                    Suspendisse congue vulputate lobortis. Pellentesque at interdum
-                    tortor. Quisque arcu quam, malesuada vel mauris et, posuere
-                    sagittis ipsum. Aliquam ultricies a ligula nec faucibus.{" "}
+                    Aliquam ultricies a ligula nec faucibus.{" "}
                   </p>
                 </Grid>
-            </Grid>
-          <Divider variant="fullWidth" style={{ margin: "10px 0" }} />
-            <Grid container wrap="nowrap" spacing={2}>
-                <Grid item>
-                  <Avatar alt="Remy Sharp"/>
-                </Grid>
-                <Grid justifyContent="left" item xs zeroMinWidth>
-                  <h4 style={{ margin: 0, textAlign: "left" }}> name </h4>
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    sx={{ mt: 1}}
-                    label="Add comment"
-                  />
-                </Grid>
-            </Grid>
-          </Paper>   
+              </Grid>
+            <Divider variant="fullWidth" style={{ margin: "20px 0" }} />
+              <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item>
+                    <Avatar alt="Remy Sharp"/>
+                  </Grid>
+                  <Grid justifyContent="left" item xs zeroMinWidth>
+                    <h4 style={{ margin: 0, textAlign: "left" }}> name </h4>
+                    <p style={{ textAlign: "left" }}>
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean
+                      luctus ut est sed faucibus. Duis bibendum ac ex vehicula laoreet.
+                      Suspendisse congue vulputate lobortis.Quisque arcu quam, malesuada vel mauris et, posuere
+                      sagittis ipsum. Aliquam ultricies a ligula nec faucibus.{" "}
+                    </p>
+                  </Grid>
+              </Grid>
+            <Divider variant="fullWidth" style={{ margin: "10px 0" }} />
+              <Grid container wrap="nowrap" spacing={2}>
+                  <Grid item>
+                    <Avatar alt="Remy Sharp"/>
+                  </Grid>
+                  <Grid justifyContent="left" item xs zeroMinWidth>
+                    <h4 style={{ margin: 0, textAlign: "left" }}> name </h4>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      sx={{ mt: 1}}
+                      label="Add comment"
+                    />
+                  </Grid>
+              </Grid>
+            </Paper>   
+          </Stack>
         </Stack>
-      </Stack>
-
-      <div style={instyle}>
       </div>
-
-    </div>
     </div>
   );
 }
