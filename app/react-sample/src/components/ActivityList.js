@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import ActivityComponent from './ActivityComponent';
+import ActivityComponentHome from './ActivityComponentHome';
 import Button from '@mui/material/Button';
 
 import { Grid } from '@mui/material';
@@ -12,13 +12,12 @@ export default function ActivityList() {
 
     <div>
       <Grid container spacing={2}>
-        <ActivityComponent />
-        <ActivityComponent />
-        <ActivityComponent />
-        <ActivityComponent />
-        <ActivityComponent />
-        <ActivityComponent />
-        <ActivityComponent />
+        <ActivityComponentHome />
+        <ActivityComponentHome />
+        <ActivityComponentHome />
+        <ActivityComponentHome />
+        <ActivityComponentHome />
+        <ActivityComponentHome />
 
       </Grid>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
