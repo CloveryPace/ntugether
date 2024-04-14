@@ -19,43 +19,57 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
+import { API_SIGN_UP } from '../global/constants';
+import axios from 'axios';
+import { MuiOtpInput } from 'mui-one-time-password-input'
 
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 const { useState } = React;
 
 export default function Signup() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
-
+  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
 
   const [gender, setGender] = useState('');
 
-  const handleChange = (event) => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    // console.log({
+    //   name: data.get('name'),
+    //   email: data.get('email'),
+    //   password: data.get('password'),
+    //   gender: data.get('gender'),
+    //   birthday: data.get('birthday'),
+    // });
+
+    axios.put(API_SIGN_UP, { 
+      name: data.get('name'),
+      email: data.get('email'),
+      password: data.get('password'),
+      gender: data.get('gender'),
+      birthday: data.get('birthday')
+    })
+    .then(function (response) {
+      console.log(response);
+      setSignupStatus(2);
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  }
+
+  const [otp, setOtp] = useState('');
+
+  const handleOTPChange = (newValue) => {
+    setOtp(newValue)
+  }
+
+  const handleGenderChange = (event) => {
     setGender(event.target.value);
   };
-
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -63,7 +77,6 @@ export default function Signup() {
         <CssBaseline />
         
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          
         <Box
           sx={{
             my: 8,
@@ -79,7 +92,9 @@ export default function Signup() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          {signupStatus == 1 ? 
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -128,9 +143,11 @@ export default function Signup() {
                   <Select
                     labelId="label_gender"
                     id="gender"
+                    name="gender"
                     value={gender}
                     label="Gender"
-                    onChange={handleChange}
+                    onChange={handleGenderChange}
+                    fullWidth
                   >
                     <MenuItem value={1}>Male</MenuItem>
                     <MenuItem value={2}>Female</MenuItem>
@@ -184,9 +201,21 @@ export default function Signup() {
                 </Link>
               </Grid>
             </Grid>
+        </Box> : 
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <MuiOtpInput value={otp} onChange={handleOTPChange} length={6}/>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign Up
+            </Button>
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
+          }
+          </Box>
+        
         </Grid>
         <Grid
           item

@@ -1,0 +1,12 @@
+{
+  "User": [
+    {
+      "name": null,
+      "email": null,
+      "password": null,
+      "gender": null,
+      "birthday": null,
+      "id": "1"
+    }
+  ]
+}
