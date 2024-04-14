@@ -1,11 +1,18 @@
 {
   "User": [
     {
-      "name": null,
-      "email": null,
-      "password": null,
-      "gender": null,
-      "birthday": null,
+      "name": "汪佩璇",
+      "email": "ddd@ddd.com",
+      "password": "111",
+      "gender": "1",
+      "birthday": "04/06/2024",
+      "id": "1"
+    }
+  ],
+  "Otp": [
+    {
+      "otp": "111111",
+      "email": "ddd@ddd.com",
       "id": "1"
     }
   ]

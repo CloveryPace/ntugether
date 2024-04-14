@@ -19,7 +19,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-import { API_SIGN_UP } from '../global/constants';
+import { API_SIGN_UP, API_SIGN_UP_OTP } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 
@@ -31,8 +31,9 @@ export default function Signup() {
   const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
 
   const [gender, setGender] = useState('');
+  const [email, setEmail] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     // console.log({
@@ -67,10 +68,28 @@ export default function Signup() {
     setOtp(newValue)
   }
 
+
+  const handleComplete = (value) => {
+    console.log(value);
+    axios.put(API_SIGN_UP_OTP, { 
+      otp: value,
+      email: email
+    
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
   const handleGenderChange = (event) => {
     setGender(event.target.value);
   };
 
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -93,7 +112,7 @@ export default function Signup() {
             Sign up
           </Typography>
           {signupStatus == 1 ? 
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}
+          <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -117,6 +136,8 @@ export default function Signup() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={email}
+                  onChange={handleEmailChange} 
                 />
               </Grid>
 
@@ -202,17 +223,8 @@ export default function Signup() {
               </Grid>
             </Grid>
         </Box> : 
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <MuiOtpInput value={otp} onChange={handleOTPChange} length={6}/>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
-            >
-              Sign Up
-            </Button>
-          </Box>
+            <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
+             style={{marginTop:20}} />
           }
           </Box>
         

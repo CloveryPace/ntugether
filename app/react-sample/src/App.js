@@ -1,13 +1,13 @@
 import './App.css';
 import HeaderBar from "./components/HeaderBar";
-import Signup from "./page/Signup";
+import Login from "./page/Login";
 
 function App() {
   return (
     <div>
       <HeaderBar />
       <main>
-        <Signup />
+        <Login />
       </main>
     </div>
   );
