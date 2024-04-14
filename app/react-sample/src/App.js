@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-import './App.css';
-import HeaderBar from "./components/HeaderBar";
-
-function App() {
-  return (
-    <div>
-      <HeaderBar />
-      <main>
-      </main>
-    </div>
-=======
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
 import { ThemeProvider } from '@mui/material/styles';
@@ -36,7 +24,6 @@ function App() {
         </Routes>
         </BrowserRouter>
     </ThemeProvider>
->>>>>>> 77866dc (Router initialization)
   );
 }
 
