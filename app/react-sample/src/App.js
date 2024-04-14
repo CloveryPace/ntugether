@@ -1,4 +1,3 @@
-
 import './App.css';
 import HeaderBar from "./components/HeaderBar";
 import { ThemeProvider } from '@mui/material/styles';
