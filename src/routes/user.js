@@ -15,8 +15,16 @@ require('dotenv').config();
 var router = express.Router();
 router.use(bodyParser.json());
 
-// Create a connection pool to the MySQL server
-const connection = require('../../database');
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: 'root', 
+  database: 'ntugetherdb'
+});
+
+// Connect to the database
+connection.connect();
+console.log("connected");
 
 // GET routes
 router.get("/", getMember);

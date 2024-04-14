@@ -12,8 +12,24 @@ router.use(bodyParser.json());
 // TODO: filter type
 // TODO: authorization
 
+
 // Create a connection pool to the MySQL server
-const connection = require('../../database');
+const connection = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'secure1234',
+    database: 'ntugetherdb'
+});
+
+// connect to database server
+connection.connect((err) => {
+    if (err) {
+        console.error('Error connecting to MySQL server: ' + err.stack);
+        return;
+    }
+
+    console.log('Connected to MySQL server');
+});
 
 /**
  * ROUTES: /activity/create
