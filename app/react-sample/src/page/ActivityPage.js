@@ -8,25 +8,14 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { cyan, yellow, orange } from '@mui/material/colors';
 import { Divider, Grid, Paper } from "@material-ui/core";
 import TextField from "@mui/material/TextField";
+import { Typography} from '@mui/material';
 
-const tagTheme = createTheme({
-  palette: {
-    primary: {
-      main: yellow[400],
-    },
-    secondary:{
-      main: cyan[100],
-    },
-    warning:{
-      main: orange[400]
-    }
-  },
-});
+import theme from '../components/Theme'; 
+import HeaderBar from '../components/HeaderBar';
+
+import './Common.css';
 
 function ActivityPage() {
-  const style = { 
-    padding: "5rem 0 10rem 10rem",
-  };
   const style2 = { 
     padding: "1rem 0 0 0" 
   };
@@ -35,54 +24,49 @@ function ActivityPage() {
   };
 
   return (
-    <div style={style}>
-
+    <ThemeProvider theme={theme}>
+      <HeaderBar />
+      <div className='Main'>
       <Stack direction="row" spacing={2}>
-        <h2> 活動名稱 </h2> 
+        <Typography variant="h4">活動名稱</Typography>
         <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="secondary" label="type"/>
-        </ThemeProvider>
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="primary" label="一次性"/>
-        </ThemeProvider>
-        <ThemeProvider theme={tagTheme}>
-          <Chip color="warning" label="需審核"/>
-        </ThemeProvider>
+        <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label="一次性"/>
+        <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
+        <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
         <Button variant="contained" color="primary"> 編輯活動 </Button> 
       </Stack>
 
       <Stack direction="row" spacing={1.5} style={style2}>
-        <h3> 活動簡介 </h3>
+        <Typography variant="h6"> 活動簡介 </Typography>
       </Stack>
 
       <Stack direction="row" spacing={10} style={style2}>
         <Stack direction="column" spacing={3} style={instyle}>
           <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 📅 </h4>
+            <Typography variant="h6"> 活動時間 </Typography>
           </Stack>
           <Stack direction="row" spacing={6} style={style2}> 
-            <h4> 📍 </h4>
+            <Typography variant="h6"> 活動地點 </Typography>
           </Stack>
           <Stack direction="row" spacing={6} style={style2}> 
-            <h4> 人數上限 </h4>
+            <Typography variant="h6"> 人數上限 </Typography>
           </Stack>
           <Stack direction="row" spacing={7} style={style2}> 
-            <h4> 參加者 </h4>
+            <Typography variant="h6"> 參加者 </Typography>
           </Stack>
           <Stack direction="row" spacing={7} style={style2}> 
-            <h4> 討論串 </h4>
+            <Typography variant="h6"> 討論串 </Typography>
           </Stack>
         </Stack>
         <Stack direction="column" spacing={3} style={instyle}>
           <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 2024/01/01 20:00 </h4>
+            <Typography variant="h6"> 2024/01/01 20:00 </Typography>
           </Stack>
           <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 台大門口 </h4>
+            <Typography variant="h6"> 台大門口 </Typography>
           </Stack>
           <Stack direction="row" spacing={10} style={style2}> 
-            <h4> 5 </h4>
+            <Typography variant="h6"> 5 </Typography>
           </Stack>
           <Stack direction="row" spacing={7} style={style2}> 
           <Avatar alt="Remy Sharp"/>
@@ -141,8 +125,8 @@ function ActivityPage() {
 
       <div style={instyle}>
       </div>
-
-    </div>
+      </div>
+    </ThemeProvider>
   );
 }
 

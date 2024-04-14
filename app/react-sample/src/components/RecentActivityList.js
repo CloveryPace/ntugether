@@ -34,7 +34,7 @@ export default function RecentActivityList() {
 
   return (
     <div>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         即將來臨的活動
       </Typography>
       <List>

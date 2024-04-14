@@ -9,9 +9,9 @@ export default function TextButtons() {
 
   return (
     <Stack direction="row" justifyContent="center" spacing={2}>
-      <Button variant="contained" color='secondary'>學習</Button> 
-      <Button variant="contained" color='secondary'>運動</Button> 
-      <Button variant="contained" color='secondary'>其他</Button>
+      <Button variant="contained" color='primary'>學習</Button> 
+      <Button variant="contained" color='primary'>運動</Button> 
+      <Button variant="contained" color='primary'>其他</Button>
     </Stack>
   );
 }

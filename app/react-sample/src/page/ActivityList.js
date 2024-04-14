@@ -2,28 +2,27 @@
 
 import Stack from '@mui/material/Stack';
 import ActivityComponent from "../components/ActivityComponent";
+import ActivityListComponent from "../components/ActivityListComponent.js";
+import { ThemeProvider } from '@mui/material/styles';
+import { Typography} from '@mui/material';
+
+import theme from '../components/Theme'; 
+import HeaderBar from '../components/HeaderBar';
+
+import './Common.css';
+
 
 function ActivityList() {
 
-  const style = { 
-    padding: "3rem"
-  };
-  const instyle = { 
-    padding: "1.5rem 0 0 0" 
-  };
 
   return (
-    <div style={style}>
-
-      <Stack direction="row" spacing={1.5} className='m-16'>
-        <h3> 活動列表 </h3> 
-      </Stack>
-
-      <div style={instyle}>
-        <ActivityComponent></ActivityComponent>
+    <ThemeProvider theme={theme}>
+      <HeaderBar />
+      <div className='Main'>
+      <Typography variant="h4">活動列表</Typography>
+      <ActivityListComponent/>
       </div>
-
-    </div>
+    </ThemeProvider>
   );
 }
 

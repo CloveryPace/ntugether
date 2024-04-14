@@ -1,8 +1,9 @@
 // 活動完整資訊
+import HeaderBar from '../components/HeaderBar';
+import './Common.css';
 
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
-import { blue, yellow, orange } from '@mui/material/colors';
 import * as React from 'react';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -18,28 +19,30 @@ import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
+import { ThemeProvider } from '@mui/material/styles';
+import { Typography} from '@mui/material';
+
+import theme from '../components/Theme'; 
+
 const ItemOneTime = styled(Paper)(({ theme }) => ({
-  backgroundColor: yellow[400],
+  backgroundColor: theme.palette.hashtag.oneTime,
   ...theme.typography.body2,
   padding: theme.spacing(1),
   textAlign: 'center',
-  color: theme.palette.text.secondary,
 }));
 
 const ItemReview = styled(Paper)(({ theme }) => ({
-    backgroundColor: orange[400],
+    backgroundColor: theme.palette.hashtag.review,
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
 }));
 
 const ItemTag = styled(Paper)(({ theme }) => ({
-    backgroundColor: blue[100],
+    backgroundColor: theme.palette.hashtag.type,
     ...theme.typography.body2,
     padding: theme.spacing(1),
     textAlign: 'center',
-    color: theme.palette.text.secondary,
 }));
 
 function NewActivity() {
@@ -58,9 +61,6 @@ function NewActivity() {
     const [review, setReview] = useState(false); // 需審核: true, 不需審核：false
     const [type, setType] = useState(false); // 需審核: true, 不需審核：false
 
-    const style = { 
-        padding: "5rem 5rem 10rem 10rem",
-    };
     const style2 = { 
         padding: "3rem 5rem 0 0",
     };
@@ -89,16 +89,17 @@ function NewActivity() {
     };
 
   return (
-    <div>
-        <div style={style}>
+    <ThemeProvider theme={theme}>
+     <HeaderBar />
+        <div className='Main'>
 
             <Stack direction="row" spacing={2}>
-                <h1> 新增活動 </h1> 
+                <Typography variant="h4">新增活動</Typography>
             </Stack>
 
             <Grid container spacing={10}>
-                <Grid item xs={6}>
-                    <h4> 活動名稱 </h4>
+                <Grid item xs={12} md={6}>
+                <Typography variant="h6">活動名稱</Typography>
                     <TextField
                         inputRef={ActivityName}
                         variant="outlined"
@@ -106,7 +107,7 @@ function NewActivity() {
                         fullWidth
                         label="輸入活動名稱"
                     />
-                    <h4> 活動簡介 </h4>
+                    <Typography variant="h6"> 活動簡介 </Typography>
                     <TextField
                         inputRef={ActivityIntro}
                         variant="outlined"
@@ -114,7 +115,7 @@ function NewActivity() {
                         fullWidth
                         label="輸入活動簡介"
                     />
-                    <h4> 一次性活動 </h4>
+                    <Typography variant="h6"> 一次性活動 </Typography>
                     <RadioGroup aria-label="onetime" name="onetime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChange} defaultValue="一次性活動">
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
@@ -129,7 +130,7 @@ function NewActivity() {
                         </Grid>
                         ))}
                     </RadioGroup>
-                    <h4> 需審核 </h4>
+                    <Typography variant="h6"> 需審核 </Typography>
                     <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
@@ -144,7 +145,7 @@ function NewActivity() {
                         </Grid>
                         ))}
                     </RadioGroup>
-                    <h4> </h4>
+                    <Typography variant="h6"> </Typography>
                     <TextField
                         inputRef={ApplyQues}
                         fullWidth
@@ -152,7 +153,7 @@ function NewActivity() {
                         autoFocus
                         label="輸入審核題目"
                     />
-                    <h4> 活動類型 </h4>
+                    <Typography variant="h6"> 活動類型 </Typography>
                     <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue="運動">
                         {['運動', '讀書會', "出遊"].map((value) => (
                         <Grid item>
@@ -169,8 +170,8 @@ function NewActivity() {
                     </RadioGroup>
                 </Grid>
 
-                <Grid item xs={6}>
-                    <h3> 📅 </h3>
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h6"> 活動時間 </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                         <DatePicker
                         inputRef={ActivityTime}
@@ -180,7 +181,7 @@ function NewActivity() {
                         id="date"
                         />
                     </LocalizationProvider>
-                    <h3> 📍 </h3>
+                    <Typography variant="h6"> 活動地點 </Typography>
                     <TextField
                         fullWidth
                         inputRef={ActivityPos}
@@ -188,7 +189,7 @@ function NewActivity() {
                         autoFocus
                         label="輸入活動地點"
                     />
-                    <h4> 人數上限 </h4>
+                    <Typography variant="h6"> 人數上限 </Typography>
                     <TextField
                         fullWidth
                         inputRef={AttendNum}
@@ -196,7 +197,7 @@ function NewActivity() {
                         autoFocus
                         label="輸入人數上限"
                     />
-                    <h4> 邀請加入 </h4>
+                    <Typography variant="h6"> 邀請加入 </Typography>
                     <TextField
                         fullWidth
                         inputRef={SearchName}
@@ -215,7 +216,7 @@ function NewActivity() {
               </Grid>
             </Grid>
         </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
