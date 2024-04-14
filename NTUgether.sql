@@ -12,7 +12,9 @@ CREATE TABLE Users (
     gender VARCHAR(50),
     photo BLOB,
     self_introduction TEXT,
-    interests TEXT -- JSON array to store list of interests
+    oauthProvider VARCHAR(255),
+    oauthId VARCHAR(255),
+    verified boolean
 );
 
 CREATE TABLE Userinterests (
@@ -45,7 +47,7 @@ CREATE TABLE LongTermActivities (
     activity_id INT NOT NULL,
     date DATETIME NOT NULL,
     last_activity_id INT,
-    check_by_organizer BOOLEAN,
+    -- check_by_organizer BOOLEAN,
     FOREIGN KEY (activity_id) REFERENCES Activities(activity_id),
     FOREIGN KEY (last_activity_id) REFERENCES LongTermActivities(long_term_activity_id)
 ) ENGINE=InnoDB;
@@ -155,10 +157,10 @@ CREATE TABLE UserProgress (
 
 /* Insert into fake data */
 -- Users Table
-INSERT INTO Users (name, email, password, birthday, gender, interests) VALUES
-('John Doe', 'john@example.com', 'password123', '1990-05-15', 'Male', '["Hiking", "Reading", "Cooking"]'),
-('Jane Smith', 'jane@example.com', 'password456', '1985-09-20', 'Female', '["Painting", "Yoga", "Photography"]'),
-('Alice Johnson', 'alice@example.com', 'password789', '1995-02-10', 'Female', '["Traveling", "Skiing", "Gardening"]');
+INSERT INTO Users (name, email, password, birthday, gender) VALUES
+('John Doe', 'john@example.com', 'password123', '1990-05-15', 'Male'),
+('Jane Smith', 'jane@example.com', 'password456', '1985-09-20', 'Female'),
+('Alice Johnson', 'alice@example.com', 'password789', '1995-02-10', 'Female');
 
 -- INSERT INTO Users (name, email, password) VALUES
 -- ('test', 'test@gmail.com', 'testpassword');
@@ -172,10 +174,10 @@ INSERT INTO Activities (name, introduction, date, location, max_participants, ne
 ('Cooking Class', 'A hands-on cooking class to learn new recipes.', '2024-04-20', 'Culinary School', 10, 1, 0, 3, 'None', 0);
 
 -- Long-term Activity Table
-INSERT INTO LongTermActivities (activity_id, date, last_activity_id, check_by_organizer) VALUES
-(1, '2024-05-01 09:00:00', NULL, 1),
-(2, '2024-04-15 14:00:00', NULL, 0),
-(3, '2024-04-20 18:00:00', 2, 0);
+INSERT INTO LongTermActivities (activity_id, date, last_activity_id) VALUES
+(1, '2024-05-01 09:00:00', NULL),
+(2, '2024-04-15 14:00:00', NULL),
+(3, '2024-04-20 18:00:00', 2);
 
 -- Activity Participant Status Table
 INSERT INTO ActivityParticipantStatus (activity_id, long_term_activity_id, participant_id) VALUES
