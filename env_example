@@ -3,3 +3,6 @@ JWT_EXPIRES_IN =
 
 Email = 
 Password = 
+
+googleClientID = 
+googleClientSecret = 

@@ -7,6 +7,9 @@ const mysql = require('mysql');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser');
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');  // Use express-session
 require('dotenv').config();
 
 var router = express.Router();
@@ -38,6 +41,70 @@ router.put("/emailVerify", emailVerify);
 // DELETE routes
 router.delete("/", deleteMember);
 
+
+// Configure the Google strategy for use 
+passport.use(new GoogleStrategy({
+  clientID: process.env.googleClientID,
+  clientSecret: process.env.googleClientSecret,
+  callbackURL: "/user/oauth2callback"
+},
+(accessToken, refreshToken, profile, done) => {
+  try{
+    //  Check for existing user
+    connection.query('SELECT * FROM Users WHERE oauthId = ?', [profile.id], (err, existingUsers) => {
+    if (existingUsers.length > 0) {
+      return done(null, existingUsers[0]);
+    } else {
+    // if not, create new user in our db
+      connection.query('INSERT INTO Users (oauthId, email, name, oauthProvider) VALUES (?, ?, ?, "google")', [profile.id, profile.emails[0].value, profile.displayName], (err, result) => {
+      const newUser = {
+        // id: result.insertId,
+        oauthId: profile.id,
+        email: profile.emails[0].value,
+        name: profile.displayName
+      };
+      return done(null, newUser);
+      });
+    }
+  });
+  } catch (error) {
+    return done(error);
+  }
+}
+));
+
+passport.serializeUser((user, done) => {
+done(null, user);
+});
+
+passport.deserializeUser((user, done) => {
+done(null, user);
+});
+
+router.use(session({
+  secret: 'sdm_is_so_fun',
+  resave: false,
+  saveUninitialized: true
+}));
+
+router.use(passport.initialize());
+router.use(passport.session());
+
+// Define routes.
+router.get('/auth/google',
+passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/oauth2callback', 
+passport.authenticate('google', { failureRedirect: '/auth/failure' }),
+(req, res) => {
+  // Successful authentication, redirect home.
+  console.log("successful authentication");
+  res.redirect('/');
+});
+
+router.get('/auth/failure', (req, res) => {
+res.send('Failed to authenticate.');
+});
 
 const SECRET_KEY = 'sdm_is_so_fun';
 

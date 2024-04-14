@@ -16,6 +16,7 @@ app.use("/user", user_routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // run server
-app.listen(4000, () => {
-    console.log("The server is running at http://localhost:4000");
+port = 4000;
+app.listen(port, () => {
+    console.log(`The server is running at http://localhost:${port}`);
 });
