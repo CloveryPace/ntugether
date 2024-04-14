@@ -1,16 +1,16 @@
-import './Homepage.css';
-import HeaderBar from './components/HeaderBar';
-import MainInform from './components/MainInform';
-import TextButtons from './components/TextButtons';
-import ActivityList from './components/ActivityList';
-import Footer from './components/Footer';
+import '../Homepage.css';
+import HeaderBar from '../components/HeaderBar';
+import MainInform from '../components/MainInform';
+import TextButtons from '../components/TextButtons';
+import RecentActivityList from '../components/RecentActivityList';
+import Footer from '../components/Footer';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
 
-import theme from './components/Theme'; 
+import theme from '../components/Theme'; 
 
-function App() {
+function HomePage() {
   return (
     <ThemeProvider theme={theme}>
         
@@ -22,14 +22,13 @@ function App() {
           <Typography variant="h5">活動類別</Typography>
           <TextButtons />
           <Typography variant="h5">熱門活動</Typography>
-          <ActivityList />
+          <RecentActivityList />
         </div>
         <Footer />
         </div>
-      
 
       </ThemeProvider>
   );
 }
 
-export default App;
+export default HomePage;

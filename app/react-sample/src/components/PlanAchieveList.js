@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
 import PlanAchieveItem from './PlanAchieveItem';
-import {useTheme} from '@mui/material';
 
 export default function PlanAchieveList() {
-  const theme = useTheme();
 
   const initialDisplayCount = 2; 
   const incrementCount = 3; 

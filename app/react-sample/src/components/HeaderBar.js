@@ -16,7 +16,7 @@ import { styled, alpha } from '@mui/material/styles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {useTheme} from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,7 +58,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function HeaderBar() {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedLocation, setSelectedLocation] = React.useState('北部');
 
@@ -80,9 +80,12 @@ export default function HeaderBar() {
         <IconButton edge="start" color="icon" aria-label="open drawer">
           <MenuIcon />
         </IconButton>
+        
+        <Button onClick={() => navigate('/')}>
         <Typography variant="h6" noWrap>
         NTUgether
         </Typography>
+        </Button>
         
         {/* Search Input */}
         <Search>
