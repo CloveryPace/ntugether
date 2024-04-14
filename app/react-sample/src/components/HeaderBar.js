@@ -1,20 +1,10 @@
+// 暫時的 Header
 
-
-
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
 import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
+<<<<<<< HEAD
 import { styled, alpha } from '@mui/material/styles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -55,11 +45,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: '100%',
     [theme.breakpoints.up('md')]: {
       width: '20ch',
+=======
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const darkTheme = createTheme({
+  palette: {
+    mode: 'dark',
+    primary: {
+      main: "#696969",
+>>>>>>> 148d7c7 (Revert "Kelsey/homepage")
     },
   },
-}));
+});
 
 export default function HeaderBar() {
+<<<<<<< HEAD
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -147,5 +147,17 @@ export default function HeaderBar() {
         </IconButton>
       </Toolbar>
     </AppBar>
+=======
+  return (
+    <ThemeProvider theme={darkTheme}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" aria-label="menu" sx={{ mr: 2 }}>
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+    </ThemeProvider>
+>>>>>>> 148d7c7 (Revert "Kelsey/homepage")
   );
 }
