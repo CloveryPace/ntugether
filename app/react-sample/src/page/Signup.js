@@ -20,6 +20,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
 
+import theme from '../components/Theme'; 
 
 function Copyright(props) {
   return (
@@ -36,7 +37,6 @@ function Copyright(props) {
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
-const defaultTheme = createTheme();
 const { useState } = React;
 
 export default function Signup() {
@@ -58,7 +58,7 @@ export default function Signup() {
 
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         

@@ -38,18 +38,28 @@ export default function ActivityComponentHome() {
         <div className="box" style={style} onClick={handleOpen}>
           <Stack direction="column">
             <div> 
-            <Typography variant="h6" gutterBottom>Activity name</Typography>
+            <Typography variant="h5" gutterBottom>Activity name</Typography>
               <Stack direction="row" spacing={1}>
-                <Chip color="primary" label="type"/>
-                <Chip color="primary" label="一次性"/>
+                <Chip color="secondary" label="type"/>
+                <Chip color="secondary" label="一次性"/>
               </Stack >
+
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
-              <ScheduleIcon color="icon"/>
-              <LocationOnIcon color="icon"/>
-              <PeopleIcon color="icon"/>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
+                  <Typography variant="body1">2024/07/01</Typography>
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>
+                  <Typography variant="body1">台大校園</Typography>
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
+                </div>
               </Stack>
+
             </div>
-              <Button variant="contained" color="secondary"> 參加 </Button> 
+              <Button variant="contained" color="primary"> 參加 </Button> 
           </Stack>
         </div>
       </Grid>

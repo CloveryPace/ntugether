@@ -23,6 +23,17 @@ const theme = createTheme({
 
       words: {
         main: '#2C3E4F',
+      },
+
+      error: {
+        main: "#C1666B",
+      },
+
+      hashtag: {
+        oneTime: '#FFB867',
+        review: '#FFC966',
+        type:  '#FFE666',
+        contrastText: '#2C3E4F',
       }
     },
   
@@ -31,10 +42,38 @@ const theme = createTheme({
         color: "#2C3E4F",
       },
 
-      h5: {
+      h4: {
         fontWeight: 'bold',
         marginTop: "20px",
         marginBottom: "20px",
+        fontSize: "28px",
+      },
+
+      h5: {
+        fontWeight: 'bold',
+        marginTop: "15px",
+        marginBottom: "15px",
+        fontSize: "20px",
+      },
+
+      h6: {
+        marginTop: "20px",
+        marginBottom: "20px",
+        fontSize: "18px",
+      },
+
+    },
+
+    components: {
+      MuiRadio: {
+        styleOverrides: {
+          root: {
+            color: '#E8ECEB',
+            '&.Mui-checked': {
+              color: '#E8ECEB',
+            },
+          },
+        },
       },
     },
   
