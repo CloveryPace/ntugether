@@ -25,7 +25,7 @@ export default function PlanAchieveList() {
 
   return (
     <div>
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" gutterBottom>
         進度達成比例
       </Typography>
       <List>
