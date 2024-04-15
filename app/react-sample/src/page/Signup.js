@@ -22,9 +22,22 @@ import React from 'react';
 import { API_SIGN_UP, API_SIGN_UP_OTP } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
+import theme from '../components/Theme'; 
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      <Link color="inherit" href="https://mui.com/">
+        Your Website
+      </Link>{' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
 
+// TODO remove, this demo shouldn't need to reset the theme.
 
-const defaultTheme = createTheme();
 const { useState } = React;
 
 export default function Signup() {
@@ -91,7 +104,7 @@ export default function Signup() {
     setEmail(event.target.value);
   };
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         
@@ -217,7 +230,7 @@ export default function Signup() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href={'/login'} variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>

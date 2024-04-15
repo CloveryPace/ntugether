@@ -11,6 +11,7 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import theme from '../components/Theme'; 
 import { API_LOGIN } from '../global/constants';
 import axios from 'axios';
 
@@ -28,8 +29,6 @@ function Copyright(props) {
 }
 
 // TODO remove, this demo shouldn't need to reset the theme.
-
-const defaultTheme = createTheme();
 
 export default function Login() {
   const handleSubmit = (event) => {
@@ -53,7 +52,7 @@ export default function Login() {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         
@@ -114,7 +113,7 @@ export default function Login() {
                   </Link>
                 </Grid>
                 <Grid item>
-                  <Link href="#" variant="body2">
+                  <Link href={'/signup'} variant="body2">
                     {"Don't have an account? Sign Up"}
                   </Link>
                 </Grid>

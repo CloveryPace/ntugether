@@ -1,12 +1,12 @@
-// 活動資訊方塊
+// 活動資訊方塊 
 
-import { useState } from "react";
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { pink, yellow, cyan, orange } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
+import { useNavigate } from 'react-router-dom';
 
 const tagTheme = createTheme({
   palette: {
@@ -31,8 +31,7 @@ const buttonTheme = createTheme({
 });
 
 export default function ActivityComponent() {
-    const [openContent, setOpenContent] = useState(false);
-
+    const navigate = useNavigate();
     const style = { 
       border: '1px solid rgba(0, 0, 0, 0.1)',
       width: '20rem',
@@ -42,20 +41,11 @@ export default function ActivityComponent() {
       padding: '1rem'
     };
 
-    //  打開 Activity 頁面
-    const handleOpen = () => {
-        if (openContent === false) {
-          setOpenContent(true);
-        }
-        else {
-          setOpenContent(false);
-        }
-      };
-
+    // TODO: navigate到特定活動頁面（參數：ID）
     return (
-        <div className="box" style={style} onClick={handleOpen}>
+        <div className="box" style={style}>
             <Stack direction="column">
-              <div style={style2}> 
+              <div style={style2} onClick={() => navigate('/activitypage')}> 
                 <h3> Activity name </h3> 
                 <Stack direction="row" spacing={1}>
                 <ThemeProvider theme={tagTheme}>
