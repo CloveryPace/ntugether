@@ -10,7 +10,7 @@ import { Typography} from '@mui/material';
 
 import theme from '../components/Theme'; 
 
-function App() {
+function HomePage() {
   return (
     <ThemeProvider theme={theme}>
         
@@ -30,4 +30,4 @@ function App() {
   );
 }
 
-export default App;
+export default HomePage;
