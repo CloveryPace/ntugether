@@ -3,65 +3,57 @@
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { pink, yellow, cyan, orange } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
+import Typography from '@mui/material/Typography';
+import {useTheme} from '@mui/material';
 
-const tagTheme = createTheme({
-  palette: {
-    primary: {
-      main: yellow[400],
-    },
-    secondary:{
-      main: cyan[100],
-    },
-    warning:{
-      main: orange[400]
-    }
-  },
-});
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PeopleIcon from '@mui/icons-material/People';
 
-const buttonTheme = createTheme({
-  palette: {
-    primary: {
-      main: pink[100],
-    },
-  },
-});
+import { Grid } from '@mui/material';
 
 export default function ActivityComponent() {
     const navigate = useNavigate();
+    const theme = useTheme();
     const style = { 
-      border: '1px solid rgba(0, 0, 0, 0.1)',
-      width: '20rem',
-      padding: '1rem'
-    };
-    const style2 = { 
-      padding: '1rem'
+      border: '1.5px solid rgba(0, 0, 0, 0.1)',
+      padding: '2rem'
     };
 
     // TODO: navigate到特定活動頁面（參數：ID）
+
     return (
+        <Grid item xs={12} md={4}>
         <div className="box" style={style}>
-            <Stack direction="column">
-              <div style={style2} onClick={() => navigate('/activitypage')}> 
-                <h3> Activity name </h3> 
-                <Stack direction="row" spacing={1}>
-                <ThemeProvider theme={tagTheme}>
-                  <Chip color="secondary" label="type"/>
-                  <Chip color="primary" label="一次性"/>
-                </ThemeProvider>
-                </Stack>
-                <p>  📅：2024/07/01 </p>
-                <p> 📍：台大校園 </p>
-                <p> 參加者 </p>
-                <Avatar alt="Remy Sharp"/>
-              </div>
-              <ThemeProvider theme={buttonTheme}>
-                <Button variant="contained" color="primary"> 參加 </Button> 
-              </ThemeProvider>
-            </Stack>
+          <Stack direction="column">
+            <div onClick={() => navigate('/activitypage')}> 
+            <Typography variant="h5" gutterBottom>Activity name</Typography>
+              <Stack direction="row" spacing={1}>
+                <Chip color="secondary" label="type"/>
+                <Chip color="secondary" label="一次性"/>
+              </Stack >
+
+              <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
+                  <Typography variant="body1">2024/07/01</Typography>
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>
+                  <Typography variant="body1">台大校園</Typography>
+                </div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
+                  <Avatar alt="Remy Sharp"/>
+                </div>
+              </Stack>
+
+            </div>
+              <Button variant="contained" color="primary"> 參加 </Button> 
+          </Stack>
         </div>
+        </Grid>
     );
 }
