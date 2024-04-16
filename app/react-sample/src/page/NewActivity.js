@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import axios from 'axios';
 import { API_CREATE_ACTIVITY } from '../global/constants';
+import dayjs from 'dayjs';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
@@ -64,7 +65,8 @@ function NewActivity() {
     const SearchName = useRef(); // 輸入想邀請的人
     const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
     const [review, setReview] = useState(false); // 需審核: true, 不需審核：false
-    const [type, setType] = useState(false); // 需審核: true, 不需審核：false
+    const [type, setType] = useState('運動'); // 活動類型
+    const [actDate, setActDate] = useState(dayjs('2024-04-17')); 
 
     const [activityData, setActivityData] = useState({
         activityName: '',
@@ -111,6 +113,7 @@ function NewActivity() {
         axios.post(API_CREATE_ACTIVITY, activityData)
           .then(function (response) {
             console.log(response);
+            alert('新增成功(*´∀`)~♥');
             navigate('/activitylist');
           })
           .catch(function (error) {
@@ -120,8 +123,6 @@ function NewActivity() {
 
     const handleOneTimeChange = (event) => {
         setOneTime(event.target.value);
-        console.log(event);
-        console.log(event.target.value);
         handleChange(event);
     };
 
@@ -132,6 +133,19 @@ function NewActivity() {
 
     const handleChangeType = (event) => {
         setType(event.target.value);
+        handleChange(event);
+    };
+
+    const handleChangeDate = (dateData) => {
+        console.log(dateData);
+        setActDate(dateData);
+        let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
+        const event = { 
+            "target": {
+                "value": finaldate,
+                "name": "activityTime"
+            }
+        };
         handleChange(event);
 
     };
@@ -199,7 +213,9 @@ function NewActivity() {
                     </RadioGroup>
                     <Typography variant="h6"> </Typography>
                     <TextField
-                        inputRef={ApplyQues}
+                        value={activityData.applyQues}
+                        onChange={handleChange}
+                        name="applyQues"
                         fullWidth
                         variant="outlined"
                         autoFocus
@@ -226,17 +242,21 @@ function NewActivity() {
                     <Typography variant="h6"> 活動時間 </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                         <DatePicker
-                        inputRef={ActivityTime}
+                        value={actDate}
+                        onChange={handleChangeDate}
+                        name="activityTime"
                         required
                         fullWidth
                         label="輸入活動時間"
-                        id="date"
+                        id="activityTime"
                         />
                     </LocalizationProvider>
                     <Typography variant="h6"> 活動地點 </Typography>
                     <TextField
                         fullWidth
-                        inputRef={ActivityPos}
+                        value={activityData.activityPos}
+                        onChange={handleChange}
+                        name="activityPos"
                         variant="outlined"
                         autoFocus
                         label="輸入活動地點"

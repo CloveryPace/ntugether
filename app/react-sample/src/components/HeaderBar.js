@@ -140,7 +140,7 @@ export default function HeaderBar() {
           <NotificationsIcon color="icon"/>
         </IconButton>
         <IconButton edge="end" aria-label="account of current user">
-          <Face color="icon"/>
+          <Face color="icon" onClick={() => navigate('/userprofile')}/>
         </IconButton>
       </Toolbar>
     </AppBar>

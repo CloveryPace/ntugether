@@ -1,3 +1,6 @@
+import HeaderBar from '../components/HeaderBar';
+import './Common.css';
+
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -16,7 +19,8 @@ import Typography from '@mui/material/Typography';
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-
+import UserPageNav from '../components/UserPageNav';
+import theme from '../components/Theme'; 
 
 const { useState } = React;
 
@@ -48,7 +52,7 @@ const VisuallyHiddenInput = styled('input')({
 
 function UserProfile() {
   const style = { 
-    padding: "5rem 10rem 10rem 10rem",
+    padding: "0 10rem 10rem 10rem",
   };
   const style2 = { 
     padding: "1rem 0 0 0" 
@@ -76,7 +80,9 @@ function UserProfile() {
 
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
+    <HeaderBar />
+    <UserPageNav /> 
     <div style={style}>
         <CssBaseline />
 
@@ -105,7 +111,7 @@ function UserProfile() {
         <Grid item xs={10}>
             <Box
                 sx={{
-                my: 4,
+                my: 0,
                 mx: 4,
                 display: 'flex',
                 flexDirection: 'column',
