@@ -8,7 +8,7 @@ import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import Face from '@mui/icons-material/Face';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -140,7 +140,7 @@ export default function HeaderBar() {
           <NotificationsIcon color="icon"/>
         </IconButton>
         <IconButton edge="end" aria-label="account of current user">
-          <AccountCircle color="icon"/>
+          <Face color="icon"/>
         </IconButton>
       </Toolbar>
     </AppBar>

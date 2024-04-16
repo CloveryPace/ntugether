@@ -57,7 +57,7 @@ export default function Signup() {
     //   birthday: data.get('birthday'),
     // });
 
-    axios.put(API_SIGN_UP, { 
+    axios.post(API_SIGN_UP, { 
       name: data.get('name'),
       email: data.get('email'),
       password: data.get('password'),
