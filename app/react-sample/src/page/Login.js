@@ -10,9 +10,10 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { ThemeProvider } from '@mui/material/styles';
-
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from '../components/Theme'; 
+import { API_LOGIN } from '../global/constants';
+import axios from 'axios';
 
 function Copyright(props) {
   return (
@@ -37,6 +38,17 @@ export default function Login() {
       email: data.get('email'),
       password: data.get('password'),
     });
+    axios.put(API_LOGIN, { 
+        email: data.get('email'),
+        password: data.get('password')
+      
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
   };
 
   return (
@@ -85,6 +97,7 @@ export default function Login() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
+              <Blackline  />
               <Button
                 type="submit"
                 fullWidth
@@ -105,7 +118,7 @@ export default function Login() {
                   </Link>
                 </Grid>
               </Grid>
-              <Copyright sx={{ mt: 5 }} />
+              {/* <Copyright sx={{ mt: 5 }} /> */}
             </Box>
           </Box>
         </Grid>
@@ -126,4 +139,37 @@ export default function Login() {
       </Grid>
     </ThemeProvider>
   );
+}
+
+export function Blackline(){
+    const styleLeft = {
+        marginLeft:'auto',
+        marginRight:'auto',
+        width: '40%',
+        float:'left'
+    };
+
+    const styleRight = {
+        marginLeft:'auto',
+        marginRight:'auto',
+        width: '40%',
+        float: 'right'
+    };
+    return(
+        <div className="divider" style={{textAlign:'center'}}>
+            <hr className="left" style={{
+                marginLeft:'auto',
+                marginRight:'auto',
+                width: '40%',
+                float:'left'
+             }} />
+             OR
+            <hr className="right" style={{
+                marginLeft:'auto',
+                marginRight:'auto',
+                width: '40%',
+                float: 'right'
+            }}/>
+        </div>
+    )
 }

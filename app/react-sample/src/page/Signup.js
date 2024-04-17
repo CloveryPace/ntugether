@@ -19,9 +19,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-
+import { API_SIGN_UP, API_SIGN_UP_OTP } from '../global/constants';
+import axios from 'axios';
+import { MuiOtpInput } from 'mui-one-time-password-input'
 import theme from '../components/Theme'; 
-
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -40,30 +41,74 @@ function Copyright(props) {
 const { useState } = React;
 
 export default function Signup() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
-
+  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
 
   const [gender, setGender] = useState('');
+  const [email, setEmail] = useState('');
 
-  const handleChange = (event) => {
+  const handleFirstSignupSubmit = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    // console.log({
+    //   name: data.get('name'),
+    //   email: data.get('email'),
+    //   password: data.get('password'),
+    //   gender: data.get('gender'),
+    //   birthday: data.get('birthday'),
+    // });
+
+    axios.post(API_SIGN_UP, { 
+      name: data.get('name'),
+      email: data.get('email'),
+      password: data.get('password'),
+      gender: data.get('gender'),
+      birthday: data.get('birthday')
+    })
+    .then(function (response) {
+      console.log(response);
+      setSignupStatus(2);
+
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+  }
+
+  const [otp, setOtp] = useState('');
+
+  const handleOTPChange = (newValue) => {
+    setOtp(newValue)
+  }
+
+
+  const handleComplete = (value) => {
+    console.log(value);
+    axios.put(API_SIGN_UP_OTP, { 
+      otp: value,
+      email: email
+    
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+  const handleGenderChange = (event) => {
     setGender(event.target.value);
   };
 
-
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          
         <Box
           sx={{
             my: 8,
@@ -79,7 +124,9 @@ export default function Signup() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          {signupStatus == 1 ? 
+          <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -102,6 +149,8 @@ export default function Signup() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  value={email}
+                  onChange={handleEmailChange} 
                 />
               </Grid>
 
@@ -128,9 +177,11 @@ export default function Signup() {
                   <Select
                     labelId="label_gender"
                     id="gender"
+                    name="gender"
                     value={gender}
                     label="Gender"
-                    onChange={handleChange}
+                    onChange={handleGenderChange}
+                    fullWidth
                   >
                     <MenuItem value={1}>Male</MenuItem>
                     <MenuItem value={2}>Female</MenuItem>
@@ -184,9 +235,12 @@ export default function Signup() {
                 </Link>
               </Grid>
             </Grid>
+        </Box> : 
+            <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
+             style={{marginTop:20}} />
+          }
           </Box>
-        </Box>
-        <Copyright sx={{ mt: 5 }} />
+        
         </Grid>
         <Grid
           item

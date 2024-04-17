@@ -18,6 +18,10 @@ import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import axios from 'axios';
+import { API_CREATE_ACTIVITY } from '../global/constants';
+import dayjs from 'dayjs';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
@@ -61,7 +65,38 @@ function NewActivity() {
     const SearchName = useRef(); // 輸入想邀請的人
     const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
     const [review, setReview] = useState(false); // 需審核: true, 不需審核：false
-    const [type, setType] = useState(false); // 需審核: true, 不需審核：false
+    const [type, setType] = useState('運動'); // 活動類型
+    const [actDate, setActDate] = useState(dayjs('2024-04-17')); 
+
+    const [activityData, setActivityData] = useState({
+        activityName: '',
+        activityIntro: '',
+        applyQues: '',
+        activityTime: '',
+        activityPos: '',
+        AttendNum: '',
+        inviteName: '',
+        oneTime: '',
+        type: '',
+        review: ''
+
+      })
+    const handleChange = e => {
+        const { name, value } = e.target;
+        // console.log("handleChange")
+
+        // console.log(name);
+        // console.log(value);
+
+        // console.log(activityData)
+
+        setActivityData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+
+        console.log(activityData)
+    };  
 
     const style2 = { 
         padding: "3rem 5rem 0 0",
@@ -69,25 +104,50 @@ function NewActivity() {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log(ActivityTime.current?.value);
-        console.log("是否為一次性活動" + oneTime);
-        console.log("是否需要審核" + review);
-        console.log("活動類型: " + type);
+        // console.log(ActivityTime.current?.value);
+        // console.log("是否為一次性活動" + oneTime);
+        // console.log("是否需要審核" + review);
+        // console.log("活動類型: " + type);
+        console.log(activityData);
+
+        axios.post(API_CREATE_ACTIVITY, activityData)
+          .then(function (response) {
+            console.log(response);
+            alert('新增成功(*´∀`)~♥');
+            navigate('/activitylist');
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
     };
 
-    const handleChange = (event) => {
-        event.persist();
+    const handleOneTimeChange = (event) => {
         setOneTime(event.target.value);
+        handleChange(event);
     };
 
     const handleChangeReview = (event) => {
-        event.persist();
         setReview(event.target.value);
+        handleChange(event);
     };
 
     const handleChangeType = (event) => {
-        event.persist();
         setType(event.target.value);
+        handleChange(event);
+    };
+
+    const handleChangeDate = (dateData) => {
+        console.log(dateData);
+        setActDate(dateData);
+        let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
+        const event = { 
+            "target": {
+                "value": finaldate,
+                "name": "activityTime"
+            }
+        };
+        handleChange(event);
+
     };
 
   return (
@@ -98,27 +158,31 @@ function NewActivity() {
             <Stack direction="row" spacing={2}>
                 <Typography variant="h4">新增活動</Typography>
             </Stack>
-
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Grid container spacing={10}>
                 <Grid item xs={12} md={6}>
                 <Typography variant="h6">活動名稱</Typography>
                     <TextField
-                        inputRef={ActivityName}
                         variant="outlined"
+                        value={activityData.name}
+                        onChange={handleChange}
+                        name="activityName"
                         autoFocus
                         fullWidth
                         label="輸入活動名稱"
                     />
                     <Typography variant="h6"> 活動簡介 </Typography>
                     <TextField
-                        inputRef={ActivityIntro}
                         variant="outlined"
+                        value={activityData.activityIntro}
+                        onChange={handleChange}
+                        name="activityIntro"
                         autoFocus
                         fullWidth
                         label="輸入活動簡介"
                     />
                     <Typography variant="h6"> 一次性活動 </Typography>
-                    <RadioGroup aria-label="onetime" name="onetime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChange} defaultValue="一次性活動">
+                    <RadioGroup aria-label="onetime" name="oneTime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue="一次性活動">
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
                             <ItemOneTime> 
@@ -149,7 +213,9 @@ function NewActivity() {
                     </RadioGroup>
                     <Typography variant="h6"> </Typography>
                     <TextField
-                        inputRef={ApplyQues}
+                        value={activityData.applyQues}
+                        onChange={handleChange}
+                        name="applyQues"
                         fullWidth
                         variant="outlined"
                         autoFocus
@@ -176,17 +242,21 @@ function NewActivity() {
                     <Typography variant="h6"> 活動時間 </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                         <DatePicker
-                        inputRef={ActivityTime}
+                        value={actDate}
+                        onChange={handleChangeDate}
+                        name="activityTime"
                         required
                         fullWidth
                         label="輸入活動時間"
-                        id="date"
+                        id="activityTime"
                         />
                     </LocalizationProvider>
                     <Typography variant="h6"> 活動地點 </Typography>
                     <TextField
                         fullWidth
-                        inputRef={ActivityPos}
+                        value={activityData.activityPos}
+                        onChange={handleChange}
+                        name="activityPos"
                         variant="outlined"
                         autoFocus
                         label="輸入活動地點"
@@ -212,11 +282,12 @@ function NewActivity() {
             <Grid container justifyContent="center" style={style2}>
               <Grid item>
                 <Stack direction="row" spacing={2}>
-                    <Button variant="contained" color="primary" onClick={handleSubmit}> 新增 </Button>
+                    <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}> 新增 </Button>
                     <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> 取消 </Button>
                 </Stack>
               </Grid>
             </Grid>
+            </Box>
         </div>
     </ThemeProvider>
   );
