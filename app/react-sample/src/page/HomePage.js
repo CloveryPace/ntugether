@@ -2,7 +2,7 @@ import './Common.css';
 import HeaderBar from '../components/HeaderBar';
 import MainInform from '../components/MainInform';
 import TextButtons from '../components/TextButtons';
-import ActivityListComponent from '../components/ActivityListComponent';
+import ProgressItem from '../components/ProgressItem';
 import Footer from '../components/Footer';
 
 import { ThemeProvider } from '@mui/material/styles';
@@ -21,7 +21,7 @@ function HomePage() {
           <Typography variant="h4">活動類別</Typography>
           <TextButtons />
           <Typography variant="h4">熱門活動</Typography>
-          <ActivityListComponent />
+          <ProgressItem />
         </div>
         <Footer />
       
