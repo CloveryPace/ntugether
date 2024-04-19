@@ -21,6 +21,7 @@ export default function ReviewBox({data}) {
         <div className="box" style={style}>
           <Stack direction="column" spacing={2}>
             <Typography variant="h5" gutterBottom>立即加入</Typography>
+            <p> 審核題目：XXX</p>
               <TextField
                 variant="outlined"
                 name="reviewreply"
