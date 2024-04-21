@@ -82,7 +82,7 @@ function UserProfile() {
   return (
     <ThemeProvider theme={theme}>
     <HeaderBar />
-    <UserPageNav /> 
+    <UserPageNav selectedTab={0}/> 
     <div style={style}>
         <CssBaseline />
 

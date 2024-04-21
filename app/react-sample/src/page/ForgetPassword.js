@@ -2,8 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -30,17 +28,15 @@ function Copyright(props) {
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
-export default function Login() {
+export default function ForgetPassword() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
-      password: data.get('password'),
     });
     axios.put(API_LOGIN, { 
         email: data.get('email'),
-        password: data.get('password')
       
       })
       .then(function (response) {
@@ -70,9 +66,19 @@ export default function Login() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              Forgot Password
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Typography variant="body1">
+            回到 <Link href={'./login'} variant="body2">
+                    登入
+                  </Link> 或 <Link href={'./signup'} variant="body2">
+                    註冊帳號
+                  </Link>。
+            </Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 4,  width: '100%' }}>
+            <Typography variant="body2">
+            輸入你註冊會員的電子信箱
+            </Typography>
               <TextField
                 margin="normal"
                 required
@@ -83,40 +89,19 @@ export default function Login() {
                 autoComplete="email"
                 autoFocus
               />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Blackline  />
+              
+              
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                重設密碼
               </Button>
               <Grid container>
-                <Grid item xs>
-                  <Link href={'./forgetPassword'} variant="body2">
-                    Forgot password?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href={'/signup'} variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
-                </Grid>
+                
+                
               </Grid>
               {/* <Copyright sx={{ mt: 5 }} /> */}
             </Box>
@@ -141,35 +126,3 @@ export default function Login() {
   );
 }
 
-export function Blackline(){
-    const styleLeft = {
-        marginLeft:'auto',
-        marginRight:'auto',
-        width: '40%',
-        float:'left'
-    };
-
-    const styleRight = {
-        marginLeft:'auto',
-        marginRight:'auto',
-        width: '40%',
-        float: 'right'
-    };
-    return(
-        <div className="divider" style={{textAlign:'center'}}>
-            <hr className="left" style={{
-                marginLeft:'auto',
-                marginRight:'auto',
-                width: '40%',
-                float:'left'
-             }} />
-             OR
-            <hr className="right" style={{
-                marginLeft:'auto',
-                marginRight:'auto',
-                width: '40%',
-                float: 'right'
-            }}/>
-        </div>
-    )
-}
