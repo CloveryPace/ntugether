@@ -19,7 +19,7 @@
   "Login": [
     {
       "email": "",
-      "password": "",
+      "password": null,
       "id": "1"
     }
   ],

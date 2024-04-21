@@ -1,21 +1,19 @@
-import Stack from '@mui/material/Stack';
-import Chip from '@mui/material/Chip';
+import HeaderBar from '../components/HeaderBar';
+import './Common.css';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { cyan, yellow, orange } from '@mui/material/colors';
-import { Divider, Grid, Paper } from "@material-ui/core";
-import Avatar from '@mui/material/Avatar';
+import { Grid } from "@material-ui/core";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import UserPageNav from '../components/UserPageNav';
+import theme from '../components/Theme'; 
+import Divider from '@mui/material/Divider';
 
 
 const { useState } = React;
@@ -48,13 +46,21 @@ const VisuallyHiddenInput = styled('input')({
 
 function AccountSetting() {
   const style = { 
-    padding: "5rem 10rem 10rem 10rem",
+    padding: "0 20rem 10rem 20rem",
   };
   const style2 = { 
     padding: "1rem 0 0 0" 
   };
   const instyle = { 
     padding: "3rem 0 0 0" 
+  };
+  const dividerStyle = {
+    p: 0,
+    width: '100%',
+    borderRadius: 2,
+    border: '1px solid',
+    borderColor: 'divider',
+    backgroundColor: 'background.paper',
   };
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -76,49 +82,33 @@ function AccountSetting() {
 
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
+    <HeaderBar />
+    <UserPageNav selectedTab={4}/> 
     <div style={style}>
         <CssBaseline />
 
     <Grid container spacing={2}>
-        <Grid item xs={6} sx={{borderRight: '2px solid'}}>
-            <Box alignItems="center">
-
-                <Avatar
-                alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
-                sx={{ width: 128, height: 128 }}
-                />
-                <Button
-                    sx={{ mt: 3, mb: 2 }}
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    >
-                    Upload file
-                    <VisuallyHiddenInput type="file" />
-                    </Button>
-            </Box>
-                
-        </Grid>
-        <Grid item xs={6}>
-            <Box
+        <Grid item xs={12}>
+            <Box 
+                component="section"
                 sx={{
-                my: 4,
+                my: 0,
                 mx: 4,
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                flexDirection: 'column'
                 }}
             >
-                <Stack spacing={2}>
-
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+              
+                <Typography component="h2" variant="h5" align="left">
+                  帳號設定
+                </Typography> 
+                <Divider sx={dividerStyle}/>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 , width: 1/2}} >
 
                         <TextField
-                                margin="normal"
                                 fullWidth
+                                margin="normal"
                                 id="outlined-controlled"
                                 label="Name"
                                 value={name}
@@ -127,8 +117,8 @@ function AccountSetting() {
                                 }}
                             />
                         <TextField
-                                margin="normal"
                                 fullWidth
+                                margin="normal"
                                 id="outlined-controlled"
                                 label="Email"
                                 value={email}
@@ -146,37 +136,63 @@ function AccountSetting() {
                                 setPhone(event.target.value);
                                 }}
                             />
-                        
-                            
-                            
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label="Gender"
-                                value={gender}
-                                onChange={(event) => {
-                                setGender(event.target.value);
-                                }}
-                            />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            sx={{ mt: 3, mb: 2 }}
+                        >
+                            Modify
+                        </Button>
+                    </Box>
+            </Box>
+            
+        </Grid>
+        <Grid item xs={12}>
+            <Box 
+                component="section"
+                sx={{
+                my: 0,
+                mx: 4,
+                display: 'flex',
+                flexDirection: 'column'
+                }}
+            >
+              
+                <Typography component="h2" variant="h5" align="left">
+                  社群綁定
+                </Typography> 
+                <Divider sx={dividerStyle}/>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 , width: 1/2}} >
 
                         <TextField
                                 fullWidth
                                 margin="normal"
-                                id="outlined-multiline-static"
-                                label="About me"
-                                multiline
-                                rows={4}
-                                defaultValue="Default Value"
-                                />
+                                id="outlined-controlled"
+                                label="Name"
+                                value={name}
+                                onChange={(event) => {
+                                setName(event.target.value);
+                                }}
+                            />
                         <TextField
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label="Tag"
-                                value={tag}
+                                label="Email"
+                                value={email}
                                 onChange={(event) => {
-                                setTag(event.target.value);
+                                setEmail(event.target.value);
+                                }}
+                            />
+                        <TextField
+                                fullWidth
+                                margin="normal"
+                                id="outlined-controlled"
+                                label="Phone"
+                                value={phone}
+                                onChange={(event) => {
+                                setPhone(event.target.value);
                                 }}
                             />
                         <Button
@@ -188,12 +204,33 @@ function AccountSetting() {
                             Modify
                         </Button>
                     </Box>
-                </Stack> 
             </Box>
             
+        </Grid>
+        <Grid item xs={12}>
+            <Box 
+                component="section"
+                sx={{
+                my: 0,
+                mx: 4,
+                display: 'flex',
+                flexDirection: 'column'
+                }}
+            >
+              
+                <Typography component="h2" variant="h5" align="left">
+                  刪除帳號
+                </Typography> 
+                <Divider sx={dividerStyle}/>
+                <Button
+                    variant="outlined" color="error"
+                    sx={{ mt: 3, mb: 2, width: 1/3}}
+                >
+                    刪除此帳號
+                </Button>
+            </Box>
             
         </Grid>
-       
     </Grid>
     </div>
     </ThemeProvider>
