@@ -9,6 +9,9 @@ import ActivityPage from './page/ActivityPage';
 import ActivityList from './page/ActivityList';
 import NewActivity from './page/NewActivity';
 import Login from './page/Login';
+import UserProfile from './page/UserProfile';
+import ForgetPassword from './page/ForgetPassword';
+import AccountSetting from './page/AccountSetting';
 
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
@@ -19,9 +22,14 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path='/signup' element={<Signup />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/forgetPassword' element={<ForgetPassword />} />
           <Route path='/activitylist' element={<ActivityList />} />
           <Route path='/activitypage' element={<ActivityPage />} />
           <Route path='/newactivity' element={<NewActivity />} />
+          <Route path='/userprofile' element={<UserProfile />} />
+          <Route path='/setting' element={<AccountSetting />} />
+
+
         </Routes>
         </BrowserRouter>
     </ThemeProvider>

@@ -139,7 +139,7 @@ export default function HeaderBar() {
         <IconButton aria-label="notification">
           <NotificationsIcon color="icon"/>
         </IconButton>
-        <IconButton edge="end" aria-label="account of current user">
+        <IconButton edge="end" aria-label="account of current user" onClick={() => navigate('/userprofile')}>
           <Face color="icon"/>
         </IconButton>
       </Toolbar>
