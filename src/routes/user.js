@@ -16,10 +16,10 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 const connection = require('../../database');
+const User = require('../model/userModel'); // 不能用const { User } = require('../model/userModel')
 
 // GET routes
 router.get("/", getMember);
-router.get("/emailSend", emailSend);
 router.get("/signin", signIn);
 
 // POST routes
@@ -115,104 +115,69 @@ async function signUp(req, res) {
     console.log("name", name);
     console.log("password", password);
 
-      try {
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 12);
+    
+    // Create user using Sequelize
+    const newUser = await User.create({
+      name: name,
+      email: email,
+      password: hashedPassword
+    });
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 12);
-        
-        // Create user
-        // SQL query to insert a new member into the database
-        const sqlCreate = `INSERT INTO Users (name, email, password) VALUES (?, ?, ?);`;
+    console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
 
-        // Execute SQL query
-        connection.query(sqlCreate, [name, email, hashedPassword], (error, results) => {
-          if (error) {
-            return res.status(500).send('Internal Server Error');
-          }
+    // Create json web token
+    const token = jwt.sign(
+      { userId: newUser.id }, // Use the newly created user's id
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
+    );
 
-          const userId = results.insertId;
-          console.log(userId);
-          
-          // Create json web token
-          const token = jwt.sign(
-            {
-              userId: userId,
-            },
-            process.env.JWT_SECRET,
-            {
-              expiresIn: process.env.JWT_EXPIRES_IN, // JWT_EXPIRES_IN is the duration of the token
-            },
-          );
-
-          
-
-          return res.status(201).json({
-            message: 'Member created successfully',
-            token: token,
-          });
-        });
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "Internal server error" });
+    const { code, timestamp } = generateVerificationCode(email);
+    // Example email sending code with nodemailer
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.Email,
+        pass: process.env.Password
       }
+    });
+  
+    const mailOptions = {
+      from: process.env.Email,
+      to: email,
+      subject: 'NTUgether Password Reset',
+      text: `Your verification code is: ${code}`
+    };
+  
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send('Error sending email');
+      } else {
+        res.send('Verification code sent to your email. Please verify within 10 minutes.');
+        return res.status(201).json({
+          message: 'Member created successfully, verification email sent',
+          token: token, // JWT token for immediate login (optional)
+        });
+      }
+    });
+
 
   } catch (error) {
     console.log(error);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      return res.status(409).json({ error: "Email already exists" });
+    }
     return res.status(500).json({ error: "Internal server error" });
   }
 }
 
-
-// Example route for handling forget password request
-async function emailSend (req, res) {
-  const {userEmail} = req.query;
-  const { code, timestamp } = generateVerificationCode(userEmail);
-  console.log(userEmail);
-  // Check if user already exists
-  const sqlCheckExistence = 'SELECT * FROM Users WHERE `email` = ?;';
-
-  connection.query(sqlCheckExistence, [userEmail], async (error, results) => {
-    if (error) {
-      return res.status(500).send('Internal Server Error');
-    }
-
-    if (results.length > 0) {
-      console.log("User already exists");
-      return res.status(400).json({ error: "User already exists" });
-    }
-  });
-    
-  // Example email sending code with nodemailer
-  const transporter = nodemailer.createTransport({
-   service: 'gmail',
-   host: 'smtp.gmail.com',
-   port: 465,
-   secure: true,
-    auth: {
-      user: process.env.Email,
-      pass: process.env.Password
-    }
-  });
-
-  const mailOptions = {
-    from: process.env.Email,
-    to: userEmail,
-    subject: 'NTUgether Password Reset',
-    text: `Your verification code is: ${code}`
-  };
-
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
-      return res.status(500).send('Error sending email');
-    } else {
-      res.send('Verification code sent to your email. Please verify within 10 minutes.');
-      // return res.status(200).json(verificationCode);
-    }
-  });
-};
-
-function emailVerify (req, res) {
+async function emailVerify(req, res) {
   const { email, code } = req.body;
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
@@ -220,18 +185,28 @@ function emailVerify (req, res) {
   const { code: validCode, timestamp } = generateVerificationCode(email);
   console.log(validCode, timestamp);
   console.log(code, currentTimestamp);
-  if (code === validCode ) { 
-      const query = 'UPDATE Users SET verified = TRUE WHERE email = ?';
-      connection.query(query, [email], (error, results) => {
-          if (error) {
-              return res.status(500).send('Error updating user verification status');
-          }
-          res.send('Email verified successfully');
-      });
-  } else {
-      res.status(401).send('Invalid or expired verification code');
-  }
 
+  if (code === validCode) {
+    try {
+      // Use Sequelize to update the verified status for the user
+      const result = await User.update(
+        { verified: true },
+        { where: { email: email } }
+      );
+
+      if (result[0] > 0) { // result[0] contains the number of affected rows
+        res.send('Email verified successfully');
+      } else {
+        // No rows were updated, which means no user was found with that email
+        res.status(404).send('No user found with that email');
+      }
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send('Error updating user verification status');
+    }
+  } else {
+    res.status(401).send('Invalid or expired verification code');
+  }
 }
 
 async function signIn(req, res) {
@@ -240,131 +215,105 @@ async function signIn(req, res) {
     console.log("email", email);
     console.log("password", password);
 
-    // SQL query to check if the user exists and get their hashed password
-    const sqlCheckExistenceAndFetchPassword = 'SELECT user_id, password FROM Users WHERE `email` = ? LIMIT 1;';
+    // Use Sequelize to find the user by email
+    const user = await User.findOne({
+      where: { 
+        email: email,
 
-    // Execute SQL query
-    connection.query(sqlCheckExistenceAndFetchPassword, [email], async (error, results) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).send('Internal Server Error');
-      }
-
-      if (results.length === 0) {
-        // If no user found with that email
-        console.log("User does not exist");
-        return res.status(404).json({ error: "User does not exist" });
-      }
-      console.log(results);
-      const { id: userId, password: hashedPassword } = results[0];
-
-      try {
-        // Compare the provided password with the stored hashed password
-        const isMatch = await bcrypt.compare(password, hashedPassword);
-
-        if (!isMatch) {
-          // Passwords do not match
-          return res.status(401).json({ error: "Invalid credentials" });
-        }
-
-        // Passwords match, create JWT token
-        const token = jwt.sign(
-          {
-            userId: userId,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: process.env.JWT_EXPIRES_IN, // Use the same JWT expiry as in signUp
-          },
-        );
-
-        // Successfully authenticated
-        return res.status(200).json({
-          message: 'Authentication successful',
-          jwtToken: token,
-        });
-
-      } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: "Internal server error during authentication" });
-      }
+      },
+      attributes: ['user_id', 'password'], // Select only the user_id and password fields
     });
+
+    if (!user) {
+      // If no user found with that email
+      console.log("User does not exist");
+      return res.status(404).json({ error: "User does not exist" });
+    }
+    const { user_id: userId, password: hashedPassword } = user;
+
+    // Compare the provided password with the stored hashed password
+    const isMatch = await bcrypt.compare(password, hashedPassword);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Passwords match, create JWT token
+    const token = jwt.sign(
+      { userId: userId },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN } // Use the same JWT expiry as in signUp
+    );
+
+    // Successfully authenticated
+    return res.status(200).json({
+      message: 'Authentication successful',
+      jwtToken: token,
+    });
+
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error during authentication" });
   }
 }
-
-
-
 
 
 function getMember(req, res) {
   const {name, email} = req.query; 
   console.log("name", name);
 
-  const sql = 
-  `SELECT DISTINCT u.user_id, u.name, u.email
-  FROM Users as u
-  WHERE u.name = ?
-  AND u.email = ?;
-  `;
-  
-  // Execute SQL query
-  connection.query(sql, [name, email], (error, results) => {
+  User.findOne({
+    where:{
+      name: name,
+      email: email
+    } 
+  })
+  .then(results => {
+    
+    if (results){
+      res.json({members: results});
 
-    if (error) {
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-
-    if (results.length > 0) {
-
-      res.json({ members: results });
     } else {
-      res.status(200).send('No members found.');
+      res.status(200).send("No member found.");
     }
+  })
+  .catch(error => {
+    console.error("Error querying the database:", error);
+    res.status(500).send("Internal Server Error");
   });
 }
 
-function updateMember(req, res) {
-  const { user_id, name, email } = req.body; // Assuming these are the fields you want to update
+async function updateMember(req, res) {
+  const { user_id, name, email } = req.body;
 
-  // SQL query to update an existing member in the database
-  const sql = `UPDATE Users SET name = ?, email = ? WHERE user_id = ?;`;
+  try {
+    // Update the user
+    const [updatedRows] = await User.update({ name, email }, { where: { user_id } });
 
-  // Execute SQL query
-  connection.query(sql, [name, email, user_id], (error, results) => {
-      if (error) {
-          res.status(500).send('Internal Server Error');
-          return;
-      }
-      if (results.affectedRows > 0) {
-          res.status(200).send('Member updated successfully');
-      } else {
-          res.status(404).send('Member not found');
-      }
-  });
+    if (updatedRows > 0) {
+      res.status(200).send('Member updated successfully');
+    } else {
+      res.status(404).send('Member not found');
+    }
+  } catch (error) {
+    console.error('Error updating member:', error);
+    res.status(500).send('Internal Server Error');
+  }
 }
 
-function deleteMember(req, res) {
-  const { id } = req.body; // Get the id of the member to delete
+async function deleteMember(req, res) {
+  const { user_id } = req.body; // Get the id of the member to delete
 
-  // SQL query to delete a member from the database
-  const sql = `DELETE FROM Users WHERE user_id = ?;`;
-
-  // Execute SQL query
-  connection.query(sql, [id], (error, results) => {
-      if (error) {
-          res.status(500).send('Internal Server Error');
-          return;
-      }
-      if (results.affectedRows > 0) {
-          res.status(200).send('Member deleted successfully');
-      } else {
-          res.status(404).send('Member not found');
-      }
-  });
+  try {
+    const affectedRows = await User.destroy({where: { user_id }})
+    if (affectedRows > 0) {
+      res.status(200).send('Member deleted successfully');
+    } else{
+      res.status(404).send('Member not found');
+    } 
+  } catch(error){
+    console.log('Error deleting member:', error);
+    res.status(500).send('Internal Server Error')
+  }
 }
 
 module.exports = router;
