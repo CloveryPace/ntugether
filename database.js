@@ -1,5 +1,9 @@
 // database.js
 const mysql = require('mysql');
+const fs = require('fs');
+
+require('dotenv').config();
+
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
