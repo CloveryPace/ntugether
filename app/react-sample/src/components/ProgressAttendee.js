@@ -22,11 +22,11 @@ export default function ProgressAttendee() {
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined">
         <CardContent  sx={{pb: 0  }}>
-          <Avatar sx={{ bgcolor: 'secondary.main', mb: 1.5  }}></Avatar>
+          <Avatar sx={{ mb: 1.5  }}></Avatar>
           <Typography variant="body1" sx={{mb: 1.5  }}>
           60%，已完成18個進度，待完成12個進度
           </Typography>
-          <LinearProgress variant="determinate" value={progress} sx={{height: 30, mb: 1.5 }} />
+          <LinearProgress variant="determinate" value={progress} sx={{height: 10, mb: 1.5 }} />
           { 
             showProgress? <Typography variant="body2" sx={{mb: 1.5  }}>
             <ul>

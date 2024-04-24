@@ -13,6 +13,9 @@ import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
 
+import PlanNew from './page/PlanNew';
+import PlanPage from './page/PlanPage';
+
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
   return (

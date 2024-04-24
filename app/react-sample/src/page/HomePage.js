@@ -23,6 +23,7 @@ function HomePage() {
           <Typography variant="h4">熱門活動</Typography>
           <ActivityListComponent />
         </div>
+
         <Footer />
       
 

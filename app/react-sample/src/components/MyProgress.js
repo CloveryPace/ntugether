@@ -13,7 +13,7 @@ const { useState } = React;
 export default function MyProgress() {
     const [progress, setProgress] = useState(70);
     return (
-        <Box sx={{ minWidth: 275 }}>
+        <Box sx={{ width: '100%' }}>
             <Card variant="outlined">
 
                 <CardContent>
@@ -22,7 +22,7 @@ export default function MyProgress() {
                         <Typography variant="body1" sx={{ mb: 1.5  }}>
                         60%，已完成18個進度，待完成12個進度
                         </Typography>
-                        <LinearProgress variant="determinate" value={progress} sx={{height: 30, mb: 1.5 }} />
+                        <LinearProgress variant="determinate" value={progress} sx={{height: 10, mb: 1.5 }} />
                     </div>
                     <Typography variant="body2" sx={{ mb: 1.5  }}>
                         <ul>
@@ -33,8 +33,8 @@ export default function MyProgress() {
                     </Typography>
                 </CardContent>
 
-                <div style={{ padding: 40 }}>
-                    <Grid container spacing={10}>
+                <div style={{ padding: 36,  paddingTop: 0}}>
+                    <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                             <CompletedProgressItemList />
                         </Grid>
