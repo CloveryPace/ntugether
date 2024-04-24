@@ -13,6 +13,9 @@ import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
 
+import PlanNew from './page/PlanNew';
+import PlanPage from './page/PlanPage';
+
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
   return (
@@ -37,25 +40,3 @@ function App() {
 }
 
 export default App;
-
-
-
-/*
-import './App.css';
-import HeaderBar from "./components/HeaderBar";
-
-import HomePage from './page/HomePage.js';
-import NewActivity from './page/NewActivity';
-import ActivityList from './page/ActivityList.js';
-import ActivityPage from './page/ActivityPage.js';
-import Login from './page/Login.js';
-import Signup from './page/Signup.js';
-
-function App() {
-  return (
-    <ActivityList />
-  );
-}
-
-export default App;
-*/
