@@ -12,6 +12,9 @@ import Login from './page/Login';
 import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
+import FollowActivity from './page/FollowActivity';
+import FollowAccount from './page/FollowAccount';
+
 
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
@@ -28,6 +31,9 @@ function App() {
           <Route path='/newactivity' element={<NewActivity />} />
           <Route path='/userprofile' element={<UserProfile />} />
           <Route path='/setting' element={<AccountSetting />} />
+          <Route path='/favorite-activity' element={<FollowActivity />} />
+          <Route path='/follow-members' element={<FollowAccount />} />
+
 
 
         </Routes>

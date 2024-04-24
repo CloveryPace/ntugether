@@ -20,6 +20,7 @@ import { useNavigate } from 'react-router-dom';
 import Badge from '@mui/material/Badge';
 import Paper from '@mui/material/Paper';
 import NotificationList from './NotificationList';
+import Divider from '@mui/material/Divider';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -59,10 +60,52 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const StyledMenu = styled((props) => (
+  <Menu
+    elevation={0}
+    anchorOrigin={{
+      vertical: 'bottom',
+      horizontal: 'right',
+    }}
+    transformOrigin={{
+      vertical: 'top',
+      horizontal: 'right',
+    }}
+    {...props}
+  />
+))(({ theme }) => ({
+  '& .MuiPaper-root': {
+    borderRadius: 6,
+    marginTop: theme.spacing(1),
+    minWidth: 180,
+    color:
+      theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+    boxShadow:
+      'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+    '& .MuiMenu-list': {
+      padding: '4px 0',
+    },
+    '& .MuiMenuItem-root': {
+      '& .MuiSvgIcon-root': {
+        fontSize: 18,
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(1.5),
+      },
+      '&:active': {
+        backgroundColor: alpha(
+          theme.palette.primary.main,
+          theme.palette.action.selectedOpacity,
+        ),
+      },
+    },
+  },
+}));
+
 export default function HeaderBar() {
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [accountAnchor, setAccountAnchor] = React.useState(null);
   const [selectedLocation, setSelectedLocation] = React.useState('北部');
   const [showNotifiaction, setShowNotifiaction] = React.useState(false);
 
@@ -75,11 +118,21 @@ export default function HeaderBar() {
     setAnchorEl(null);
   };
 
+  const handleAccountClick = (event) => {
+    setAccountAnchor(event.currentTarget);
+  };
+
   const toggleNotification = () => {  
     setShowNotifiaction(!showNotifiaction);
   }
+  const handleClose = () => {
+    setAccountAnchor(null);
+  };
+
 
   const open = Boolean(anchorEl);
+  const openAccountList = Boolean(accountAnchor);
+
 
   return (
     <AppBar position="static" sx={{ bgcolor: theme.palette.third.main, maxHeight: '64px' }}>
@@ -141,7 +194,7 @@ export default function HeaderBar() {
         </Menu>
 
 
-        <IconButton aria-label="favorite">
+        <IconButton aria-label="favorite" onClick={() => navigate('/favorite-activity')}>
           <FavoriteBorder color="icon"/>
         </IconButton>
         <IconButton aria-label="notification" onClick={() => toggleNotification()}>
@@ -153,9 +206,44 @@ export default function HeaderBar() {
         <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-44px, 66px)', zIndex:2}}>
           <NotificationList />
         </Paper>: null}
-        <IconButton edge="end" aria-label="account of current user" onClick={() => navigate('/userprofile')}>
+        <IconButton edge="end" aria-label="account of current user" id="account-button"
+        aria-controls={openAccountList ? 'account-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={openAccountList ? 'true' : undefined}
+        variant="contained"
+        onClick={handleAccountClick}>
           <Face color="icon"/>
-        </IconButton>
+      </IconButton>
+      <StyledMenu
+        id="account-menu"
+        MenuListProps={{
+          'aria-labelledby': 'account-button',
+        }}
+        anchorEl={accountAnchor}
+        open={openAccountList}
+        onClose={handleClose}
+        
+      >
+        <MenuItem onClick={() => navigate('/userprofile')} sx={{ justifyContent: 'center'}}>
+          個人頁面
+        </MenuItem>
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+          活動紀錄
+        </MenuItem>
+        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+          進度紀錄
+        </MenuItem>
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
+          繁體中文
+        </MenuItem>
+        <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
+            <Button variant="contained">
+              登出
+            </Button>
+        </MenuItem>
+      </StyledMenu>
       </Toolbar>
     </AppBar>
   );
