@@ -17,6 +17,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {useTheme} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Badge from '@mui/material/Badge';
+import Paper from '@mui/material/Paper';
+import NotificationList from './NotificationList';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -61,6 +64,7 @@ export default function HeaderBar() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedLocation, setSelectedLocation] = React.useState('北部');
+  const [showNotifiaction, setShowNotifiaction] = React.useState(false);
 
   const handleLocationIconClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,10 +75,14 @@ export default function HeaderBar() {
     setAnchorEl(null);
   };
 
+  const toggleNotification = () => {  
+    setShowNotifiaction(!showNotifiaction);
+  }
+
   const open = Boolean(anchorEl);
 
   return (
-    <AppBar position="static" sx={{ bgcolor: theme.palette.third.main }}>
+    <AppBar position="static" sx={{ bgcolor: theme.palette.third.main, maxHeight: '64px' }}>
       <Toolbar>
         {/* Logo and Menu Icon */}
         <IconButton edge="start" color="icon" aria-label="open drawer">
@@ -136,9 +144,15 @@ export default function HeaderBar() {
         <IconButton aria-label="favorite">
           <FavoriteBorder color="icon"/>
         </IconButton>
-        <IconButton aria-label="notification">
-          <NotificationsIcon color="icon"/>
+        <IconButton aria-label="notification" onClick={() => toggleNotification()}>
+          <Badge badgeContent={4} color="secondary" max={99}>
+            <NotificationsIcon color="icon"/>
+          </Badge>
         </IconButton>
+        {showNotifiaction? 
+        <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-44px, 66px)', zIndex:2}}>
+          <NotificationList />
+        </Paper>: null}
         <IconButton edge="end" aria-label="account of current user" onClick={() => navigate('/userprofile')}>
           <Face color="icon"/>
         </IconButton>
