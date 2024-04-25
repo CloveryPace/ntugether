@@ -27,36 +27,42 @@ connection.connect((err) => {
 });
 
 /**
- * ROUTES: /application/apply
- * FUNCTION: apply for an activity
+ * ROUTES: /application/{applicationID}
+ * METHOD: GET
+ * FUNCTION: get application detail
  */
-router.post("/apply", function (req, res) {
+router.get("/:applicationID", function (req, res) {
+    const query = 'SELECT * FROM Applications WHERE user_id = ?';
+    var user_id = 1; // TODO: get user from token
 
-    var activity_id = req.body.activity_id; // Assuming activity_id and value are sent in the POST body
-    var application_response = req.body.application_response;
-    var applicant_id = 1; // NOTE: the applicant_id is set as 1 tempororily
-    connection.query('INSERT INTO Applications(applicant_id, activity_id, application_response, is_approved) VALUES (?, ?, ?, FALSE)', [applicant_id, activity_id, application_response], (error, results, fields) => {
-        if (error) {
-            console.error('Error executing MySQL query: ' + error.stack);
-            return res.status(500).send('Error executing MySQL query');
-        }
+    connection.query(
+        query,
+        [user_id],
+        (error, results, fields) => {
+            if (error) {
+                console.error('Error executing MySQL query: ' + error.stack);
+                return res.status(500).send('Error executing MySQL query');
+            }
 
-        // Check if any rows were affected by the update
-        if (results.affectedRows === 0) {
-            return res.status(404).send('activity does not exist');
-        }
+            // Check if any rows were affected by the update
+            if (results.affectedRows === 0) {
+                return res.status(404).send('activity does not exist');
+            }
 
-        // Send success response
-        res.send('application added');
-    });
+            // Send success response
+            res.json(results);
+        });
 
+
+    // TODO: push notification;
 });
 
+
 /**
- * ROUTES: /application/verify
+ * ROUTES: /application/{applicationID}/approve
  * FUNCTION: verify for applications
  */
-router.post("/verify", function (req, res) {
+router.post("/:applicationID/approve", function (req, res) {
     // TODO: add rejection
     // TODO: add to applicants table
 
@@ -123,33 +129,4 @@ router.post("/verify", function (req, res) {
 
 });
 
-/**
- * ROUTES: /application/
- * FUNCTION: get all the applications for the user
- */
-router.get("/", function (req, res) {
-    const query = 'SELECT * FROM Applications WHERE user_id = ?';
-    var user_id = 1; // TODO: get user from token
-
-    connection.query(
-        query,
-        [user_id],
-        (error, results, fields) => {
-            if (error) {
-                console.error('Error executing MySQL query: ' + error.stack);
-                return res.status(500).send('Error executing MySQL query');
-            }
-
-            // Check if any rows were affected by the update
-            if (results.affectedRows === 0) {
-                return res.status(404).send('activity does not exist');
-            }
-
-            // Send success response
-            res.json(results);
-        });
-
-
-    // TODO: push notification;
-});
 module.exports = router;

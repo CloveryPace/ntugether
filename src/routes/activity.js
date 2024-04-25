@@ -2,6 +2,9 @@ const express = require('express');
 const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
+// controller 
+const activityController = require('../controllers/activity_controller');
+
 var router = express.Router();
 
 router.use(bodyParser.json());
@@ -31,11 +34,20 @@ connection.connect((err) => {
     console.log('Connected to MySQL server');
 });
 
+
 /**
- * ROUTES: /activity/create
- * FUNCTION: creaet a new activity
+ * ROUTES: /activity
+ * METHOD: get
+ * FUNCTION: get activity list
  */
-router.post("/create", (req, res) => {
+router.get("", activityController.getActivitiesList(req, res));
+
+/**
+ * ROUTE: /activity
+ * METHOD: post
+ * FUNCTION: create an activity
+ */
+router.post("", (req, res) => {
 
     const query =
         'INSERT INTO \
@@ -69,6 +81,111 @@ router.post("/create", (req, res) => {
 });
 
 /**
+ * ROUTES: /activity/{activityID}
+ * METHOD: get
+ * FUNCTION: get detail of an activity
+ */
+router.get("/:activityID", (req, res) => {
+    var activityID = req.params.activityID;
+
+    connection.query(
+        'SELECT * FROM Activities WHERE activity_id = ?',
+        [activityID],
+        (error, results, fields) => {
+            if (error) {
+                console.error('Error executing MySQL query: ' + error.stack);
+                return res.status(500).send('Error executing MySQL query');
+            }
+
+            // Check if any rows were affected by the update
+            if (results.affectedRows === 0) {
+                return res.status(404).send('activity does not exist');
+            }
+
+            // Send success response
+            res.json(results);
+        });
+
+});
+
+/**
+ * ROUTES: /activity/{activityID}
+ * METHOD: PATCH
+ * FUNCTION: Update an existing activity by Id. Only the creator of the activity could call this endpoint.
+ */
+router.patch("/:activityID", (req, res) => { // FIXME: error might occurs
+    var activityID = req.params.activityID;
+    const { ...newData } = req.body;
+
+    // Generate the SET clause for the SQL query
+    const setClause = Object.keys(...newData).map(key => `${key} = ?`).join(', '); // "key1 = ?, key2 = ?, key3 = ?"
+
+    // Generate the values array for the SQL query
+    const values = Object.values(newData);
+
+    // Execute the query to update the activity
+    connection.query(`UPDATE Activities SET ${setClause} WHERE activity_id = ?`, [...values, activityID], (error, results) => {
+        if (error) {
+            console.error('Error updating activity:', error);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        // Check if any rows were affected by the update
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Activity not found' });
+        }
+
+        // Send success response
+        res.json({ message: 'Activity updated successfully' });
+    });
+});
+
+/**
+ * UNDONE:
+ * ROUTES: /activity/{activityID}
+ * METHOD: DELETE
+ * FUNCTION: delete the activity. Only the creator of the activity could call this endpoint
+ */
+router.delete("/:activityID", activityController.deleteActivity(req, res));
+
+
+/**
+ * ROUTES: /activity/{activityID}/application
+ * METHOD: get
+ * FUNCTION: Get all application for the specific activity. Only the creator of the activity could call this endpoint.
+ */
+router.get("/activity/:activityID/application", activityController.getAllApplications(req, res));
+
+
+/**
+ * ROUTES: /activity/{activityID}/remove-user
+ * METHOD: PATCH
+ * FUNCTION: remove the join user for specific application, only activity creator can do this
+ */
+router.patch("/activity/:activityID/remove-user", activityController.removeUser(req, res));
+
+/**
+ * ROUTES: /activity/{activityID}/apply
+ * METHOD: POST
+ * FUNCTION: join specific activity, except the user has joined it already
+ */
+router.post("/activity/:activityID/apply", activityController.applyActivity(req, res));
+
+/**
+ * ROUTES: /activity/{activityID}/discussion
+ * METHOD: GET
+ * FUNCTION: get all discussion based on the order of timeline of specific activity, where the output is also controlled by offset and limit
+ */
+router.get("/activity/:activityID/discussion", activityController.getDiscussion(req, res));
+
+/**
+ * ROUTES: /activity/{activityID}/discussion
+ * METHOD: POST
+ * FUNCTION: discuess on an specific activity. User create or joined(approved by creator) can call this endpoint
+ */
+router.post("/activity/:activityID/discussion", activityController.makeDiscussion(req, res));
+
+/**
  * ROUTES: /activity/leave
  * FUNCTION: leave from an activity 
  */
@@ -86,33 +203,6 @@ router.post("/leave", function (req, res) {
             }
             // Send success response
             res.send('leaved');
-        });
-
-});
-
-/**
- * ROUTES: /activity/get-info
- * FUNCTION: get one activity information
- */
-router.post("/get-info", (req, res) => {
-    var { activity_id } = req.body; // TODO: get user from token
-
-    connection.query(
-        'SELECT * FROM Activities WHERE activity_id = ?',
-        [activity_id],
-        (error, results, fields) => {
-            if (error) {
-                console.error('Error executing MySQL query: ' + error.stack);
-                return res.status(500).send('Error executing MySQL query');
-            }
-
-            // Check if any rows were affected by the update
-            if (results.affectedRows === 0) {
-                return res.status(404).send('activity does not exist');
-            }
-
-            // Send success response
-            res.json(results);
         });
 
 });
@@ -139,61 +229,5 @@ router.post("/filter-with-location", (req, res) => {
 
 });
 
-/**
- * ROUTES: /activity/get-list-infos
- * FUNCTION: get 2 random activities for the user // NOTE: this should be changed
- */
-router.get("/get-list-infos", (req, res) => {
-
-    connection.query(
-        'SELECT * FROM Activities',
-        (error, results, fields) => {
-            if (error) {
-                console.error('Error executing MySQL query: ' + error.stack);
-                return res.status(500).send('Error executing MySQL query');
-            }
-
-            // Check if any rows were affected by the update
-            if (results.affectedRows === 0) {
-                return res.status(404).send('activity does not exist');
-            }
-
-            // Send success response
-            first_two_activities = results.slice(0, 2);
-            res.json(first_two_activities);
-        });
-
-});
-
-
-/**
- * ROUTES: /activity/edit
- * FUNCTION: edit activity data
- */
-router.patch("/edit", (req, res) => { // FIXME: error might occurs
-    const { activity_id, ...newData } = req.body;
-
-    // Generate the SET clause for the SQL query
-    const setClause = Object.keys(...newData).map(key => `${key} = ?`).join(', '); // "key1 = ?, key2 = ?, key3 = ?"
-
-    // Generate the values array for the SQL query
-    const values = Object.values(newData);
-
-    // Execute the query to update the activity
-    connection.query(`UPDATE Activities SET ${setClause} WHERE activity_id = ?`, [...values, activity_id], (error, results) => {
-        if (error) {
-            console.error('Error updating activity:', error);
-            return res.status(500).json({ error: 'Internal Server Error' });
-        }
-
-        // Check if any rows were affected by the update
-        if (results.affectedRows === 0) {
-            return res.status(404).json({ error: 'Activity not found' });
-        }
-
-        // Send success response
-        res.json({ message: 'Activity updated successfully' });
-    });
-});
 
 module.exports = router;
