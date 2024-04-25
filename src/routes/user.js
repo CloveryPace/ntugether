@@ -9,21 +9,24 @@ const nodemailer = require('nodemailer')
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const session = require('express-session');  // Use express-session
+const session = require('express-session');
 require('dotenv').config();
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 const connection = require('../../database');
-const User = require('../model/userModel'); // 不能用const { User } = require('../model/userModel')
+const User = require('../model/userModel');
 
 // GET routes
 router.get("/", getMember);
+router.get("/", getMember);
 router.get("/signin", signIn);
+router.get("/forgetPassword", forgetPassword);
 
 // POST routes
 router.post("/signup", signUp);
+router.post("/resetPassword", resetPassword);
 
 // PUT routes
 router.put("/", updateMember);
@@ -108,6 +111,17 @@ function generateVerificationCode(email) {
   return { code, timestamp };
 }
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.Email,
+    pass: process.env.Password
+  }
+});
+
 async function signUp(req, res) {
   try {
     const { name, email, password } = req.query;
@@ -150,7 +164,7 @@ async function signUp(req, res) {
     const mailOptions = {
       from: process.env.Email,
       to: email,
-      subject: 'NTUgether Password Reset',
+      subject: 'NTUgether Email Verification',
       text: `Your verification code is: ${code}`
     };
   
@@ -162,7 +176,7 @@ async function signUp(req, res) {
         res.send('Verification code sent to your email. Please verify within 10 minutes.');
         return res.status(201).json({
           message: 'Member created successfully, verification email sent',
-          token: token, // JWT token for immediate login (optional)
+          token: token, // JWT token
         });
       }
     });
@@ -243,6 +257,7 @@ async function signIn(req, res) {
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN } // Use the same JWT expiry as in signUp
     );
+    console.log('jwt token', token);
 
     // Successfully authenticated
     return res.status(200).json({
@@ -256,12 +271,84 @@ async function signIn(req, res) {
   }
 }
 
+async function forgetPassword(req, res){
+  try{
+    const {email} = req.query;
+    console.log(email);
 
-function getMember(req, res) {
+    const user = await User.findOne({where: {email: email }});
+
+    if (!user) {
+      return res.status(404).send("User not found.");
+    }
+
+    const { code, timestamp } = generateVerificationCode(email);
+    
+    const mailOptions = {
+      from: process.env.Email,
+      to: email,
+      subject: 'Password Reset Request',
+      text: `You have requested to reset your password. Your verification code is: ${code}.
+      Please verify within 10 minute.`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error){
+        console.log(error);
+        return res.status(500).send('Error sending email');
+      } else{
+        return res.status(200).json({
+          message: 'Password reset email sent,  Please verify within 10 minute.',
+        });
+      }
+    })
+  } catch(error) {
+    console.log(error);
+    res.status(500).send('Internal server error');
+  }
+
+}
+
+async function resetPassword(req, res){
+  try{
+    const {email, code, newPassword} = req.body;
+    
+    const user = await User.findOne({where: {email: email}});
+    if(!user){
+      return res.status(404).send('User not found')
+    }
+
+    const { code: validCode, timestamp } = generateVerificationCode(email);
+    // console.log(validCode, timestamp);
+    // console.log(code);
+    if (code === validCode) {
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        const result = await User.update({password: hashedPassword}, {where: {email: email}});
+  
+        if (result[0] > 0) {
+          res.send('Password reset successfully');
+        } else {
+          res.status(404).send('No user found with that email');
+        }
+      
+    } else {
+      res.status(401).send('Invalid or expired verification code');
+    }
+
+    
+    
+  } catch(error){
+    console.log(error);
+    res.status(500).send('Internal server error');
+  }
+}
+
+
+async function getMember(req, res) {
   const {name, email} = req.query; 
   console.log("name", name);
 
-  User.findOne({
+  await User.findOne({
     where:{
       name: name,
       email: email
