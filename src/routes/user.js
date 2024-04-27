@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer')
+const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -42,37 +42,37 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.googleClientSecret,
   callbackURL: "/user/oauth2callback"
 },
-(accessToken, refreshToken, profile, done) => {
-  try{
-    //  Check for existing user
-    connection.query('SELECT * FROM Users WHERE oauthId = ?', [profile.id], (err, existingUsers) => {
-    if (existingUsers.length > 0) {
-      return done(null, existingUsers[0]);
-    } else {
-    // if not, create new user in our db
-      connection.query('INSERT INTO Users (oauthId, email, name, oauthProvider) VALUES (?, ?, ?, "google")', [profile.id, profile.emails[0].value, profile.displayName], (err, result) => {
-      const newUser = {
-        // id: result.insertId,
-        oauthId: profile.id,
-        email: profile.emails[0].value,
-        name: profile.displayName
-      };
-      return done(null, newUser);
+  (accessToken, refreshToken, profile, done) => {
+    try {
+      //  Check for existing user
+      connection.query('SELECT * FROM Users WHERE oauthId = ?', [profile.id], (err, existingUsers) => {
+        if (existingUsers.length > 0) {
+          return done(null, existingUsers[0]);
+        } else {
+          // if not, create new user in our db
+          connection.query('INSERT INTO Users (oauthId, email, name, oauthProvider) VALUES (?, ?, ?, "google")', [profile.id, profile.emails[0].value, profile.displayName], (err, result) => {
+            const newUser = {
+              // id: result.insertId,
+              oauthId: profile.id,
+              email: profile.emails[0].value,
+              name: profile.displayName
+            };
+            return done(null, newUser);
+          });
+        }
       });
+    } catch (error) {
+      return done(error);
     }
-  });
-  } catch (error) {
-    return done(error);
   }
-}
 ));
 
 passport.serializeUser((user, done) => {
-done(null, user);
+  done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-done(null, user);
+  done(null, user);
 });
 
 router.use(session({
@@ -86,27 +86,27 @@ router.use(passport.session());
 
 // Define routes.
 router.get('/auth/google',
-passport.authenticate('google', { scope: ['profile', 'email'] }));
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-router.get('/oauth2callback', 
-passport.authenticate('google', { failureRedirect: '/auth/failure' }),
-(req, res) => {
-  // Successful authentication, redirect home.
-  console.log("successful authentication");
-  res.redirect('/');
-});
+router.get('/oauth2callback',
+  passport.authenticate('google', { failureRedirect: '/auth/failure' }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    console.log("successful authentication");
+    res.redirect('/');
+  });
 
 router.get('/auth/failure', (req, res) => {
-res.send('Failed to authenticate.');
+  res.send('Failed to authenticate.');
 });
 
 const SECRET_KEY = 'sdm_is_so_fun';
 
 function generateVerificationCode(email) {
-  const timestamp = Math.floor(Math.floor(Date.now() / 1000) / 600) // Current time in seconds
+  const timestamp = Math.floor(Math.floor(Date.now() / 1000) / 600); // Current time in seconds
   const hash = crypto.createHmac('sha256', SECRET_KEY)
-                     .update(email + timestamp)
-                     .digest('hex');
+    .update(email + timestamp)
+    .digest('hex');
   const code = hash.substring(0, 6); // Take first 6 characters for simplicity
   return { code, timestamp };
 }
@@ -131,7 +131,7 @@ async function signUp(req, res) {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
-    
+
     // Create user using Sequelize
     const newUser = await User.create({
       name: name,
@@ -160,14 +160,14 @@ async function signUp(req, res) {
         pass: process.env.Password
       }
     });
-  
+
     const mailOptions = {
       from: process.env.Email,
       to: email,
       subject: 'NTUgether Email Verification',
       text: `Your verification code is: ${code}`
     };
-  
+
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.log(error);
@@ -231,7 +231,7 @@ async function signIn(req, res) {
 
     // Use Sequelize to find the user by email
     const user = await User.findOne({
-      where: { 
+      where: {
         email: email,
 
       },
@@ -271,19 +271,19 @@ async function signIn(req, res) {
   }
 }
 
-async function forgetPassword(req, res){
-  try{
-    const {email} = req.query;
+async function forgetPassword(req, res) {
+  try {
+    const { email } = req.query;
     console.log(email);
 
-    const user = await User.findOne({where: {email: email }});
+    const user = await User.findOne({ where: { email: email } });
 
     if (!user) {
       return res.status(404).send("User not found.");
     }
 
     const { code, timestamp } = generateVerificationCode(email);
-    
+
     const mailOptions = {
       from: process.env.Email,
       to: email,
@@ -293,51 +293,51 @@ async function forgetPassword(req, res){
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-      if (error){
+      if (error) {
         console.log(error);
         return res.status(500).send('Error sending email');
-      } else{
+      } else {
         return res.status(200).json({
           message: 'Password reset email sent,  Please verify within 10 minute.',
         });
       }
-    })
-  } catch(error) {
+    });
+  } catch (error) {
     console.log(error);
     res.status(500).send('Internal server error');
   }
 
 }
 
-async function resetPassword(req, res){
-  try{
-    const {email, code, newPassword} = req.body;
-    
-    const user = await User.findOne({where: {email: email}});
-    if(!user){
-      return res.status(404).send('User not found')
+async function resetPassword(req, res) {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    const user = await User.findOne({ where: { email: email } });
+    if (!user) {
+      return res.status(404).send('User not found');
     }
 
     const { code: validCode, timestamp } = generateVerificationCode(email);
     // console.log(validCode, timestamp);
     // console.log(code);
     if (code === validCode) {
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-        const result = await User.update({password: hashedPassword}, {where: {email: email}});
-  
-        if (result[0] > 0) {
-          res.send('Password reset successfully');
-        } else {
-          res.status(404).send('No user found with that email');
-        }
-      
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      const result = await User.update({ password: hashedPassword }, { where: { email: email } });
+
+      if (result[0] > 0) {
+        res.send('Password reset successfully');
+      } else {
+        res.status(404).send('No user found with that email');
+      }
+
     } else {
       res.status(401).send('Invalid or expired verification code');
     }
 
-    
-    
-  } catch(error){
+
+
+  } catch (error) {
     console.log(error);
     res.status(500).send('Internal server error');
   }
@@ -345,28 +345,28 @@ async function resetPassword(req, res){
 
 
 async function getMember(req, res) {
-  const {name, email} = req.query; 
+  const { name, email } = req.query;
   console.log("name", name);
 
   await User.findOne({
-    where:{
+    where: {
       name: name,
       email: email
-    } 
-  })
-  .then(results => {
-    
-    if (results){
-      res.json({members: results});
-
-    } else {
-      res.status(200).send("No member found.");
     }
   })
-  .catch(error => {
-    console.error("Error querying the database:", error);
-    res.status(500).send("Internal Server Error");
-  });
+    .then(results => {
+
+      if (results) {
+        res.json({ members: results });
+
+      } else {
+        res.status(200).send("No member found.");
+      }
+    })
+    .catch(error => {
+      console.error("Error querying the database:", error);
+      res.status(500).send("Internal Server Error");
+    });
 }
 
 async function updateMember(req, res) {
@@ -391,15 +391,15 @@ async function deleteMember(req, res) {
   const { user_id } = req.body; // Get the id of the member to delete
 
   try {
-    const affectedRows = await User.destroy({where: { user_id }})
+    const affectedRows = await User.destroy({ where: { user_id } });
     if (affectedRows > 0) {
       res.status(200).send('Member deleted successfully');
-    } else{
+    } else {
       res.status(404).send('Member not found');
-    } 
-  } catch(error){
+    }
+  } catch (error) {
     console.log('Error deleting member:', error);
-    res.status(500).send('Internal Server Error')
+    res.status(500).send('Internal Server Error');
   }
 }
 

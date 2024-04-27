@@ -65,13 +65,7 @@ CREATE TABLE ActivityParticipantStatus (
 
 -- Application Table
 CREATE TABLE Applications (
-    application_id INT AUTO_INCREMENT PRIMARY KEY,
-    activity_id INT,
-    application_response TEXT,
-    applicant_id INT,
-    is_approved BOOLEAN,
-    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id),
-    FOREIGN KEY (applicant_id) REFERENCES Users(user_id)
+     
 ) ENGINE=InnoDB;
 
 -- Invitations Table
