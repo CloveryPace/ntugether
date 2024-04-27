@@ -132,7 +132,7 @@ exports.createActivity = async (req, res) => {
  * @param {*} res 
  * }
  */
-exports.getActivitiesDetail = async (req, res) => {
+exports.getActivityDetail = async (req, res) => {
 
     /* NOTE: response format
     {
