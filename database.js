@@ -2,7 +2,7 @@
 const mysql = require('mysql');
 const { Sequelize } = require('sequelize');
 
-const sequelize = new Sequelize('ntugetherdb', 'root', 'secure0123', {
+const sequelize = new Sequelize('ntugetherdb', 'root', '', {
     host: 'localhost',
     dialect: 'mysql'  // this tells Sequelize which database to use
     // logging: console.log,  // Optional: use console.log for seeing the generated SQL queries

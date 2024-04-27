@@ -27,7 +27,7 @@ exports.getApplicationDetail = async (req, res) => {
     const user_id = 1;
     try {
         const application_id = req.params.application_id;
-        const application = activityModel.Applications.findByPk(application_id, {
+        const application = await activityModel.Applications.findByPk(application_id, {
             include: [
                 {
                     model: User,
@@ -42,7 +42,9 @@ exports.getApplicationDetail = async (req, res) => {
         });
 
         // validation
-        if (application.getActivity().created_user_id != user_id) return res.status(403).send("authorization failed");
+        const activity_id = application.activity_id;
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
         if (!application) return res.status(400).send("application not found");
 
         res.status(200).json(application);
@@ -59,15 +61,41 @@ exports.getApplicationDetail = async (req, res) => {
  */
 exports.approve = async (req, res) => {
     const user_id = 1;
+
     try {
         const application_id = req.params.application_id;
-        const application = activityModel.Applications.findByPk(application_id);
+        const application = await activityModel.Applications.findByPk(application_id);
+        if (!application) return res.status(400).send("application not found");
+        if (application.is_approved == true) return res.status(400).send("application has been approved");
 
         // validation
-        if (application.getActivity().created_user_id != user_id) return res.status(403).send("authorization failed");
-        if (!application) return res.status(400).send("application not found");
+        const activity_id = application.activity_id;
+        const activity = await activityModel.Activities.findByPk(activity_id);
 
-        application.is_approved = true;
+        if (!activity) return res.status(400).send("activity not found");
+        if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
+
+        application.update(
+            {
+                is_approved: true,
+            }
+        );
+
+        // update participants
+        participantsExist = activityModel.ActivityParticipantStatus.findOne({
+            where: {
+                joined_activities: activity_id,
+                participants: user_id
+            }
+        });
+
+        if (participantsExist) return res.status(400).send("participant has already joined");
+        activityModel.ActivityParticipantStatus.create(
+            {
+                joined_activities: activity_id,
+                participants: user_id
+            }
+        );
         res.status(200).send("approved!");
 
     } catch (error) {

@@ -2,6 +2,13 @@ const { serializeUser } = require('passport');
 const { sequelize, Sequelize } = require('../../database');
 const User = require('./userModel');
 const { DataTypes } = require('sequelize');
+
+
+
+const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus');
+const ActivityTag = sequelize.define('ActivityTag');
+/* =========================== Activities Table =================================== */
+
 /**
  * TABLE: Activities
  */
@@ -53,7 +60,7 @@ const Activities = sequelize.define('Activity', {
     },
 );
 
-Activities.belongsTo(User, { as: "Creator", foreignKey: "created_user_id" });
+Activities.belongsTo(User, { as: "Creator", foreignKey: "created_user_id", allowNull: false });
 User.hasMany(Activities, { as: "CreatedActivities", foreignKey: "created_user_id" });
 
 Activities.belongsToMany(User, { as: "Participants", through: "ActivityParticipantStatus", foreignKey: "joined_activities" });
@@ -117,10 +124,10 @@ const Applications = sequelize.define("Applications", {
 );
 
 // define relationship
-Applications.belongsTo(User, { as: "Applicant", foreignKey: "applicant_id" });
+Applications.belongsTo(User, { as: "Applicant", foreignKey: "applicant_id", allowNull: false });
 User.hasMany(Applications, { as: "Applications", foreignKey: "applicant_id" });
 
-Applications.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id" });
+Applications.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id", allowNull: false });
 Activities.hasMany(Applications, { as: "Applications", foreignKey: "activity_id" });
 
 
@@ -160,13 +167,13 @@ const Invitation = sequelize.define("Invitation", {
 );
 
 // define relationship
-Invitation.belongsTo(User, { as: "Inviter", foreignKey: "inviter_id" });
+Invitation.belongsTo(User, { as: "Inviter", foreignKey: "inviter_id", allowNull: false });
 User.hasMany(Invitation, { as: "Inviting", foreignKey: "inviter_id" });
 
-Invitation.belongsTo(User, { as: "Invitee", foreignKey: "invitee_id" });
+Invitation.belongsTo(User, { as: "Invitee", foreignKey: "invitee_id", allowNull: false });
 User.hasMany(Invitation, { as: "Invited", foreignKey: "invitee_id" });
 
-Invitation.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id" });
+Invitation.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id", allowNull: false });
 Activities.hasMany(Invitation, { as: "Invitations", foreignKey: "activity_id" });
 
 const Tag = sequelize.define("Tag", {
@@ -201,12 +208,12 @@ const Discussion = sequelize.define("Discussion", {
     },
 );
 
-Discussion.belongsTo(User, { as: "Sender", foreignKey: "sender_id" });
+Discussion.belongsTo(User, { as: "Sender", foreignKey: "sender_id", allowNull: false });
 User.hasMany(Discussion, { as: "Discussion", foreignKey: "sender_id" });
 
-Discussion.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id" });
+Discussion.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id", allowNull: false });
 Activities.hasMany(Discussion, { as: "Discussions", foreignKey: "activity_id" });
 
 
 
-module.exports = { Activities, LongTermActivities, Applications, Invitation, Tag, Discussion };
+module.exports = { Activities, LongTermActivities, Applications, Invitation, Tag, Discussion, ActivityParticipantStatus, ActivityTag, };

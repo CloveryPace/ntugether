@@ -14,13 +14,13 @@ const connection = require('../../database');
  * METHOD: GET
  * FUNCTION: get application detail
  */
-router.get("/:applicationID", applicationController.getApplicationDetail);
+router.get("/:application_id", applicationController.getApplicationDetail);
 
 
 /**
  * ROUTES: /application/{applicationID}/approve
  * FUNCTION: verify for applications
  */
-router.post("/:applicationID/approve", applicationController.approve);
+router.patch("/:application_id/approve", applicationController.approve);
 
 module.exports = router;

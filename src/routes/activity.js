@@ -8,6 +8,8 @@ const activityController = require('../controllers/activity_controller');
 var router = express.Router();
 router.use(bodyParser.json());
 
+activityController.sync();
+
 // TODO: join and leave an activity
 // TODO: type table
 // TODO: long term activity

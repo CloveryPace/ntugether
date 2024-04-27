@@ -31,5 +31,13 @@
   "devDependencies": {
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CloveryPace/sdm_final.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CloveryPace/sdm_final/issues"
+  },
+  "homepage": "https://github.com/CloveryPace/sdm_final#readme"
 }
