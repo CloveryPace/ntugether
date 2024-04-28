@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const User = require('../model/userModel');
 require('dotenv').config();
 
 /* ================== Middleware ================== */
@@ -13,16 +14,17 @@ exports.authentication = (req, res, next) => {
     let token;
     try {
         token = req.headers['authorization'].split(' ')[1];
+        console.log("token is ", token);
     } catch (error) {
         console.error("error getting token from headers", error);
-        token = '';
+        return res.status(401).send("invalid header");
     }
 
-    jwt.verify(token, env['JWT_SECRET'], (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
-            return res.status(401).json({ message: 'authorization fail' });
+            return res.status(401).send("authorization fail");
         } else {
-            req.user_id = decoded.id;
+            req.user_id = decoded.userId;
             next();
         }
     });

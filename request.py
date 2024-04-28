@@ -2,6 +2,38 @@ import requests
 import json
 
 host = "http://localhost:4000"
+token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTcxNDI5MzkwNCwiZXhwIjoxNzE0Mjk3NTA0fQ.c0wsSQ6ZAQ6srdh54DDjEUpKH63fDkqNQv7qyftX4Kk"
+
+
+def signup():
+    payload = json.dumps(
+        {
+            "name": "daniel",
+            "email": "daniel.bb0321@gmail.com",
+            "password": "pwd",
+        }
+    )
+
+    res = requests.post(
+        url=f'{host}/user/signup',
+        headers={"content-type": "application/json", },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def signin():
+    res = requests.get(
+        url=f'{host}/user/signin/?email=daniel.bb0321@gmail.com&password=pwd',
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
+
+    print(res.text)
+    print(res.status_code)
 
 
 def create_activity():
@@ -20,7 +52,10 @@ def create_activity():
 
     res = requests.post(
         url=f"{host}/activity",
-        headers={"content-type": "application/json", },
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
         data=payload,
     )
 
@@ -31,8 +66,10 @@ def create_activity():
 def get_acitvity_list():
     res = requests.get(
         url=f"{host}/activity/?limit=5&search=example&country=Taiwan&location=Taipei&mode=owned",
-        headers={"content-type": "application/json", },
-    )
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
 
     print(res.text)
     print(res.status_code)
@@ -41,8 +78,10 @@ def get_acitvity_list():
 def get_acitvity_detail():
     res = requests.get(
         url=f"{host}/activity/2",
-        headers={"content-type": "application/json", },
-    )
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
 
     print(res.text)
     print(res.status_code)
@@ -61,8 +100,10 @@ def update_activity():
     )
     res = requests.patch(
         url=f"{host}/activity/2",
-        headers={"content-type": "application/json", },
-        data=payload,
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },        data=payload,
     )
 
     print(res.text)
@@ -72,8 +113,10 @@ def update_activity():
 def delete_activity():
     res = requests.patch(
         url=f"{host}/activity/3",
-        headers={"content-type": "application/json", },
-    )
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
 
     print(res.text)
     print(res.status_code)
@@ -82,12 +125,15 @@ def delete_activity():
 def apply():
     payload = json.dumps(
         {
-            "application_response": "I want to join"
+            "application_response": "I want to join please!"
         }
     )
     res = requests.post(
-        url=f"{host}/activity/2/apply",
-        headers={"content-type": "application/json", },
+        url=f"{host}/activity/3/apply",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
         data=payload,
     )
 
@@ -115,8 +161,10 @@ def remove_user():
     )
     res = requests.patch(
         url=f"{host}/activity/2/remove-user",
-        headers={"content-type": "application/json", },
-        data=payload,
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },        data=payload,
     )
 
     print(res.text)
@@ -126,8 +174,10 @@ def remove_user():
 def get_application_detail():
     res = requests.get(
         url=f"{host}/application/2",
-        headers={"content-type": "application/json", },
-    )
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
 
     print(res.text)
     print(res.status_code)
@@ -141,8 +191,10 @@ def make_discussion():
     )
     res = requests.post(
         url=f"{host}/activity/2/discussion",
-        headers={"content-type": "application/json", },
-        data=payload,
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },        data=payload,
     )
 
     print(res.text)
@@ -153,8 +205,10 @@ def get_disccussion():
 
     res = requests.get(
         url=f"{host}/activity/2/discussion?limit=5&offset=0",
-        headers={"content-type": "application/json", },
-    )
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
 
     print(res.text)
     print(res.status_code)
@@ -164,16 +218,15 @@ if __name__ == '__main__':
 
     user_id = 1
 
+    # signin()
     # create_activity()
     # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
-    # apply()
+    apply()
     # approve()
-    # remove()
     # make_discussion()
     # get_disccussion()
     # get_application_detail()
-
-    remove_user()
+    # remove_user()

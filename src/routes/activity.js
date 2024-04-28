@@ -22,7 +22,7 @@ activityController.sync();
  * FUNCTION: get activity list
  * NOTE: probably should make people get activity list without authentication
  */
-router.get("", authMiddleware.authentication, activityController.getActivitiesList);
+router.get("/", authMiddleware.authentication, activityController.getActivitiesList);
 
 /**
  * ROUTE: /activity
@@ -30,7 +30,7 @@ router.get("", authMiddleware.authentication, activityController.getActivitiesLi
  * AUTH: JWT token
  * FUNCTION: create an activity
  */
-router.post("", authMiddleware.authentication, activityController.createActivity);
+router.post("/", authMiddleware.authentication, activityController.createActivity);
 
 /**
  * ROUTES: /activity/{activity_id}

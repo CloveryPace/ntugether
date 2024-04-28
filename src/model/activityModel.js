@@ -39,15 +39,18 @@ const Activities = sequelize.define('Activity', {
     },
     need_reviewed: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
     },
     is_one_time: {
         type: Sequelize.BOOLEAN,
+        defaultValue: true,
     },
     application_problem: {
         type: Sequelize.STRING,
     },
     check_by_organizer: {
         type: Sequelize.BOOLEAN,
+        defaultValue: false,
     },
 
     // FOREIGN KEY(created_user_id) REFERENCES Users(user_id);

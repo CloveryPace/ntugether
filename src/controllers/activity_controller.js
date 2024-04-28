@@ -65,15 +65,17 @@ exports.getActivitiesList = async (req, res) => {
 
         if (allowModes.includes(mode) == false) return res.status(400).send("invalid mode");
 
+        // set search condition
         var condition = {
             name: {
                 [Op.like]: '%' + search + '%'
             },
-            country: country,
-            location: location,
             is_one_time: !is_long_term,
         };
 
+        if (country) condition.country = country;
+        if (location) condition.location = location;
+        if (search) condition.name = { [Op.like]: '%' + search + '%' },
         if (start_date & end_date) {
             condition.date = {
                 [Op.between]: [start_date, end_date]
@@ -88,6 +90,7 @@ exports.getActivitiesList = async (req, res) => {
             };
         }
 
+        // set include condition
         var includeConditions = new Array();
         if (mode == "owned") includeConditions.push({
             model: User,
@@ -137,9 +140,12 @@ exports.createActivity = async (req, res) => {
     */
 
     try {
-        const user_id = req.user_id;
+        const user_id = await req.user_id;
 
         var { id, ...body } = req.body;
+        body.need_review = req.body.need_review;
+        body.is_one_time = req.body.is_one_time;
+        body.check_by_organizer = req.body.check_by_organizer;
         body.created_user_id = user_id;
 
         const newActivity = await activityModel.Activities.create(body);

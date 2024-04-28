@@ -2,7 +2,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const authMiddleware = require('../middlewares/authentication');
 const applicationController = require('../controllers/application_controller');
-const authMiddleware = require('../middlewares/authentication');
 
 var router = express.Router();
 
