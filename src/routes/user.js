@@ -20,7 +20,6 @@ const User = require('../model/userModel');
 
 // GET routes
 router.get("/", getMember);
-router.get("/", getMember);
 router.get("/signin", signIn);
 router.get("/forgetPassword", forgetPassword);
 
@@ -117,7 +116,7 @@ const transporter = nodemailer.createTransport({
 
 async function signUp(req, res) {
   try {
-    const { name, email, birthday, gender, password } = req.query;
+    const { name, email, birthday, gender, password } = req.body;
     console.log("email", email);
     console.log("name", name);
     console.log("birthday", birthday);
