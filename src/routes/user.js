@@ -124,9 +124,11 @@ const transporter = nodemailer.createTransport({
 
 async function signUp(req, res) {
   try {
-    const { name, email, password } = req.query;
+    const { name, email, birthday, gender, password } = req.query;
     console.log("email", email);
     console.log("name", name);
+    console.log("birthday", birthday);
+    console.log("gender", gender);
     console.log("password", password);
 
     // Hash password
@@ -136,6 +138,8 @@ async function signUp(req, res) {
     const newUser = await User.create({
       name: name,
       email: email,
+      birthday: birthday,
+      gender, gender,
       password: hashedPassword
     });
 
@@ -370,11 +374,17 @@ async function getMember(req, res) {
 }
 
 async function updateMember(req, res) {
-  const { user_id, name, email } = req.body;
+  const { user_id, name, email, phoneNum, gender, aboutMe} = req.body;
+  const updateFields = {};
+    if (name) updateFields.name = name;
+    if (email) updateFields.email = email;
+    if (phoneNum) updateFields.phoneNum = phoneNum;
+    if (gender) updateFields.gender = gender;
+    if (aboutMe) updateFields.self_introduction = aboutMe;
 
   try {
     // Update the user
-    const [updatedRows] = await User.update({ name, email }, { where: { user_id } });
+    const [updatedRows] = await User.update(updateFields, { where: { user_id } });
 
     if (updatedRows > 0) {
       res.status(200).send('Member updated successfully');

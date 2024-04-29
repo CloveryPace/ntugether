@@ -75,7 +75,7 @@ exports.getActivitiesList = async (req, res) => {
 
         if (country) condition.country = country;
         if (location) condition.location = location;
-        if (search) condition.name = { [Op.like]: '%' + search + '%' },
+        if (search) condition.name = { [Op.like]: '%' + search + '%' };
         if (start_date & end_date) {
             condition.date = {
                 [Op.between]: [start_date, end_date]

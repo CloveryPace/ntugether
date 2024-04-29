@@ -9,6 +9,10 @@ const user_routes = require('./src/routes/user.js');
 
 const app = express();
 
+// ADD CORS
+var cors = require('cors');
+app.use(cors());
+
 // use routes
 app.use("/application", application_routes);
 app.use("/activity", activity_routes);

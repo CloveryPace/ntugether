@@ -2,7 +2,7 @@ const swaggerAutogen = require('swagger-autogen')();
 
 const doc = {
 	info: {
-		title: 'Sample Todo',
+		title: 'NTUgether API document',
 		description: 'Description',
 	},
 	host: 'localhost:4000',

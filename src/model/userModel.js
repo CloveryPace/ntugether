@@ -27,6 +27,9 @@ const User = sequelize.define('User', {
     gender: {
         type: Sequelize.STRING
     },
+    phoneNum: {
+        type: Sequelize.STRING
+    },
     photo: {
         type: Sequelize.BLOB
     },
