@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Sample Todo",
+    "title": "NTUgether API document",
     "description": "Description",
     "version": "1.0.0"
   },
@@ -581,6 +581,15 @@
                 },
                 "email": {
                   "example": "any"
+                },
+                "phoneNum": {
+                  "example": "any"
+                },
+                "gender": {
+                  "example": "any"
+                },
+                "aboutMe": {
+                  "example": "any"
                 }
               }
             }
@@ -692,6 +701,16 @@
           },
           {
             "name": "email",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "birthday",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "gender",
             "in": "query",
             "type": "string"
           },

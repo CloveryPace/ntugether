@@ -42,30 +42,26 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.googleClientSecret,
   callbackURL: "/user/oauth2callback"
 },
-  (accessToken, refreshToken, profile, done) => {
+  async (accessToken, refreshToken, profile, done) => {
     try {
-      //  Check for existing user
-      connection.query('SELECT * FROM Users WHERE oauthId = ?', [profile.id], (err, existingUsers) => {
-        if (existingUsers.length > 0) {
-          return done(null, existingUsers[0]);
-        } else {
-          // if not, create new user in our db
-          connection.query('INSERT INTO Users (oauthId, email, name, oauthProvider) VALUES (?, ?, ?, "google")', [profile.id, profile.emails[0].value, profile.displayName], (err, result) => {
-            const newUser = {
-              // id: result.insertId,
-              oauthId: profile.id,
-              email: profile.emails[0].value,
-              name: profile.displayName
-            };
-            return done(null, newUser);
-          });
-        }
-      });
+      const user = await User.findOne({ where: { oauthId: profile.id } });
+      if (user) {
+        return done(null, user);
+      } else {
+        const newUser = await User.create({
+          oauthId: profile.id,
+          email: profile.emails[0].value,
+          name: profile.displayName,
+          oauthProvider: 'google'
+        });
+        return done(null, newUser);
+      }
     } catch (error) {
       return done(error);
     }
   }
 ));
+
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -84,15 +80,13 @@ router.use(session({
 router.use(passport.initialize());
 router.use(passport.session());
 
-// Define routes.
+// Define routes
 router.get('/auth/google',
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 router.get('/oauth2callback',
   passport.authenticate('google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
-    // Successful authentication, redirect home.
-    console.log("successful authentication");
     res.redirect('/');
   });
 
@@ -103,12 +97,11 @@ router.get('/auth/failure', (req, res) => {
 const SECRET_KEY = 'sdm_is_so_fun';
 
 function generateVerificationCode(email) {
-  const timestamp = Math.floor(Math.floor(Date.now() / 1000) / 600); // Current time in seconds
   const hash = crypto.createHmac('sha256', SECRET_KEY)
-    .update(email + timestamp)
+    .update(email)
     .digest('hex');
   const code = hash.substring(0, 6); // Take first 6 characters for simplicity
-  return { code, timestamp };
+  return code;
 }
 
 const transporter = nodemailer.createTransport({
@@ -152,7 +145,7 @@ async function signUp(req, res) {
       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
     );
 
-    const { code, timestamp } = generateVerificationCode(email);
+    const code = generateVerificationCode(email);
     // Example email sending code with nodemailer
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -197,12 +190,11 @@ async function signUp(req, res) {
 
 async function emailVerify(req, res) {
   const { email, code } = req.body;
-  const currentTimestamp = Math.floor(Date.now() / 1000);
 
   // Re-generate the code based on the current timestamp and compare
-  const { code: validCode, timestamp } = generateVerificationCode(email);
-  console.log(validCode, timestamp);
-  console.log(code, currentTimestamp);
+  const validCode = generateVerificationCode(email);
+  console.log("validCode", validCode);
+  console.log("code", code);
 
   if (code === validCode) {
     try {
@@ -286,14 +278,13 @@ async function forgetPassword(req, res) {
       return res.status(404).send("User not found.");
     }
 
-    const { code, timestamp } = generateVerificationCode(email);
+    const code = generateVerificationCode(email);
 
     const mailOptions = {
       from: process.env.Email,
       to: email,
       subject: 'Password Reset Request',
-      text: `You have requested to reset your password. Your verification code is: ${code}.
-      Please verify within 10 minute.`
+      text: `You have requested to reset your password. Your verification code is: ${code}. Please verify within 10 minute.`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -302,7 +293,7 @@ async function forgetPassword(req, res) {
         return res.status(500).send('Error sending email');
       } else {
         return res.status(200).json({
-          message: 'Password reset email sent,  Please verify within 10 minute.',
+          message: 'You have requested to reset your password. Please verify within 10 minute.',
         });
       }
     });
@@ -322,9 +313,9 @@ async function resetPassword(req, res) {
       return res.status(404).send('User not found');
     }
 
-    const { code: validCode, timestamp } = generateVerificationCode(email);
-    // console.log(validCode, timestamp);
-    // console.log(code);
+    const validCode = generateVerificationCode(email);
+    console.log("validCode", validCode);
+    console.log("code", code);
     if (code === validCode) {
       const hashedPassword = await bcrypt.hash(newPassword, 12);
       const result = await User.update({ password: hashedPassword }, { where: { email: email } });
