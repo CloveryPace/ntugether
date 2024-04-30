@@ -40,10 +40,11 @@ export default function AccountComponent({data}) {
           backgroundColor: (theme) =>
             theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         }}
+        onClick={() => navigate('/user')}
       >
       <Grid container spacing={2}>
         <Grid item>
-          <Avatar alt="Remy Sharp" sx={{ width: 128, height: 128 }}/>
+          <Avatar alt="Remy Sharp" sx={{ width: {md:128, xs:30}, height: {md:128, xs:30} }}/>
         </Grid>
         <Grid item xs={12} sm container>
           <Grid item xs container direction="column" spacing={2}>
