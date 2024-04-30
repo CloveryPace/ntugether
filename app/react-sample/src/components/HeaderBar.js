@@ -21,6 +21,8 @@ import Badge from '@mui/material/Badge';
 import Paper from '@mui/material/Paper';
 import NotificationList from './NotificationList';
 import Divider from '@mui/material/Divider';
+import { ClickAwayListener } from '@mui/base/ClickAwayListener';
+import { useTranslation } from 'react-i18next';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -102,12 +104,19 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function HeaderBar() {
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [accountAnchor, setAccountAnchor] = React.useState(null);
+  const [languageAnchor, setlanguageAnchor] = React.useState(null);
+  const [language, setlanguage] = React.useState('zh-tw');
   const [selectedLocation, setSelectedLocation] = React.useState('北部');
   const [showNotifiaction, setShowNotifiaction] = React.useState(false);
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   const handleLocationIconClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -116,6 +125,16 @@ export default function HeaderBar() {
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
     setAnchorEl(null);
+  };
+
+  const handleLanguageSelect = (language) => {
+    setlanguage(language);
+    setlanguageAnchor(null);
+    changeLanguage(language);
+  };
+
+  const handleLanguageClick = (event) => {
+    setlanguageAnchor(event.currentTarget);
   };
 
   const handleAccountClick = (event) => {
@@ -132,6 +151,7 @@ export default function HeaderBar() {
 
   const open = Boolean(anchorEl);
   const openAccountList = Boolean(accountAnchor);
+  const openLanguageToggl = Boolean(languageAnchor);
 
 
   return (
@@ -175,7 +195,7 @@ export default function HeaderBar() {
           sx={{ color: 'black', textTransform: 'none', marginRight: '10px' , width: 100}}
         >
           <Typography variant="body1" noWrap>
-            {selectedLocation}
+            {t(selectedLocation)}
           </Typography>
         </Button>
         <Menu
@@ -187,25 +207,28 @@ export default function HeaderBar() {
             'aria-labelledby': 'location-button',
           }}
         >
-          <MenuItem onClick={() => handleLocationSelect('北部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>北部</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('中部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>中部</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('南部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>南部</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('東部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>東部</MenuItem>
+          <MenuItem onClick={() => handleLocationSelect('北部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('北部')}</MenuItem>
+  <MenuItem onClick={() => handleLocationSelect('中部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('中部')}</MenuItem>
+  <MenuItem onClick={() => handleLocationSelect('南部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('南部')}</MenuItem>
+  <MenuItem onClick={() => handleLocationSelect('東部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('東部')}</MenuItem>
         </Menu>
 
 
         <IconButton aria-label="favorite" onClick={() => navigate('/favorite-activity')}>
           <FavoriteBorder color="icon"/>
         </IconButton>
-        <IconButton aria-label="notification" onClick={() => toggleNotification()}>
+        <IconButton aria-label="notification" onClick={() => toggleNotification()} >
           <Badge badgeContent={4} color="secondary" max={99}>
             <NotificationsIcon color="icon"/>
           </Badge>
         </IconButton>
         {showNotifiaction? 
+        <ClickAwayListener onClickAway={() => setShowNotifiaction(false)}>
         <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-44px, 66px)', zIndex:2}}>
           <NotificationList />
-        </Paper>: null}
+        </Paper>
+        </ClickAwayListener>: null}
+        
         <IconButton edge="end" aria-label="account of current user" id="account-button"
         aria-controls={openAccountList ? 'account-menu' : undefined}
         aria-haspopup="true"
@@ -225,25 +248,40 @@ export default function HeaderBar() {
         
       >
         <MenuItem onClick={() => navigate('/userprofile')} sx={{ justifyContent: 'center'}}>
-          個人頁面
+          {t('個人頁面')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
-          活動紀錄
+        {t('活動紀錄')}
         </MenuItem>
         <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
-          進度紀錄
+        {t('進度紀錄')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
-          繁體中文
+        <MenuItem onClick={handleLanguageClick} sx={{ justifyContent: 'center'}} id="language-button" aria-controls={openLanguageToggl ? 'language-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={openLanguageToggl ? 'true' : undefined}>
+          繁體中文/English
         </MenuItem>
         <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
             <Button variant="contained">
-              登出
+            {t('登出')}
             </Button>
         </MenuItem>
       </StyledMenu>
+      <Menu
+              id="language-menu"
+              anchorEl={languageAnchor}
+              open={openLanguageToggl}
+              onClose={() => setlanguageAnchor(null)}
+              MenuListProps={{
+                'aria-labelledby': 'language-button',
+              }}
+              sx={{transform:'translateX(-105px) translateY(-40px)'}}
+            >
+              <MenuItem onClick={() => handleLanguageSelect('zh-tw')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>繁體中文</MenuItem>
+              <MenuItem onClick={() => handleLanguageSelect('en')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>English</MenuItem>
+            </Menu>
       </Toolbar>
     </AppBar>
   );

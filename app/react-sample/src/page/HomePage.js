@@ -10,17 +10,20 @@ import { Typography} from '@mui/material';
 
 import theme from '../components/Theme'; 
 
+import { useTranslation } from 'react-i18next';
+
 function HomePage() {
+  const { t, i18n } = useTranslation();
   return (
     <ThemeProvider theme={theme}>
         
         <HeaderBar />
         <div className='Main'>
-          <Typography variant="h4">我的活動</Typography>
+          <Typography variant="h4">{t('我的活動')}</Typography>
           <MainInform />
-          <Typography variant="h4">活動類別</Typography>
+          <Typography variant="h4">{t('活動類別')}</Typography>
           <TextButtons />
-          <Typography variant="h4">熱門活動</Typography>
+          <Typography variant="h4">{t('熱門活動')}</Typography>
           <ActivityListComponent />
         </div>
         <Footer />
