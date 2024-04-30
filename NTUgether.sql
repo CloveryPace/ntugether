@@ -90,9 +90,8 @@ CREATE TABLE Invitations (
 -- Plans Table
 CREATE TABLE Plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
+    name VARCHAR(20),
     goal VARCHAR(255),
-    -- type varchar(20),
     introduction TEXT,
     created_user_id INT,
     progression TEXT, -- Consider using a structured format or linking to a separate table for complex types
@@ -105,11 +104,11 @@ CREATE TABLE Plans (
 -- PlanTypes Table to store unique plan types
 CREATE TABLE PlanTypes (
     plan_type_id INT AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(255) UNIQUE NOT NULL
+    type_name VARCHAR(20) NOT NULL
 ) ENGINE=InnoDB;
 
 -- PlanTypeAssociations Table to link Plans and PlanTypes
-CREATE TABLE PlanTypeAssociations (
+CREATE TABLE PlanTypeAssociation (
     plan_id INT,
     plan_type_id INT,
     PRIMARY KEY (plan_id, plan_type_id),
@@ -118,7 +117,7 @@ CREATE TABLE PlanTypeAssociations (
 ) ENGINE=InnoDB;
 
 -- Discussions Table
-CREATE TABLE Discussions (
+CREATE TABLE Plan_discussions (
     discussion_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     plan_id INT,
@@ -211,13 +210,13 @@ INSERT INTO PlanTypes (type_name) VALUES
 ('Hobby');
 
 -- PlanTypeAssociations Table
-INSERT INTO PlanTypeAssociations (plan_id, plan_type_id) VALUES
+INSERT INTO PlanTypeAssociation (plan_id, plan_type_id) VALUES
 (1, 1),
 (2, 2),
 (3, 3);
 
 -- Discussions Table
-INSERT INTO Discussions (user_id, plan_id, content) VALUES
+INSERT INTO Plan_discussions (user_id, plan_id, content) VALUES
 (1, 1, 'Let`s share our workout routines and progress!'),
 (2, 2, 'What book should we read next?'),
 (3, 3, 'Recommendations for must-visit travel destinations?');
