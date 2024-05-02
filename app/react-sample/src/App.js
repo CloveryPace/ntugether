@@ -12,6 +12,10 @@ import Login from './page/Login';
 import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
+import ActivityAttendPage from './page/ActivityAttendPage';
+import FollowActivity from './page/FollowActivity';
+import FollowAccount from './page/FollowAccount';
+import User from './page/User';
 
 import PlanNew from './page/PlanNew';
 import PlanPage from './page/PlanPage';
@@ -34,8 +38,11 @@ function App() {
           <Route path='/activitypage' element={<ActivityPage />} />
           <Route path='/newactivity' element={<NewActivity />} />
           <Route path='/userprofile' element={<UserProfile />} />
+          <Route path='/user' element={<User />} />
           <Route path='/setting' element={<AccountSetting />} />
-
+          <Route path='/activityattendpage' element={<ActivityAttendPage />} />
+          <Route path='/favorite-activity' element={<FollowActivity />} />
+          <Route path='/follow-members' element={<FollowAccount />} />
 
         </Routes>
         </BrowserRouter>

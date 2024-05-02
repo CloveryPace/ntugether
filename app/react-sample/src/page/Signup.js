@@ -2,8 +2,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -19,50 +18,96 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-import { API_SIGN_UP, API_SIGN_UP_OTP } from '../global/constants';
+import { API_SIGN_UP, API_SIGN_UP_OTP, API_GOOGLE_LOGIN } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import theme from '../components/Theme'; 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
+import { useTranslation } from 'react-i18next';
+
+const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
+const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
+const atLeastOneLowercaseLetter = (password) => new RegExp(/(?=.*?[a-z])/).test(password);
+const atLeastOneNumber = (password) => new RegExp(/(?=.*?[0-9])/).test(password);
+const atLeastOneSpecialChar = (password) => new RegExp(/(?=.*?[#?!@$ %^&*-])/).test(password);
+
+const PasswordStrength = {  
+  WEAK: '弱',
+  MEDIUM: '中',
+  STRONG: '強'
+};
+
+function testingpasswordStrength(password){
+    if (!password) return PasswordStrength.WEAK;
+    let points = 0;
+    if (atLeastMinimumLength(password)) points += 1;
+    if (atLeastOneUppercaseLetter(password)) points += 1;
+    if (atLeastOneLowercaseLetter(password)) points += 1;
+    if (atLeastOneNumber(password)) points += 1;
+    if (atLeastOneSpecialChar(password)) points += 1;
+    if (points >= 5) return PasswordStrength.STRONG;
+    if (points >= 3) return PasswordStrength.MEDIUM;
+    return PasswordStrength.WEAK;
 }
 
+function generateColors(strength) {
+    let result = [];
+    const COLORS = {
+      NEUTRAL: 'hsla(0, 0%, 88%, 1)',
+      WEAK : 'hsla(353, 100%, 38%, 1)',
+      MEDIUM: 'hsla(40, 71%, 51%, 1)',
+      STRONG : 'hsla(134, 73%, 30%, 1)'
+    };
+    switch (strength) {
+      case PasswordStrength.WEAK:
+      result = [COLORS.WEAK, COLORS.NEUTRAL, COLORS.NEUTRAL, COLORS.NEUTRAL];
+      break;
+      case PasswordStrength.MEDIUM:
+      result = [COLORS .MEDIUM, COLORS.MEDIUM, COLORS.NEUTRAL, COLORS.NEUTRAL];
+      break;
+      case PasswordStrength.STRONG:
+      result = [ COLORS .STRONG, COLORS.STRONG, COLORS.STRONG, COLORS.STRONG];
+      break;
+    }
+    return result;
+}
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const { useState } = React;
 
 export default function Signup() {
-  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
+  const { t, i18n } = useTranslation();
 
+  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
+  const [signupSuccess, setSignupSuccess] = useState(false); // 1: signup form, 2: signup otp
+
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [gender, setGender] = useState('');
   const [email, setEmail] = useState('');
 
+  const [error, setError] = useState('');
+
+  let data = new FormData();
+
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // console.log({
-    //   name: data.get('name'),
-    //   email: data.get('email'),
-    //   password: data.get('password'),
-    //   gender: data.get('gender'),
-    //   birthday: data.get('birthday'),
-    // });
 
+    data = new FormData(event.currentTarget);
+
+    //todo: validate form
+    if (!error) {
+      // Submit form
+    }
     axios.post(API_SIGN_UP, { 
-      name: data.get('name'),
+      // name: data.get('name'),
       email: data.get('email'),
-      password: data.get('password'),
-      gender: data.get('gender'),
-      birthday: data.get('birthday')
+      // password: data.get('password'),
+      // gender: data.get('gender'),
+      // birthday: data.get('birthday')
+    }, {
+      headers: {
+        'Access-Control-Allow-Origin': true
+      }
     })
     .then(function (response) {
       console.log(response);
@@ -80,14 +125,34 @@ export default function Signup() {
   const handleOTPChange = (newValue) => {
     setOtp(newValue)
   }
-
-
   const handleComplete = (value) => {
     console.log(value);
     axios.put(API_SIGN_UP_OTP, { 
-      otp: value,
+      name: data.get('name'),
+      password: data.get('password'),
+      gender: gender,
+      birthday: data.get('birthday'),
+      code: value,
       email: email
     
+    })
+    .then(function (response) {
+      console.log(response);
+      setSignupSuccess(true);
+      setTimeout(function() {
+        window.location.assign('/');
+      }, 5000);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  const googleLogin = () => {
+    axios.get(API_GOOGLE_LOGIN, {
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
     })
     .then(function (response) {
       console.log(response);
@@ -95,9 +160,20 @@ export default function Signup() {
     .catch(function (error) {
       console.log(error);
     });
+
   }
+
+
   const handleGenderChange = (event) => {
     setGender(event.target.value);
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleConfirmPasswordChange = (event) => {
+    setConfirmPassword(event.target.value);
   };
 
   const handleEmailChange = (event) => {
@@ -122,9 +198,9 @@ export default function Signup() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            {t('註冊')}
           </Typography>
-          {signupStatus == 1 ? 
+          {signupStatus == 1 && signupSuccess == false ? 
           <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
@@ -135,7 +211,7 @@ export default function Signup() {
                   required
                   fullWidth
                   id="Name"
-                  label="Name"
+                  label={t('姓名')} 
                   autoFocus
                 />
               </Grid>
@@ -146,7 +222,7 @@ export default function Signup() {
                   required
                   fullWidth
                   id="email"
-                  label="Email Address"
+                  label={t('電子郵件')}
                   name="email"
                   autoComplete="email"
                   value={email}
@@ -160,7 +236,7 @@ export default function Signup() {
                   <DatePicker sx={{ width: 1 }}
                     required
                     fullWidth
-                    label="Birthday"
+                    label={t('生日')}
                     name="birthday"
                     id="birthday"
                     />
@@ -173,7 +249,7 @@ export default function Signup() {
               <Grid item xs={12}>
                 <FormControl fullWidth>
 
-                  <InputLabel id="label_gender">Gender</InputLabel>
+                  <InputLabel id="label_gender">{t('性別')}</InputLabel>
                   <Select
                     labelId="label_gender"
                     id="gender"
@@ -183,8 +259,8 @@ export default function Signup() {
                     onChange={handleGenderChange}
                     fullWidth
                   >
-                    <MenuItem value={1}>Male</MenuItem>
-                    <MenuItem value={2}>Female</MenuItem>
+                    <MenuItem value={1}>{t('男性')}</MenuItem>
+                    <MenuItem value={2}>{t('女性')}</MenuItem>
                   </Select>
                   </FormControl>
 
@@ -196,28 +272,36 @@ export default function Signup() {
                   required
                   fullWidth
                   name="password"
-                  label="Password"
+                  label={t('密碼')}
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  value={password}
+                  onChange={handlePasswordChange}
                 />
+                <CheckPasswordStrength password={password} />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
                   name="comfirmPassword"
-                  label="Comfirm Password"
+                  label={t('再次輸入密碼')}
                   type="password"
                   id="confirm-password"
                   autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={handleConfirmPasswordChange}
+                  color={password === confirmPassword ? 'primary' : 'warning'}
                 />
+                {password === confirmPassword ? null : <Box><Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
+          margin="6px 0 24px 0px">{t('請輸入相同的密碼')}</Typography></Box>}
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
+              <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
+              </Grid>
+              <Grid item xs={12}>
+              <Button onClick={googleLogin} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶註冊')}</Button>
               </Grid>
             </Grid>
             <Button
@@ -226,19 +310,36 @@ export default function Signup() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              {t('註冊')}
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href={'/login'} variant="body2">
-                  Already have an account? Sign in
+                  {t('已經有帳號了嗎？登入')}
                 </Link>
               </Grid>
             </Grid>
-        </Box> : 
-            <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
-             style={{marginTop:20}} />
-          }
+            </Box> : 
+                <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
+                style={{marginTop:20}} />
+              }
+              {
+                signupSuccess == true && signupStatus == 2? 
+                <Box>
+                <Typography component="body1" variant="body1">
+                  {t('註冊成功，將在 5 秒後跳轉至登入頁面')}</Typography>
+                  <Typography component="body" variant="body1">
+                  {t('或是直接前往')}<Link href={'/'}>{t('首頁')}</Link></Typography></Box> : 
+                  null
+              }
+              {
+                signupSuccess == false && signupStatus == 2? 
+
+                <Box>
+                    <Typography component="body1" variant="body1">
+                  註冊失敗，請再試一次</Typography>
+                    </Box>: null
+              }
           </Box>
         
         </Grid>
@@ -260,3 +361,32 @@ export default function Signup() {
     </ThemeProvider>
   );
 }
+
+
+function CheckPasswordStrength({password}){
+  const { t, i18n } = useTranslation();
+
+  const passwordStrength = testingpasswordStrength(password);
+  const colors = generateColors(passwordStrength);
+
+  return(
+  <Box>
+      <Box display="flex" alignItems="center" justifyContent="center" gap="5px" margin="10px 0">
+      {colors.map((color, index) => (
+        <Box key={index} flex={1} height="5px" borderRadius="5px" bgcolor={color}></Box>
+      ))}
+      </Box>
+      <Box display="flex" alignItems="center" justifyContent="flex-start" gap="5px" margin="0 0 15px">
+        <Typography color={colors[0]}>{t(passwordStrength)}</Typography>
+        </Box>
+        {passwordStrength !== PasswordStrength.STRONG && (
+          <Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
+          margin="0 0 24px 0px">
+            {t('密碼需包含至少 8 個字元，包含至少一個大寫字母、小寫字母、數字、特殊字元')}
+          </Typography>)
+        }
+  </Box>
+  
+
+      );
+    }
