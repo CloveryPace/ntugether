@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ListItem, ListItemText, Paper } from '@mui/material';
 import {useTheme} from '@mui/material';
 import Button from '@mui/material/Button';
+import { Box} from '@mui/material';
 
 export default function UpcomingProgressItem({ item, index }) {
   const theme = useTheme();
@@ -22,7 +23,9 @@ export default function UpcomingProgressItem({ item, index }) {
               } />
         </ListItem>
         <div style={{ padding: 5 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
           <Button variant="contained" color="primary">完成 / 編輯</Button>
+        </Box>
         </div>
       </Paper>
     );

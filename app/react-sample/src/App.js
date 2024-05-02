@@ -12,10 +12,13 @@ import Login from './page/Login';
 import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
+import ActivityAttendPage from './page/ActivityAttendPage';
 import FollowActivity from './page/FollowActivity';
 import FollowAccount from './page/FollowAccount';
 import User from './page/User';
 
+import PlanNew from './page/PlanNew';
+import PlanPage from './page/PlanPage';
 
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
@@ -33,10 +36,9 @@ function App() {
           <Route path='/userprofile' element={<UserProfile />} />
           <Route path='/user' element={<User />} />
           <Route path='/setting' element={<AccountSetting />} />
+          <Route path='/activityattendpage' element={<ActivityAttendPage />} />
           <Route path='/favorite-activity' element={<FollowActivity />} />
           <Route path='/follow-members' element={<FollowAccount />} />
-
-
 
         </Routes>
         </BrowserRouter>
@@ -45,25 +47,3 @@ function App() {
 }
 
 export default App;
-
-
-
-/*
-import './App.css';
-import HeaderBar from "./components/HeaderBar";
-
-import HomePage from './page/HomePage.js';
-import NewActivity from './page/NewActivity';
-import ActivityList from './page/ActivityList.js';
-import ActivityPage from './page/ActivityPage.js';
-import Login from './page/Login.js';
-import Signup from './page/Signup.js';
-
-function App() {
-  return (
-    <ActivityList />
-  );
-}
-
-export default App;
-*/

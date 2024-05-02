@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
 import CompletedProgressItem from './CompletedProgressItem';
+import { Box} from '@mui/material';
 
 export default function CompletedProgressItemList() {
 
@@ -30,9 +31,11 @@ export default function CompletedProgressItemList() {
         ))}
       </List>
       {displayCount < recentActivity.length && (
-        <Button onClick={handleShowMore}>
-          <Typography>查看更多</Typography>
-        </Button>
+        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+          <Button onClick={handleShowMore}>
+            <Typography>查看更多</Typography>
+          </Button>
+        </Box>
       )}
     </div>
   );

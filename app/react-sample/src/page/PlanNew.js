@@ -22,9 +22,13 @@ import Box from '@mui/material/Box';
 import axios from 'axios';
 import { API_CREATE_ACTIVITY } from '../global/constants';
 import dayjs from 'dayjs';
+
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
+import { Divider } from '@mui/material';
+
 import theme from '../components/Theme'; 
+import AddProgress from '../components/AddProgress';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -49,7 +53,7 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 
 // TODO: 按新增按鈕，到活動頁面（透過活動ID）
 
-function NewActivity() {
+function PlanNew() {
     const navigate = useNavigate();
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
@@ -141,6 +145,7 @@ function NewActivity() {
             }
         };
         handleChange(event);
+
     };
 
   return (
@@ -149,12 +154,12 @@ function NewActivity() {
         <div className='Main'>
 
             <Stack direction="row" spacing={2}>
-                <Typography variant="h4">新增活動</Typography>
+                <Typography variant="h4">新增進度計畫</Typography>
             </Stack>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <Grid container spacing={10}>
                 <Grid item xs={12} md={6}>
-                <Typography variant="h6">活動名稱</Typography>
+                <Typography variant="h6">計畫名稱</Typography>
                     <TextField
                         variant="outlined"
                         value={activityData.name}
@@ -162,9 +167,9 @@ function NewActivity() {
                         name="activityName"
                         autoFocus
                         fullWidth
-                        label="輸入活動名稱"
+                        label="輸入計畫名稱"
                     />
-                    <Typography variant="h6"> 活動簡介 </Typography>
+                    <Typography variant="h6"> 計畫目標 </Typography>
                     <TextField
                         variant="outlined"
                         value={activityData.activityIntro}
@@ -172,23 +177,33 @@ function NewActivity() {
                         name="activityIntro"
                         autoFocus
                         fullWidth
-                        label="輸入活動簡介"
+                        label="輸入計畫目標"
                     />
-                    <Typography variant="h6"> 一次性活動 </Typography>
-                    <RadioGroup aria-label="onetime" name="oneTime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue="一次性活動">
-                        {['一次性活動', '長期性活動'].map((value) => (
-                        <Grid item>
-                            <ItemOneTime> 
-                                <FormControlLabel
-                                    value={value === "一次性活動"}
-                                    control={<Radio />}
-                                    label={`${value}`}
-                                    labelPlacement="end"
-                                />
-                            </ItemOneTime>
-                        </Grid>
-                        ))}
-                    </RadioGroup>
+                    <Typography variant="h6"> 計畫簡介 </Typography>
+                    <TextField
+                        variant="outlined"
+                        value={activityData.activityIntro}
+                        onChange={handleChange}
+                        name="activityIntro"
+                        autoFocus
+                        fullWidth
+                        label="輸入計畫簡介"
+                    />
+                    <Typography variant="h6"> 計畫日期 </Typography>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+                        <DatePicker
+                        value={actDate}
+                        onChange={handleChangeDate}
+                        name="activityTime"
+                        required
+                        fullWidth
+                        label="輸入計畫日期"
+                        id="activityTime"
+                        />
+                    </LocalizationProvider>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
                     <Typography variant="h6"> 加入審核 </Typography>
                     <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                         {['需審核', '不需審核'].map((value) => (
@@ -214,7 +229,7 @@ function NewActivity() {
                         autoFocus
                         label="輸入審核題目"
                     />
-                    <Typography variant="h6"> 活動類型 </Typography>
+                    <Typography variant="h6"> 計畫類型 </Typography>
                     <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue="運動">
                         {['運動', '讀書會', "出遊"].map((value) => (
                         <Grid item>
@@ -229,39 +244,6 @@ function NewActivity() {
                         </Grid>
                         ))}
                     </RadioGroup>
-                </Grid>
-
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6"> 活動時間 </Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                        <DatePicker
-                        value={actDate}
-                        onChange={handleChangeDate}
-                        name="activityTime"
-                        required
-                        fullWidth
-                        label="輸入活動時間"
-                        id="activityTime"
-                        />
-                    </LocalizationProvider>
-                    <Typography variant="h6"> 活動地點 </Typography>
-                    <TextField
-                        fullWidth
-                        value={activityData.activityPos}
-                        onChange={handleChange}
-                        name="activityPos"
-                        variant="outlined"
-                        autoFocus
-                        label="輸入活動地點"
-                    />
-                    <Typography variant="h6"> 人數上限 </Typography>
-                    <TextField
-                        fullWidth
-                        inputRef={AttendNum}
-                        variant="outlined"
-                        autoFocus
-                        label="輸入人數上限"
-                    />
                     <Typography variant="h6"> 邀請加入 </Typography>
                     <TextField
                         fullWidth
@@ -272,6 +254,10 @@ function NewActivity() {
                     />
                 </Grid>
             </Grid>
+            <Divider sx={{my: 4,}}/>
+            <Typography variant="h6"> 進度項目 </Typography>
+            <AddProgress />
+            <Divider sx={{my: 4,}}/>
             <Grid container justifyContent="center">
               <Grid item>
                 <Stack direction="row" spacing={2}>
@@ -286,4 +272,4 @@ function NewActivity() {
   );
 }
 
-export default NewActivity;
+export default PlanNew;
