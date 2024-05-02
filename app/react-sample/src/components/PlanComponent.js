@@ -9,7 +9,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import PeopleIcon from '@mui/icons-material/People';
 import { Grid } from '@mui/material';
 
-export default function ActivityComponent({data}) {
+export default function PlanComponent({data}) {
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'

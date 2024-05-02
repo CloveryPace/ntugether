@@ -17,6 +17,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import {useTheme} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { Popover } from '@mui/material';
+
+import FilterBar from './FilterBar';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -71,12 +74,12 @@ export default function HeaderBar() {
   };
   const open = Boolean(anchorEl);
 
-  const handleSearchClick = (event) => {
+  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
+  const isFilterOpen = Boolean(filterAnchorEl);
+
+  const handleSearchFocus = (event) => {
     setFilterAnchorEl(event.currentTarget);
   };
-  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
-  const isFilterPopoverOpen = Boolean(filterAnchorEl);
-
 
   return (
     <AppBar position="static" sx={{ bgcolor: theme.palette.third.main }}>
@@ -93,7 +96,7 @@ export default function HeaderBar() {
         </Button>
         
         {/* Search Input */}
-        <Search>
+        <Search onFocus={handleSearchFocus}>
           <SearchIconWrapper>
             <SearchIcon />
           </SearchIconWrapper>
@@ -102,6 +105,21 @@ export default function HeaderBar() {
             inputProps={{ 'aria-label': 'search' }}
           />
         </Search>
+
+        <Popover
+          open={isFilterOpen}
+          anchorEl={filterAnchorEl}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <FilterBar />
+        </Popover>
 
         {/* Spacer */}
         <div style={{ flexGrow: 1 }} />
