@@ -12,23 +12,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from '../components/Theme'; 
 import { API_LOGIN } from '../global/constants';
 import axios from 'axios';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { useTranslation } from 'react-i18next';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 export default function ForgetPassword() {
+  const { t, i18n } = useTranslation();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -66,25 +56,25 @@ export default function ForgetPassword() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Forgot Password
+              {t('忘記密碼')}
             </Typography>
             <Typography variant="body1">
-            回到 <Link href={'./login'} variant="body2">
-                    登入
+            {t('回到')} <Link href={'./login'} variant="body2">
+                    {t('登入')}
                   </Link> 或 <Link href={'./signup'} variant="body2">
-                    註冊帳號
+                  {t('註冊')}
                   </Link>。
             </Typography>
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 4,  width: '100%' }}>
             <Typography variant="body2">
-            輸入你註冊會員的電子信箱
+            {t('輸入你註冊會員的電子信箱')}
             </Typography>
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label={t('電子郵件')}
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -97,7 +87,7 @@ export default function ForgetPassword() {
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                重設密碼
+                {t('重設密碼')}
               </Button>
               <Grid container>
                 
