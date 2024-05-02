@@ -8,6 +8,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { Divider, Grid, Paper } from "@material-ui/core";
 import TextField from "@mui/material/TextField";
 import { Typography} from '@mui/material';
+import { useState } from "react";
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
 import Box from '@mui/material/Box';
@@ -16,6 +17,15 @@ import EditActivityPage from './EditActivityPage';
 
 function ActivityPage() {
   const [editingShow, setEditingShow] = useState(false);
+  const [attend, setAttend] = useState(false); // 參加活動
+  const handleAttend = () => {
+    setAttend(true);
+    alert("參加成功");
+  };
+  const handleQuit = () => {
+    setAttend(false);
+    alert("退出成功");
+  };
 
   window.scrollTo(0, 0); //讓進入畫面在上方
   const subtitle = { 
@@ -193,7 +203,18 @@ function ActivityPage() {
             </Grid>
           </Paper>   
       </Box>
-
+      <Typography variant="h4"></Typography>
+      <Grid container justifyContent="center">
+        <Grid item>
+          <Stack direction="row" spacing={2}>
+          { 
+            attend? 
+            <Button variant="contained" type="submit" color="warning" onClick={handleQuit}> 退出活動 </Button> :
+            <Button variant="contained" type="submit" color="primary" onClick={handleAttend}> 參加活動 </Button>
+          }  
+          </Stack>
+        </Grid>
+      </Grid>
     </div>
     </ThemeProvider>
   );
