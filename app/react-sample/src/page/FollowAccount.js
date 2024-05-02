@@ -2,31 +2,25 @@ import './Common.css';
 import HeaderBar from '../components/HeaderBar';
 import MainInform from '../components/MainInform';
 import TextButtons from '../components/TextButtons';
-import ActivityListComponent from '../components/ActivityListComponent';
+import AccountListComponent from '../components/AccountListComponent';
 import Footer from '../components/Footer';
+import FollowPageNav from '../components/FollowPageNav';
 
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
 
 import theme from '../components/Theme'; 
 
-import { useTranslation } from 'react-i18next';
-
-function HomePage() {
-  const { t, i18n } = useTranslation();
+function FollowAccount() {
   return (
     <ThemeProvider theme={theme}>
         
         <HeaderBar />
         <div className='Main'>
-          <Typography variant="h4">{t('我的活動')}</Typography>
-          <MainInform />
-          <Typography variant="h4">{t('活動類別')}</Typography>
-          <TextButtons />
-          <Typography variant="h4">{t('熱門活動')}</Typography>
-          <ActivityListComponent />
+        <Typography variant="h4" component="h1">追蹤清單</Typography>
+        <FollowPageNav selectedTab={1}/>
+        <AccountListComponent />
         </div>
-
         <Footer />
       
 
@@ -34,4 +28,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default FollowAccount;
