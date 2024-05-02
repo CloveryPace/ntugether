@@ -5,9 +5,9 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import { ThemeProvider } from '@mui/material/styles';
-import { Divider, Grid, Paper } from "@material-ui/core";
-import TextField from "@mui/material/TextField";
 import { Typography} from '@mui/material';
+import PendingReview from '../components/PendingReview';
+import CommentsBox from '../components/CommentsBox';
 import { useState } from "react";
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
@@ -131,6 +131,19 @@ function ActivityPage() {
         <div style={subtitle}><Typography variant="h6"> 參加者 </Typography></div>
         <div style={{alignSelf: 'center'}}><Avatar alt="Remy Sharp"/></div>
       </div>
+
+      <br/>
+      <br/>
+
+      <div style={container}>
+        <div style={subtitle}><Typography variant="h6"> 加入審核 </Typography></div>
+        <div><PendingReview/></div>
+      </div>
+      
+      <br/>
+      <br/>
+
+      <CommentsBox/>
 
       <Box
       sx={{
