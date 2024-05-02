@@ -12,6 +12,7 @@ import Login from './page/Login';
 import UserProfile from './page/UserProfile';
 import ForgetPassword from './page/ForgetPassword';
 import AccountSetting from './page/AccountSetting';
+import ActivityAttendPage from './page/ActivityAttendPage';
 
 import PlanNew from './page/PlanNew';
 import PlanPage from './page/PlanPage';
@@ -31,7 +32,7 @@ function App() {
           <Route path='/newactivity' element={<NewActivity />} />
           <Route path='/userprofile' element={<UserProfile />} />
           <Route path='/setting' element={<AccountSetting />} />
-
+          <Route path='/activityattendpage' element={<ActivityAttendPage />} />
 
         </Routes>
         </BrowserRouter>
