@@ -22,10 +22,8 @@ import Box from '@mui/material/Box';
 import axios from 'axios';
 import { API_CREATE_ACTIVITY } from '../global/constants';
 import dayjs from 'dayjs';
-
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
-
 import theme from '../components/Theme'; 
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
@@ -143,7 +141,6 @@ function NewActivity() {
             }
         };
         handleChange(event);
-
     };
 
   return (
