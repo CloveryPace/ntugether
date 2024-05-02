@@ -15,24 +15,26 @@ require('dotenv').config();
 var router = express.Router();
 router.use(bodyParser.json());
 
-const connection = require('../../database');
+// const connection = require('../../database');
 const User = require('../model/userModel');
+const authMiddleware = require('../middlewares/authentication');
 
 // GET routes
 router.get("/", getMember);
-router.get("/signin", signIn);
 router.get("/forgetPassword", forgetPassword);
+router.get("/emailSend", emailSend)
 
 // POST routes
 router.post("/signup", signUp);
+router.post("/signin", signIn);
 router.post("/resetPassword", resetPassword);
 
 // PUT routes
-router.put("/", updateMember);
-router.put("/emailVerify", emailVerify);
+router.put("/", authMiddleware.authentication, updateMember);
+// router.put("/emailVerify", emailVerify);
 
 // DELETE routes
-router.delete("/", deleteMember);
+router.delete("/", authMiddleware.authentication, deleteMember);
 
 
 // Configure the Google strategy for use 
@@ -96,11 +98,20 @@ router.get('/auth/failure', (req, res) => {
 const SECRET_KEY = 'sdm_is_so_fun';
 
 function generateVerificationCode(email) {
+  const timestamp = Date.now();
+  const data = email;
   const hash = crypto.createHmac('sha256', SECRET_KEY)
-    .update(email)
+    .update(data)
     .digest('hex');
   const code = hash.substring(0, 6); // Take first 6 characters for simplicity
-  return code;
+  return { code, timestamp };
+}
+
+function isVerificationCodeValid(timestamp) {
+  const currentTime = Date.now();
+  const codeTimestamp = parseInt(timestamp, 10); // Parse the timestamp
+  // Check if the current time is within 10 minutes (600,000 milliseconds) of the code's timestamp
+  return (currentTime - codeTimestamp) <= 600000;
 }
 
 const transporter = nodemailer.createTransport({
@@ -114,14 +125,100 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-async function signUp(req, res) {
+// async function signUp(req, res) {
+//   try {
+//     const { name, email, birthday, gender, password } = req.body;
+//     console.log("email", email);
+//     console.log("name", name);
+//     console.log("birthday", birthday);
+//     console.log("gender", gender);
+//     console.log("password", password);
+
+//     // Hash password
+//     const hashedPassword = await bcrypt.hash(password, 12);
+
+//     // Create user using Sequelize
+//     const newUser = await User.create({
+//       name: name,
+//       email: email,
+//       birthday: birthday,
+//       gender, gender,
+//       password: hashedPassword
+//     });
+
+//     console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
+
+//     // Create json web token
+//     const token = jwt.sign(
+//       { userId: newUser.id }, // Use the newly created user's id
+//       process.env.JWT_SECRET,
+//       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
+//     );
+
+//     const code = generateVerificationCode(email);
+//     // Example email sending code with nodemailer
+//     const transporter = nodemailer.createTransport({
+//       service: 'gmail',
+//       host: 'smtp.gmail.com',
+//       port: 465,
+//       secure: true,
+//       auth: {
+//         user: process.env.Email,
+//         pass: process.env.Password
+//       }
+//     });
+
+//     const mailOptions = {
+//       from: process.env.Email,
+//       to: email,
+//       subject: 'NTUgether Email Verification',
+//       text: `Your verification code is: ${code}`
+//     };
+
+//     transporter.sendMail(mailOptions, (error, info) => {
+//       if (error) {
+//         console.log(error);
+//         return res.status(500).send('Error sending email');
+//       } else {
+//         res.send('Verification code sent to your email. Please verify within 10 minutes.');
+//         return res.status(201).json({
+//           message: 'Member created successfully, verification email sent',
+//           token: token, // JWT token
+//         });
+//       }
+//     });
+
+
+//   } catch (error) {
+//     console.log(error);
+//     if (error.name === 'SequelizeUniqueConstraintError') {
+//       return res.status(409).json({ error: "Email already exists" });
+//     }
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// }
+
+async function signUp( req, res){
   try {
-    const { name, email, birthday, gender, password } = req.body;
+    const { name, email, birthday, gender, password, code } = req.body;
     console.log("email", email);
     console.log("name", name);
     console.log("birthday", birthday);
     console.log("gender", gender);
     console.log("password", password);
+    console.log("code", code);
+
+    const {code: validCode, timestamp} = generateVerificationCode(email);
+    console.log("validCode", validCode);
+    const isValid = isVerificationCodeValid(timestamp);
+
+    // Use email to generate validCode
+    if (code === validCode & isValid) {
+      console.log('Email verified successfully');
+      
+    } else {
+      return res.status(401).send('Invalid or expired verification code');
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
@@ -135,17 +232,40 @@ async function signUp(req, res) {
       password: hashedPassword
     });
 
-    console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
+    console.log(newUser.user_id); // Assuming 'id' is the auto-generated field for user_id
 
     // Create json web token
     const token = jwt.sign(
-      { userId: newUser.id }, // Use the newly created user's id
+      { userId: newUser.user_id }, // Use the newly created user's id
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
     );
 
-    const code = generateVerificationCode(email);
-    // Example email sending code with nodemailer
+    return res.status(201).json({
+      message: 'Member created successfully.',
+      token: token, // JWT token
+    });
+
+  } catch (error) {
+    console.log(error);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ error: "Email already exists" });
+    }
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+}
+
+async function emailSend ( req, res) {
+  const { email } = req.query;
+  try {
+    const user = await User.findOne({ where: { email: email } });
+
+    if (user) {
+      return res.status(409).send("Email already exists.");
+    } 
+
+    const {code, timestamp} = generateVerificationCode(email);
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       host: 'smtp.gmail.com',
@@ -170,57 +290,50 @@ async function signUp(req, res) {
         return res.status(500).send('Error sending email');
       } else {
         res.send('Verification code sent to your email. Please verify within 10 minutes.');
-        return res.status(201).json({
-          message: 'Member created successfully, verification email sent',
-          token: token, // JWT token
-        });
       }
     });
 
-
   } catch (error) {
     console.log(error);
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(409).json({ error: "Email already exists" });
-    }
     return res.status(500).json({ error: "Internal server error" });
   }
+
 }
 
-async function emailVerify(req, res) {
-  const { email, code } = req.body;
+// async function emailVerify(req, res) {
+//   const { email, code } = req.body;
 
-  // Re-generate the code based on the current timestamp and compare
-  const validCode = generateVerificationCode(email);
-  console.log("validCode", validCode);
-  console.log("code", code);
+//   // Re-generate the code based on the current timestamp and compare
+//   const validCode = generateVerificationCode(email);
+//   console.log("validCode", validCode);
+//   console.log("code", code);
 
-  if (code === validCode) {
-    try {
-      // Use Sequelize to update the verified status for the user
-      const result = await User.update(
-        { verified: true },
-        { where: { email: email } }
-      );
+//   if (code === validCode) {
+//     try {
+//       // Use Sequelize to update the verified status for the user
+//       const result = await User.update(
+//         { verified: true },
+//         { where: { email: email } }
+//       );
 
-      if (result[0] > 0) { // result[0] contains the number of affected rows
-        res.send('Email verified successfully');
-      } else {
-        // No rows were updated, which means no user was found with that email
-        res.status(404).send('No user found with that email');
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send('Error updating user verification status');
-    }
-  } else {
-    res.status(401).send('Invalid or expired verification code');
-  }
-}
+//       if (result[0] > 0) { // result[0] contains the number of affected rows
+//         res.send('Email verified successfully');
+//       } else {
+//         // No rows were updated, which means no user was found with that email
+//         res.status(404).send('No user found with that email');
+//       }
+//     } catch (error) {
+//       console.log(error);
+//       return res.status(500).send('Error updating user verification status');
+//     }
+//   } else {
+//     res.status(401).send('Invalid or expired verification code');
+//   }
+// }
 
 async function signIn(req, res) {
   try {
-    const { email, password } = req.query; // Extracting email and password from request query
+    const { email, password } = req.body; // Extracting email and password from request query
     console.log("email", email);
     console.log("password", password);
 
@@ -228,7 +341,6 @@ async function signIn(req, res) {
     const user = await User.findOne({
       where: {
         email: email,
-
       },
       attributes: ['user_id', 'password'], // Select only the user_id and password fields
     });
@@ -256,7 +368,7 @@ async function signIn(req, res) {
 
     // Successfully authenticated
     return res.status(200).json({
-      message: 'Authentication successful',
+      message: 'Sign in successfully.',
       jwtToken: token,
     });
 
@@ -277,7 +389,7 @@ async function forgetPassword(req, res) {
       return res.status(404).send("User not found.");
     }
 
-    const code = generateVerificationCode(email);
+    const {code, timestamp} = generateVerificationCode(email);
 
     const mailOptions = {
       from: process.env.Email,
@@ -312,10 +424,13 @@ async function resetPassword(req, res) {
       return res.status(404).send('User not found');
     }
 
-    const validCode = generateVerificationCode(email);
+    const {code: validCode, timestamp} = generateVerificationCode(email);
+    console.log("validCode", validCode);
+    const isValid = isVerificationCodeValid(timestamp);
+
     console.log("validCode", validCode);
     console.log("code", code);
-    if (code === validCode) {
+    if (code === validCode & isValid) {
       const hashedPassword = await bcrypt.hash(newPassword, 12);
       const result = await User.update({ password: hashedPassword }, { where: { email: email } });
 
@@ -364,7 +479,8 @@ async function getMember(req, res) {
 }
 
 async function updateMember(req, res) {
-  const { user_id, name, email, phoneNum, gender, aboutMe} = req.body;
+  const { name, email, phoneNum, gender, aboutMe} = req.body;
+  const user_id = req.user_id;
   const updateFields = {};
     if (name) updateFields.name = name;
     if (email) updateFields.email = email;
@@ -377,29 +493,33 @@ async function updateMember(req, res) {
     const [updatedRows] = await User.update(updateFields, { where: { user_id } });
 
     if (updatedRows > 0) {
-      res.status(200).send('Member updated successfully');
+      return res.status(200).send('Member updated successfully');
     } else {
-      res.status(404).send('Member not found');
+      return res.status(404).send('Please update at least one row.');
     }
   } catch (error) {
     console.error('Error updating member:', error);
-    res.status(500).send('Internal Server Error');
+    return res.status(500).send('Internal Server Error');
   }
 }
 
+
+// Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTcxNDYzNTY5MCwiZXhwIjoxNzE0NjM5MjkwfQ.q8p3_dumY9c-bCfu7aoJ7jlJ0uC7zXoWe8jfDE4KR5c
+
 async function deleteMember(req, res) {
-  const { user_id } = req.body; // Get the id of the member to delete
+  // const { user_id } = req.body; // Get the id of the member to delete
+  const user_id = req.user_id;
 
   try {
     const affectedRows = await User.destroy({ where: { user_id } });
     if (affectedRows > 0) {
-      res.status(200).send('Member deleted successfully');
+      return res.status(200).send('Member deleted successfully');
     } else {
-      res.status(404).send('Member not found');
+      return res.status(404).send('Member not found');
     }
   } catch (error) {
     console.log('Error deleting member:', error);
-    res.status(500).send('Internal Server Error');
+    return res.status(500).send('Internal Server Error');
   }
 }
 
