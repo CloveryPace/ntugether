@@ -1,101 +1,157 @@
+const { defaultValueSchemable } = require('sequelize/lib/utils');
 const { sequelize, Sequelize } = require('../../database');
 const User = require('./userModel');
+const { DataTypes } = require('sequelize');
 
-const Plan = sequelize.define({
-    plan_id: { 
-        type: sequelize.INTEGER, 
-        autoIncrement: true, 
-        primaryKey: true 
+
+
+const PlanParticipantsStatus = sequelize.define('PlanParticipantsStatus');
+const PlanTypeAssociation = sequelize.define("PlanTypeAssociation");
+/* =========================== Activities Table =================================== */
+
+const Plan = sequelize.define("Plan", {
+    plan_id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    name: { 
-        type: sequelize.STRING(20) 
+    name: {
+        type: Sequelize.STRING(20)
     },
-    goal: { 
-        type: sequelize.STRING(255) 
+    goal: {
+        type: Sequelize.STRING(255)
     },
-    introduction: { 
-        type: sequelize.TEXT 
+    introduction: {
+        type: Sequelize.TEXT
     },
-    created_user_id: { 
-        type: sequelize.INTEGER 
+    // This field should probably relate to a Progress Table
+    progression: {
+        type: Sequelize.TEXT
     },
-    progression: { 
-        type: sequelize.TEXT 
+    start_date: {
+        type: Sequelize.DATE
     },
-    startDate: { 
-        type: sequelize.DATE 
+    end_date: {
+        type: Sequelize.DATE
     },
-    endDate: { 
-        type: sequelize.DATE 
+    application_problem: {
+        type: Sequelize.STRING(255)
     },
-    applicationProblem: { 
-        type: sequelize.STRING(255) 
+    need_reviewed: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
+    },
+    is_grouped: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 }, { sequelize, tableName: 'plan' });
 
-Plan.belongsTo(User, { foreignKey: 'created_user_id', as: 'creator' });
+Plan.belongsTo(User, { as: 'Creator', foreignKey: 'created_user_id', allowNull: false });
+User.hasMany(Plan, { as: "CreatedPlan", foreignKey: "created_user_id", });
 
-const UserPlan = sequelize.define({
-    userPlanId: { 
-        type: sequelize.INTEGER, 
-        autoIncrement: true, 
-        primaryKey: true 
-    },
-    user_id: { 
-        type: sequelize.INTEGER 
-    },
-    plan_id: { 
-        type: sequelize.INTEGER 
-    }
-}, { sequelize, modelName: 'UserPlan' });
-UserPlan.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-UserPlan.belongsTo(Plan, { foreignKey: 'plan_id', as: 'plan' });
+Plan.belongsToMany(User, { as: "Participants", through: "PlanParticipantsStatus", foreignKey: "joined_plan_id" });
+User.belongsToMany(Plan, { as: "JoinedPlan", through: "PlanParticipantsStatus", foreignKey: "participant_id" });
 
 
-const PlanTypes = sequelize.define({
-    plan_type_id: { 
-        type: sequelize.INTEGER, 
-        autoIncrement: true, 
-        primaryKey: true 
+const PlanTypes = sequelize.define("PlanTypes", {
+    plan_type_id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    typeName: { 
-        type: sequelize.STRING(20), 
-        allowNull: false 
+    typeName: {
+        type: Sequelize.STRING(length = 32),
+        allowNull: false
     }
 }, { sequelize, tableName: 'PlanTypes' });
 
-const PlanTypeAssociation = sequelize.define({
-    plan_id: {
-        type: sequelize.INTEGER
+Plan.belongsToMany(PlanTypes, { foreignKey: "plan_id", through: PlanTypeAssociation });
+PlanTypes.belongsToMany(Plan, { foreignKey: "plan_type_id", through: PlanTypeAssociation });
+
+const Discussion = sequelize.define("Discussion", {
+    discussion_id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
     },
-    plan_type_id: {
-        type: sequelize.INTEGER
+    content: {
+        type: Sequelize.STRING,
+    },
+},
+    {
+        // Sequelize options
+        tableName: 'PlanDiscussion', // Explicitly specifying the table name here
+        timestamps: false // assuming your table does not have fields like createdAt or updatedAt
+    },
+);
+
+Discussion.belongsTo(User, { as: "Sender", foreignKey: "sender_id", allowNull: false });
+User.hasMany(Discussion, { as: "PlanDiscussions", foreignKey: "sender_id" });
+
+Discussion.belongsTo(Plan, { as: "Plan", foreignKey: "plan_id", allowNull: false });
+Plan.hasMany(Discussion, { as: "Discussions", foreignKey: "plan_id" });
+
+const Applications = sequelize.define("Applications", {
+    application_id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+    },
+    application_response: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    },
+    is_approved: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
-}, { tableName: 'PlanTypeAssociations'});
-PlanTypeAssociation.belongsTo(Plan, { foreignKey: 'plan_id' });
-PlanTypeAssociation.belongsTo(PlanTypes, { foreignKey: 'plan_type_id' });
+},
+    {
+        // Sequelize options
+        tableName: 'PlanApplication', // Explicitly specifying the table name here
+        timestamps: false // assuming your table does not have fields like createdAt or updatedAt
+    },
+);
 
-const Plan_discussions = sequelize.define({
-    discussion_id: { 
-        type: sequelize.INTEGER, 
-        autoIncrement: true, 
-        primaryKey: true 
+// define relationship
+Applications.belongsTo(User, { as: "Applicant", foreignKey: "applicant_id", allowNull: false });
+User.hasMany(Applications, { as: "PlanApplications", foreignKey: "applicant_id" });
+
+Applications.belongsTo(Plan, { as: "Plan", foreignKey: "plan_id", allowNull: false });
+Plan.hasMany(Applications, { as: "Applications", foreignKey: "plan_id" });
+
+
+const Invitations = sequelize.define("PlanInvitations", {
+    "invitation_id": {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     },
-    user_id: { 
-        type: sequelize.INTEGER 
+    "accepted": {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     },
-    plan_id: { 
-        type: sequelize.INTEGER 
-    },
-    content: { 
-        type: sequelize.STRING(255) 
+},
+    {
+        tablaName: "PlanInvitations",
+        timestamps: false,
     }
-}, { sequelize, tableName: 'Plan_discussions'});
-Plan_discussions.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
-Plan_discussions.belongsTo(Plan, { foreignKey: 'plan_id', as: 'plan' });
+);
+
+Invitations.belongsTo(Plan, { foreignKey: "plan_id", allowNull: false });
+Plan.hasMany(Invitations, { foreignKey: "plan_id" });
+
+Invitations.belongsTo(User, { as: "Invitee", foreignKey: "invitee", allowNull: false });
+User.hasMany(Invitations, { as: "PlanInvitations", foreignKey: "invitee" });
 
 
-module.exports = { Plan, PlanTypes, PlanTypeAssociation, Plan_discussions, UserPlan }
+module.exports = {
+    Plan, PlanTypes, PlanTypeAssociation,
+    Invitations, Discussion, PlanParticipantsStatus, PlanTypeAssociation, Applications
+};
+
+
 
 
 

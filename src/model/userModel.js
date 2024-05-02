@@ -26,13 +26,16 @@ const User = sequelize.define('User', {
         type: Sequelize.STRING
     },
     phoneNum: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: true, // modified
     },
     photo: {
-        type: Sequelize.BLOB
+        type: Sequelize.BLOB,
+        allowNull: true, // modified
     },
     self_introduction: {
-        type: Sequelize.TEXT
+        type: Sequelize.TEXT,
+        allowNull: true, // modified
     },
     oauthProvider: {
         type: Sequelize.STRING
@@ -55,14 +58,14 @@ const UserInterest = sequelize.define('UserInterests', {
         primaryKey: true,
         autoIncrement: true
     },
-    userId: { 
-        type: Sequelize.INTEGER 
+    userId: {
+        type: Sequelize.INTEGER
     },
-    interest: { 
-        type: Sequelize.STRING(20) 
+    interest: {
+        type: Sequelize.STRING(20)
     }
 
-},{
+}, {
     sequelize,
     tableName: 'UserInterests'
 });

@@ -14,7 +14,6 @@ exports.authentication = (req, res, next) => {
     let token;
     try {
         token = req.headers['authorization'].split(' ')[1];
-        console.log("token is ", token);
     } catch (error) {
         console.error("error getting token from headers", error);
         return res.status(401).send("invalid header");

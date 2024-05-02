@@ -10,7 +10,7 @@ const { parse } = require('yamljs');
  * @param {*} activity_id 
  * @returns activity instance including creator and particpants data 
  * 
- * TODO: maybe directly add include the user data to an instance passed in, instead of doing query again
+ * TODO: maybe directly add include the user data to an instance passed of, instead of doing query again
  */
 async function returnActivity(activity_id) {
     var activity = await activityModel.Activities.findByPk(activity_id, {
@@ -33,12 +33,12 @@ async function returnActivity(activity_id) {
  * sync all the model used in the controller 
  */
 exports.sync = async () => {
-    await activityModel.Activities.sync();
-    await activityModel.ActivityParticipantStatus.sync();
-    await activityModel.ActivityTag.sync();
-    await activityModel.Applications.sync();
-    await activityModel.Invitation.sync();
-    await activityModel.Discussion.sync();
+    await activityModel.Activities.sync({ alter: false });
+    await activityModel.ActivityParticipantStatus.sync({ alter: false });
+    await activityModel.ActivityTag.sync({ alter: false });
+    await activityModel.Applications.sync({ alter: false });
+    await activityModel.Invitation.sync({ alter: false });
+    await activityModel.Discussion.sync({ alter: false });
 };
 
 /**
@@ -67,9 +67,6 @@ exports.getActivitiesList = async (req, res) => {
 
         // set search condition
         var condition = {
-            name: {
-                [Op.like]: '%' + search + '%'
-            },
             is_one_time: !is_long_term,
         };
 
@@ -140,12 +137,12 @@ exports.createActivity = async (req, res) => {
     */
 
     try {
-        const user_id = await req.user_id;
+        const user_id = req.user_id;
 
         var { id, ...body } = req.body;
-        body.need_review = req.body.need_review;
-        body.is_one_time = req.body.is_one_time;
-        body.check_by_organizer = req.body.check_by_organizer;
+        // body.need_review = req.body.need_review;
+        // body.is_one_time = req.body.is_one_time;
+        // body.check_by_organizer = req.body.check_by_organizer;
         body.created_user_id = user_id;
 
         const newActivity = await activityModel.Activities.create(body);
@@ -197,8 +194,8 @@ exports.getActivityDetail = async (req, res) => {
     try {
         const user_id = req.user_id;
 
-        var activity_id = req.params.activity_id;
-        var activity = await activityModel.Activities.findByPk(activity_id, {
+        const activity_id = req.params.activity_id;
+        const activity = await activityModel.Activities.findByPk(activity_id, {
             include: [
                 {
                     model: User,
@@ -211,7 +208,7 @@ exports.getActivityDetail = async (req, res) => {
             ],
         });
         if (activity == null) return res.status(400).send("no activity");
-        // activity = returnActivity(activity_id);
+        activity = returnActivity(activity_id);
         res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
@@ -283,7 +280,7 @@ exports.deleteActivity = async (req, res) => {
         const activity_id = req.params.activity_id;
 
         // Find the activity by ID
-        var activity = await activity_id.Activity.findByPk(activity_id);
+        var activity = await activity_id.Activities.findByPk(activity_id);
 
         // If activity not found, return 404 error
         if (!activity) {
@@ -310,7 +307,7 @@ exports.deleteActivity = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.getAllApplications = (req, res) => {
+exports.getAllApplications = async (req, res) => {
     /*
     NOTE: response format
     [
@@ -332,7 +329,7 @@ exports.getAllApplications = (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        const activity = activityModel.Activities.findByPk(activity_id);
+        const activity = await activityModel.Activities.findByPk(activity_id);
 
         if (!activity) {
             return res.status(404).json({ error: 'Activity not found' });
@@ -341,7 +338,7 @@ exports.getAllApplications = (req, res) => {
             return res.status(403).json({ error: 'authorization failed' });
         }
 
-        const applications = activityModel.Applications.findAll({
+        const applications = await activityModel.Applications.findAll({
             where: {
                 activity_id: activity_id
             }
@@ -376,14 +373,13 @@ exports.removeUser = async (req, res) => {
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
         const remove_user_ids = req.body.user_id; // array
-        for (const remove_id in remove_user_ids) {
-            var user = User.findByPk(remove_id);
+        for (const remove_id of remove_user_ids) {
 
             participant = await activityModel.ActivityParticipantStatus.findOne(
                 {
                     where: {
                         joined_activities: activity_id,
-                        participants: user_id
+                        participants: remove_id
                     }
                 }
             );
