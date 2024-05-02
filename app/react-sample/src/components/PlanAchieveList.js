@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
 import PlanAchieveItem from './PlanAchieveItem';
+import { useTranslation } from 'react-i18next';
 
 export default function PlanAchieveList() {
 
   const initialDisplayCount = 2; 
   const incrementCount = 3; 
+  const { t, i18n } = useTranslation();
 
   const planAchieve = [
     { name: '健身計畫', percentage: 50 },
@@ -26,7 +28,7 @@ export default function PlanAchieveList() {
   return (
     <div>
       <Typography variant="h5" gutterBottom>
-        進度達成比例
+      {t('進度達成比例')}
       </Typography>
       <List>
         {planAchieve.slice(0, displayCount).map((item, index) => (
@@ -35,7 +37,7 @@ export default function PlanAchieveList() {
       </List>
       {displayCount < planAchieve.length && (
         <Button onClick={handleShowMore}>
-          <Typography>查看更多</Typography>
+          <Typography>{t('查看更多')}</Typography>
         </Button>
       )}
     </div>

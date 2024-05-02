@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
 import RecentActivityItem from './RecentActivityItem';
-
+import { useTranslation } from 'react-i18next';
 
 export default function RecentActivityList() {
-
+  const { t, i18n } = useTranslation();
   const initialDisplayCount = 2;
   const incrementCount = 3;
 
@@ -33,7 +33,7 @@ export default function RecentActivityList() {
   return (
     <div>
       <Typography variant="h5" gutterBottom>
-        即將來臨的活動
+        {t('即將來臨的活動')}
       </Typography>
       <List>
         {recentActivity.slice(0, displayCount).map((item, index) => (
@@ -42,7 +42,7 @@ export default function RecentActivityList() {
       </List>
       {displayCount < recentActivity.length && (
         <Button onClick={handleShowMore}>
-          <Typography>查看更多</Typography>
+          <Typography>{t('查看更多')}</Typography>
         </Button>
       )}
     </div>
