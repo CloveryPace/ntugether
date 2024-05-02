@@ -107,6 +107,7 @@ export default function HeaderBar() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [accountAnchor, setAccountAnchor] = React.useState(null);
   const [languageAnchor, setlanguageAnchor] = React.useState(null);
@@ -121,7 +122,6 @@ export default function HeaderBar() {
   const handleLocationIconClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
     setAnchorEl(null);
@@ -152,6 +152,13 @@ export default function HeaderBar() {
   const open = Boolean(anchorEl);
   const openAccountList = Boolean(accountAnchor);
   const openLanguageToggl = Boolean(languageAnchor);
+
+
+  const handleSearchClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
+  const isFilterPopoverOpen = Boolean(filterAnchorEl);
 
 
   return (

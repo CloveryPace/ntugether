@@ -34,6 +34,10 @@ const theme = createTheme({
         review: '#FFC966',
         type:  '#FFE666',
         contrastText: '#2C3E4F',
+      },
+
+      toggle: {
+        main: '#489992',
       }
     },
   
