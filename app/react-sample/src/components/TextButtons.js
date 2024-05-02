@@ -3,17 +3,19 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 export default function TextButtons() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   return (
     <Stack direction="row" justifyContent="center" spacing={2}>
-      <Button variant="contained" color='primary'>學習</Button> 
-      <Button variant="contained" color='primary'>運動</Button>
-      <Button variant="contained" color='primary'>其他</Button>
+      <Button variant="contained" color='primary'>{t('學習')}</Button> 
+      <Button variant="contained" color='primary'>{t('運動')}</Button>
+      <Button variant="contained" color='primary'>{t('其他')}</Button>
       <h1> </h1>
       <Button color='primary' onClick={() => navigate('/activitylist')}>
-      <Typography> 查看所有活動</Typography>
+      <Typography> {t('查看所有活動')}</Typography>
       </Button>
     </Stack>
   );
