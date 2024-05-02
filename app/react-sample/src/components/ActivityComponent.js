@@ -49,9 +49,7 @@ export default function ActivityComponent({data}) {
                   <Avatar alt="Remy Sharp"/>
                 </div>
               </Stack>
-
             </div>
-              <Button variant="contained" color="primary"> 參加 </Button> 
           </Stack>
         </div>
         </Grid>
