@@ -14,23 +14,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from '../components/Theme'; 
 import { API_LOGIN } from '../global/constants';
 import axios from 'axios';
-
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { useTranslation } from 'react-i18next';
+import Divider from '@mui/material/Divider';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 export default function Login() {
+  const { t, i18n } = useTranslation();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -45,6 +35,8 @@ export default function Login() {
       })
       .then(function (response) {
         console.log(response);
+        // jwt = response.data.jwtToken;
+        window.location.assign('/');
       })
       .catch(function (error) {
         console.log(error);
@@ -70,15 +62,15 @@ export default function Login() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              {t('登入')}
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 ,width: '100%'}}>
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 id="email"
-                label="Email Address"
+                label={t('電子郵件')}
                 name="email"
                 autoComplete="email"
                 autoFocus
@@ -88,33 +80,35 @@ export default function Login() {
                 required
                 fullWidth
                 name="password"
-                label="Password"
+                label={t('密碼')}
                 type="password"
                 id="password"
                 autoComplete="current-password"
               />
-              <FormControlLabel
+              {/* <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
-              />
-              <Blackline  />
+              /> */}
+              <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
+              <Button variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶登入')}</Button>
+
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
               >
-                Sign In
+                {t('登入')}
               </Button>
               <Grid container>
-                <Grid item xs>
+                <Grid item xs={12} md={6}>
                   <Link href={'./forgetPassword'} variant="body2">
-                    Forgot password?
+                  {t('忘記密碼？')}
                   </Link>
                 </Grid>
-                <Grid item>
+                <Grid item xs={12} md={6} sx={{textAlign: {md:'end', sx:'start'}}}>
                   <Link href={'/signup'} variant="body2">
-                    {"Don't have an account? Sign Up"}
+                  {t("還沒有帳號？註冊")}
                   </Link>
                 </Grid>
               </Grid>
@@ -139,37 +133,4 @@ export default function Login() {
       </Grid>
     </ThemeProvider>
   );
-}
-
-export function Blackline(){
-    const styleLeft = {
-        marginLeft:'auto',
-        marginRight:'auto',
-        width: '40%',
-        float:'left'
-    };
-
-    const styleRight = {
-        marginLeft:'auto',
-        marginRight:'auto',
-        width: '40%',
-        float: 'right'
-    };
-    return(
-        <div className="divider" style={{textAlign:'center'}}>
-            <hr className="left" style={{
-                marginLeft:'auto',
-                marginRight:'auto',
-                width: '40%',
-                float:'left'
-             }} />
-             OR
-            <hr className="right" style={{
-                marginLeft:'auto',
-                marginRight:'auto',
-                width: '40%',
-                float: 'right'
-            }}/>
-        </div>
-    )
 }

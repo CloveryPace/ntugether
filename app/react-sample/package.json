@@ -17,6 +17,7 @@
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.11",
     "i18next": "^23.11.3",
+    "i18next-browser-languagedetector": "^7.2.1",
     "i18next-http-backend": "^2.5.1",
     "json-server": "^1.0.0-alpha.23",
     "mui-one-time-password-input": "^2.0.2",
