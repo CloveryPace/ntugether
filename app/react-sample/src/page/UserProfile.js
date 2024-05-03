@@ -21,6 +21,7 @@ import { styled } from '@mui/material/styles';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
+import './Common.css';
 
 const { useState } = React;
 
@@ -51,9 +52,6 @@ const VisuallyHiddenInput = styled('input')({
   });
 
 function UserProfile() {
-  const style = { 
-    padding: "0 10rem 10rem 10rem",
-  };
   const style2 = { 
     padding: "1rem 0 0 0" 
   };
@@ -83,12 +81,18 @@ function UserProfile() {
     <ThemeProvider theme={theme}>
     <HeaderBar />
     <UserPageNav selectedTab={0}/> 
-    <div style={style}>
+
+    <div className='Main'>
         <CssBaseline />
 
     <Grid container spacing={2}>
-        <Grid item xs={2}>
-            <Box alignItems="center">
+        <Grid item xs={12} md={2} justifyContent="center">
+            <Box   sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              width: '100%' 
+            }}>
 
                 <Avatar
                 alt="Remy Sharp"
@@ -116,6 +120,7 @@ function UserProfile() {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                width: '100%',
                 }}
             >
                 <Stack spacing={2}>
