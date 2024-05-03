@@ -1,0 +1,15 @@
+.responsiveDiv {
+    display: none; 
+}
+
+@media (min-width: 600px) {
+    .responsiveDiv {
+        display: block;
+    }
+}
+
+@media (min-width: 600px) {
+    .responsiveDivS {
+        display: none;
+    }
+}
