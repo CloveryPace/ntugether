@@ -16,6 +16,7 @@ import { API_LOGIN } from '../global/constants';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Divider from '@mui/material/Divider';
+import { setAuthToken } from "../utils";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
@@ -28,14 +29,14 @@ export default function Login() {
       email: data.get('email'),
       password: data.get('password'),
     });
-    axios.put(API_LOGIN, { 
+    axios.post(API_LOGIN, { 
         email: data.get('email'),
         password: data.get('password')
       
       })
       .then(function (response) {
         console.log(response);
-        // jwt = response.data.jwtToken;
+        setAuthToken(response.data.jwtToken);
         window.location.assign('/');
       })
       .catch(function (error) {

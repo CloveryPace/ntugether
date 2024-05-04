@@ -46,7 +46,9 @@
     "弱": "Weak",
     "中": "Medium",
     "強": "Strong",
-    "姓名": "Name"
+    "姓名": "Name",
+    "已經發送驗證碼到您的信箱，請輸入驗證碼和新密碼": "The verification code has been sent to your email, please enter the verification code and new password",
+    "驗證碼": "Verification code"
 
 
 
