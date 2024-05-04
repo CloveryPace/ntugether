@@ -6,7 +6,7 @@ const doc = {
 		title: 'NTUgether API document',
 		description: 'Description',
 	},
-	host: $`{process.env.SWAGGER_HOST}:4000`,
+	host: `${process.env.SWAGGER_HOST}:4000`,
 };
 
 const outputFile = './swagger-output.json';
