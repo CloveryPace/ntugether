@@ -1,7 +1,6 @@
 // 活動完整資訊
 import HeaderBar from '../components/HeaderBar';
 import './Common.css';
-
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import * as React from 'react';
@@ -20,7 +19,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import axios from 'axios';
-import { API_CREATE_ACTIVITY } from '../global/constants';
+import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
 import dayjs from 'dayjs';
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
@@ -51,6 +50,18 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 
 function NewActivity() {
     const navigate = useNavigate();
+     
+    const token = axios.post(API_LOGIN, {
+            'email': "r12725066@ntu.edu.tw",
+            "password": "a"
+        })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+    });
+
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
     // current 後面接?，避免未輸入值時出現error
@@ -104,7 +115,11 @@ function NewActivity() {
         // console.log("活動類型: " + type);
         console.log(activityData);
 
-        axios.post(API_CREATE_ACTIVITY, activityData)
+        axios.post(API_CREATE_ACTIVITY, {
+            headers: {
+                'authorization': token
+            }
+            }, activityData)
           .then(function (response) {
             console.log(response);
             alert('新增成功(*´∀`)~♥');

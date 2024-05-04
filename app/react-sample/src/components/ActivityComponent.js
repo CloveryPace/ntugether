@@ -28,7 +28,7 @@ export default function ActivityComponent({data}) {
         <Grid item xs={12} md={4}>
         <div className="box" style={style}>
           <Stack direction="column">
-            <div onClick={() => navigate('/activitypage')}> 
+            <div onClick={() => navigate('/activitypage/')}> 
             <Typography variant="h5" gutterBottom>{data.activityName}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={data.type || "未指定"}/>
