@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 const { parse } = require('yamljs');
-
+User.sync();
 
 
 /**
