@@ -2,10 +2,7 @@
 import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import TextField from '@mui/material/TextField'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import { ThemeProvider } from '@mui/material/styles';
@@ -17,8 +14,52 @@ import HeaderBar from '../components/HeaderBar';
 import Box from '@mui/material/Box';
 import './Common.css';
 import EditActivityPage from './EditActivityPage'; 
+import {useLocation} from 'react-router-dom';
+import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 function ActivityPage() {
+  const { state } = useLocation();
+  const { id } = state; // Read values passed on state
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    //登入
+    async function runEffect(){
+    await axios.post(API_LOGIN, {
+      "email": "r12725066@ntu.edu.tw",
+      "password": "a"
+    })
+    .then(function (response) {
+        console.log(response.status, response.data);
+        //儲存token
+        const token = response.data.jwtToken;
+        //設定authorization
+        const config = {
+            headers: { 
+              authorization: `Bearer ${token}`
+            }
+        };
+        //取得活動資訊
+        axios.get(API_GET_ACTIVITY_DETAIL + id, config)
+          .then(function (res) {
+            console.log(res.data);
+            setData(res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            alert("error");
+          });
+
+      })
+      .catch(function (error) {
+          console.log(error);
+      });
+      }
+      runEffect();
+  }, [id]);
+
   const [editingShow, setEditingShow] = useState(false);
   const [attend, setAttend] = useState(false); // 參加活動
   const handleAttend = () => {
@@ -61,11 +102,12 @@ function ActivityPage() {
     >
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Stack direction="row" spacing={3}>
-            <Typography variant="h4">活動名稱</Typography>
-            <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-            <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label="一次性"/>
-            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
-            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
+            <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
+            <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+            <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={data.is_one_time? "一次性活動": "長期性活動"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_review? "需審核": "不需審核"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={"ID: " + id}/>
           </Stack>
           <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
         </Stack>
@@ -99,35 +141,35 @@ function ActivityPage() {
           sx={{
               marginBottom: '10px'
         }}>
-          <Typography variant="h4">活動名稱</Typography>
+          <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
           <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
         </Stack>
         <Stack direction="row" spacing={3}>
-          <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-          <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label="一次性"/>
-          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
-          <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
+          <Chip avatar={<Avatar>M</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+          <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={data.is_one_time? "一次性活動": "長期性活動"}/>
+          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_review? "需審核": "不需審核"}/>
+          <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
         </Stack>
       </Box>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動簡介 </Typography></div>
-        <div><Typography variant="h6"> xxxxx </Typography></div>
+        <div><Typography variant="h6"> {data.introduction? data.introduction: "尚無活動簡介"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動時間 </Typography></div>
-        <div><Typography variant="h6"> 2024/01/01 20:00 </Typography></div>
+        <div><Typography variant="h6"> {data.date? data.date: "尚無活動時間資料"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動地點 </Typography></div>
-        <div><Typography variant="h6"> xxxxx </Typography></div>
+        <div><Typography variant="h6"> {data.position? data.position: "尚無活動地點資料"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 人數上限 </Typography></div>
-        <div><Typography variant="h6"> 5 </Typography></div>
+        <div><Typography variant="h6"> {data.max_participants? data.max_participants: "尚無人數上限"} </Typography></div>
       </div>
 
       <div style={container}>

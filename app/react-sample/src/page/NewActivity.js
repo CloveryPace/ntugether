@@ -50,17 +50,6 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 
 function NewActivity() {
     const navigate = useNavigate();
-     
-    const token = axios.post(API_LOGIN, {
-            'email': "r12725066@ntu.edu.tw",
-            "password": "a"
-        })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-    });
 
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
@@ -70,65 +59,80 @@ function NewActivity() {
     const ApplyQues = useRef(); // 審核題目
     const ActivityTime = useRef(); // 活動時間
     const ActivityPos = useRef(); // 活動地點
-    const AttendNum = useRef(); // 參加人數限制
+    const max_participants = useRef(); // 參加人數限制
     const SearchName = useRef(); // 輸入想邀請的人
     const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
-    const [review, setReview] = useState(false); // 需審核: true, 不需審核：false
+    const [need_review, setReview] = useState(false); // 需審核: true, 不需審核：false
     const [type, setType] = useState('運動'); // 活動類型
-    const [actDate, setActDate] = useState(dayjs('2024-04-17')); 
+    const [actDate, setActDate] = useState(dayjs('2024-05-30')); 
 
     const [activityData, setActivityData] = useState({
-        activityName: '',
-        activityIntro: '',
-        applyQues: '',
-        activityTime: '',
-        activityPos: '',
-        AttendNum: '',
+        name: '',
+        introduction: '',
+        date: '',
         inviteName: '',
         oneTime: '',
         type: '',
-        review: ''
-
+        need_review: '',
+        country: "Taiwan",
+        max_participants: '',
+        location: '',
+        application_problem: ''
       })
+
     const handleChange = e => {
         const { name, value } = e.target;
-        // console.log("handleChange")
-
-        // console.log(name);
-        // console.log(value);
-
-        // console.log(activityData)
-
         setActivityData(prevState => ({
             ...prevState,
             [name]: value
         }));
-
         console.log(activityData)
     };  
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // console.log(ActivityTime.current?.value);
-        // console.log("是否為一次性活動" + oneTime);
-        // console.log("是否需要審核" + review);
-        // console.log("活動類型: " + type);
         console.log(activityData);
+        
+        //登入
+        axios.post(API_LOGIN, {
+            "email": "r12725066@ntu.edu.tw",
+            "password": "a"
+        })
+        .then(function (response) {
+            console.log(response.status, response.data);
+            //儲存token
+            const token = response.data.jwtToken;
 
-        axios.post(API_CREATE_ACTIVITY, {
-            headers: {
-                'authorization': token
-            }
-            }, activityData)
-          .then(function (response) {
-            console.log(response);
-            alert('新增成功(*´∀`)~♥');
-            navigate('/activitylist');
-          })
-          .catch(function (error) {
+            //設定authorization
+
+            const bodyParameters = {
+                key: "value"
+            };
+
+            const config = {
+                headers: { 
+                    authorization: `Bearer ${token}`,
+                }
+            };
+
+            //建立活動
+            axios.post(API_CREATE_ACTIVITY, bodyParameters, config)
+                .then(function (res) {
+                    console.log(res);
+                    alert('成功(*´∀`)~♥');
+                    navigate('/activitylist');
+                })
+                .catch(function (err) {
+                    alert("新增失敗");
+                    console.log(err);
+            });
+        })
+        .catch(function (error) {
             console.log(error);
-          });
+        }); 
+
     };
+
 
     const handleOneTimeChange = (event) => {
         setOneTime(event.target.value);
@@ -152,7 +156,7 @@ function NewActivity() {
         const event = { 
             "target": {
                 "value": finaldate,
-                "name": "activityTime"
+                "name": "date"
             }
         };
         handleChange(event);
@@ -174,7 +178,7 @@ function NewActivity() {
                         variant="outlined"
                         value={activityData.name}
                         onChange={handleChange}
-                        name="activityName"
+                        name="name"
                         autoFocus
                         fullWidth
                         label="輸入活動名稱"
@@ -182,9 +186,9 @@ function NewActivity() {
                     <Typography variant="h6"> 活動簡介 </Typography>
                     <TextField
                         variant="outlined"
-                        value={activityData.activityIntro}
+                        value={activityData.introduction}
                         onChange={handleChange}
-                        name="activityIntro"
+                        name="introduction"
                         autoFocus
                         fullWidth
                         label="輸入活動簡介"
@@ -205,7 +209,7 @@ function NewActivity() {
                         ))}
                     </RadioGroup>
                     <Typography variant="h6"> 加入審核 </Typography>
-                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
+                    <RadioGroup aria-label="need_review" name="need_review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
                             <ItemReview> 
@@ -221,9 +225,9 @@ function NewActivity() {
                     </RadioGroup>
                     <Typography variant="h6"> </Typography>
                     <TextField
-                        value={activityData.applyQues}
+                        value={activityData.application_problem}
                         onChange={handleChange}
-                        name="applyQues"
+                        name="application_problem"
                         fullWidth
                         variant="outlined"
                         autoFocus
@@ -252,19 +256,19 @@ function NewActivity() {
                         <DatePicker
                         value={actDate}
                         onChange={handleChangeDate}
-                        name="activityTime"
+                        name="date"
                         required
                         fullWidth
                         label="輸入活動時間"
-                        id="activityTime"
+                        id="date"
                         />
                     </LocalizationProvider>
                     <Typography variant="h6"> 活動地點 </Typography>
                     <TextField
                         fullWidth
-                        value={activityData.activityPos}
+                        value={activityData.location}
                         onChange={handleChange}
-                        name="activityPos"
+                        name="location"
                         variant="outlined"
                         autoFocus
                         label="輸入活動地點"
@@ -272,7 +276,9 @@ function NewActivity() {
                     <Typography variant="h6"> 人數上限 </Typography>
                     <TextField
                         fullWidth
-                        inputRef={AttendNum}
+                        value={activityData.max_participants}
+                        onChange={handleChange}
+                        name="max_participants"
                         variant="outlined"
                         autoFocus
                         label="輸入人數上限"
