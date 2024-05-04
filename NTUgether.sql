@@ -32,6 +32,7 @@ CREATE TABLE Activities (
     introduction TEXT NOT NULL,
     date DATE NOT NULL,
     -- type JSON, -- JSON array to store list of types
+    country VARCHAR(255),
     location VARCHAR(255),
     max_participants INT,
     need_reviewed BOOLEAN,
@@ -169,10 +170,10 @@ INSERT INTO Users (name, email, password, birthday, gender) VALUES
 -- DELETE FROM Users WHERE user_id = 4;
 
 -- Activities Table
-INSERT INTO Activities (name, introduction, date, location, max_participants, need_reviewed, is_one_time, created_user_id, application_problem, check_by_organizer) VALUES
-('Hiking Trip', 'Join us for a day of hiking in the nearby mountains.', '2024-05-01', 'Mountain Trail', 20, 0, 1, 1, 'None', 1),
-('Photography Workshop', 'Learn photography basics and improve your skills.', '2024-04-15', 'Community Center', 15, 1, 0, 2, 'None', 0),
-('Cooking Class', 'A hands-on cooking class to learn new recipes.', '2024-04-20', 'Culinary School', 10, 1, 0, 3, 'None', 0);
+INSERT INTO Activities (name, introduction, date, country, location, max_participants, need_reviewed, is_one_time, created_user_id, application_problem, check_by_organizer) VALUES
+('Hiking Trip', 'Join us for a day of hiking in the nearby mountains.', '2024-05-01', 'Taiwan', 'Mountain Trail', 20, 0, 1, 1, 'None', 1),
+('Photography Workshop', 'Learn photography basics and improve your skills.', '2024-04-15', 'Taiwan', 'Community Center', 15, 1, 0, 2, 'None', 0),
+-- ('Cooking Class', 'A hands-on cooking class to learn new recipes.', '2024-04-20', 'Taiwan', 'Culinary School', 10, 1, 0, 3, 'None', 0);
 
 -- Long-term Activity Table
 INSERT INTO LongTermActivities (activity_id, date, last_activity_id) VALUES
@@ -188,9 +189,9 @@ INSERT INTO ActivityParticipantStatus (activity_id, long_term_activity_id, parti
 
 -- Applications Table
 INSERT INTO Applications (activity_id, application_response, applicant_id, is_approved) VALUES
-(2, 'I`m excited to learn more about photography!', 1, 1),
-(3, 'Looking forward to cooking some delicious dishes!', 3, 1),
-(1, 'Can`t wait to explore the mountains!', 2, 0);
+(9, 'I`m excited to learn more about photography!', 2, 0),
+(9, 'Looking forward to cooking some delicious dishes!', 2, 0),
+(10, 'Can`t wait to explore the mountains!', 1, 0);
 
 -- Invitations Table
 INSERT INTO Invitations (inviter_id, invitee_id, activity_id) VALUES

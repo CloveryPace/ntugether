@@ -1,6 +1,7 @@
 import requests
 import json
 
+# host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
 
 
@@ -24,19 +25,34 @@ def signup():
 
 
 def signin():
-    res = requests.get(
-        url=f'{host}/user/signin/?email=b09611028@ntu.edu.tw&password=pwd',
+    payload = json.dumps({
+        "email": "daniel.bb0321@gmail.com",
+        # "email": "r12725066@ntu.edu.tw",
+        "password": "pwd"
+        # "password": "a"
+    })
+    res = requests.post(
+        url=f'{host}/user/signin',
         headers={
             "content-type": "application/json",
-        },)
+        },
+        data=payload,
+    )
 
     print(res.text)
     print(res.status_code)
 
-    return json.loads(res.text)["jwtToken"]
+    try:
+        return json.loads(res.text)["jwtToken"]
+    except Exception as e:
+        print("cannot sign in")
 
 
+# signup()
 token = signin()
+
+
+""" API """
 
 
 def create_activity():
@@ -80,7 +96,7 @@ def get_acitvity_list():
 
 def get_acitvity_detail():
     res = requests.get(
-        url=f"{host}/activity/2",
+        url=f"{host}/activity/9",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -102,7 +118,7 @@ def update_activity():
         }
     )
     res = requests.patch(
-        url=f"{host}/activity/2",
+        url=f"{host}/activity/9",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -115,7 +131,7 @@ def update_activity():
 
 def delete_activity():
     res = requests.patch(
-        url=f"{host}/activity/3",
+        url=f"{host}/activity/12",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -132,7 +148,7 @@ def apply():
         }
     )
     res = requests.post(
-        url=f"{host}/activity/3/apply",
+        url=f"{host}/activity/13/apply",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -147,8 +163,9 @@ def apply():
 def approve():
 
     res = requests.patch(
-        url=f"{host}/application/1/approve",
-        headers={"content-type": "application/json", },
+        url=f"{host}/application/7/approve",
+        headers={"content-type": "application/json",
+                 "authorization": f"bearer {token}"},
         data=json.dumps({})
     )
 
@@ -163,11 +180,25 @@ def remove_user():
         }
     )
     res = requests.patch(
-        url=f"{host}/activity/2/remove-user",
+        url=f"{host}/activity/10/remove-user",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
-        },        data=payload,
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_activity_applications():
+    res = requests.get(
+        url=f"{host}/activity/13/application",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
     )
 
     print(res.text)
@@ -259,13 +290,13 @@ def update_plan():
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
         "tags": ["Exam"],
-        "invitees": [7],
+        "invitees": [3],
         # "removed_participants": [],
         "need_review": False,
     })
 
     res = requests.patch(
-        url=f"{host}/plan/31",
+        url=f"{host}/plan/1",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -279,7 +310,7 @@ def update_plan():
 
 def delete_plan():
     res = requests.delete(
-        url=f"{host}/plan/30",
+        url=f"{host}/plan/2",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -362,7 +393,7 @@ def get_plan_application():
     print(res.status_code)
 
 
-def get_all_application():
+def get_plan_applications():
     res = requests.get(
         url=f"{host}/plan/29/applications",
         headers={
@@ -433,6 +464,7 @@ if __name__ == '__main__':
     # update_activity()
     # delete_activity()
     # apply()
+    # get_activity_applications()
     # approve()
     # make_discussion()
     # get_disccussion()
@@ -447,7 +479,9 @@ if __name__ == '__main__':
     # apply_plan()
     # approve_plan()
     # get_plan_application()
-    # get_all_application()
+    # get_plan_applications()
     # make_plan_discussion()
     # get_plan_discussion()
-    respond_to_invitation()
+    # respond_to_invitation()
+
+    pass

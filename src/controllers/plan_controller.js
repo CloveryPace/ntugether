@@ -535,16 +535,21 @@ exports.approve = async (req, res) => {
         // validation
         if (!application) return res.status(400).send("application not found");
         if (application.is_approved == true) return res.status(400).send("application has been approved");
+
+        // get plan
         const plan_id = application.plan_id;
         const plan = await planModel.Plan.findByPk(plan_id);
 
         if (!plan) return res.status(400).send("plan not found");
         if (plan.created_user_id != user_id) return res.status(403).send("authorization failed");
 
+        // get applicant
+        const applicant_id = application.applicant_id;
+
         participantsExist = await planModel.PlanParticipantsStatus.findOne({
             where: {
                 joined_plan_id: plan_id,
-                participant_id: user_id
+                participant_id: applicant_id,
             }
         });
 
@@ -557,7 +562,7 @@ exports.approve = async (req, res) => {
         await planModel.PlanParticipantsStatus.create(
             {
                 joined_plan_id: plan_id,
-                participant_id: user_id
+                participant_id: applicant_id,
             }
         );
         res.status(200).send("approved!");

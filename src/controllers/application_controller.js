@@ -68,16 +68,21 @@ exports.approve = async (req, res) => {
         // validation
         if (!application) return res.status(400).send("application not found");
         if (application.is_approved == true) return res.status(400).send("application has been approved");
+
+        // get activity
         const activity_id = application.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
 
         if (!activity) return res.status(400).send("activity not found");
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
+        // get applicant
+        const applicant_id = application.applicant_id;
+
         participantsExist = activityModel.ActivityParticipantStatus.findOne({
             where: {
                 joined_activities: activity_id,
-                participants: user_id
+                participants: applicant_id,
             }
         });
 
@@ -94,7 +99,7 @@ exports.approve = async (req, res) => {
         activityModel.ActivityParticipantStatus.create(
             {
                 joined_activities: activity_id,
-                participants: user_id
+                participants: applicant_id
             }
         );
         res.status(200).send("approved!");
