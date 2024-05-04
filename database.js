@@ -1,8 +1,10 @@
 // database.js
 const mysql = require('mysql');
 const { Sequelize } = require('sequelize');
+require('dotenv').config();
 
-const sequelize = new Sequelize('ntugetherdb', 'root', '', {
+
+const sequelize = new Sequelize('ntugetherdb', process.env.DatabaseUserName, process.env.DatabasePassword, {
     host: 'localhost',
     dialect: 'mysql'  // this tells Sequelize which database to use
     // logging: console.log,  // Optional: use console.log for seeing the generated SQL queries

@@ -1,6 +1,4 @@
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../../swagger-output.json');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
@@ -15,8 +13,8 @@ require('dotenv').config();
 var router = express.Router();
 router.use(bodyParser.json());
 
-// const connection = require('../../database');
 const User = require('../model/userModel');
+// User.sync();
 const authMiddleware = require('../middlewares/authentication');
 
 // GET routes
@@ -522,5 +520,6 @@ async function deleteMember(req, res) {
     return res.status(500).send('Internal Server Error');
   }
 }
+
 
 module.exports = router;
