@@ -1,11 +1,12 @@
 const swaggerAutogen = require('swagger-autogen')();
+require('dotenv').config();
 
 const doc = {
 	info: {
 		title: 'NTUgether API document',
 		description: 'Description',
 	},
-	host: 'localhost:4000',
+	host: $`{process.env.SWAGGER_HOST}:4000`,
 };
 
 const outputFile = './swagger-output.json';
