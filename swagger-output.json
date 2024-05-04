@@ -783,21 +783,6 @@
             "name": "email",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "query",
-            "in": "query",
-            "description": "用戶信箱，請確定已註冊",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "example": "用戶信箱"
-                }
-              }
-            }
           }
         ],
         "responses": {
@@ -848,21 +833,6 @@
             "name": "email",
             "in": "query",
             "type": "string"
-          },
-          {
-            "name": "query",
-            "in": "query",
-            "description": "輸入待註冊信箱後發送驗證碼",
-            "required": true,
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string",
-                  "example": "用戶信箱"
-                }
-              }
-            }
           }
         ],
         "responses": {

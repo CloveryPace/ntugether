@@ -56,15 +56,7 @@ router.get(
   // #swagger.tags = ['User']
   // #swagger.description = '忘記密碼，輸入信箱後發送驗證碼'
   /* 
-  #swagger.parameters['query'] = {
-      in: 'query',
-      description: '用戶信箱，請確定已註冊',
-      required: true,
-      schema: 
-      {
-          "email": "用戶信箱"
-      }
-  } */
+  
   /* #swagger.responses[200] = { 
       description: "忘記密碼驗證信發送成功",
       schema: {
@@ -88,15 +80,7 @@ router.get(
   // swagger.description = "信箱註冊驗證碼發送"
   // #swagger.tags = ['User']
   /* 
-  #swagger.parameters['query'] = {
-      in: 'query',
-      description: '輸入待註冊信箱後發送驗證碼',
-      required: true,
-      schema: 
-      {
-          "email": "用戶信箱"
-      }
-  } */
+  
   /* #swagger.responses[200] = { 
       description: "註冊驗證信發送成功",
       schema: {
