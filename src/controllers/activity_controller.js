@@ -26,7 +26,6 @@ async function returnActivity(activity_id) {
         ],
     });
 
-    console.log("returning activity");
 
     return activity;
 };
@@ -197,9 +196,7 @@ exports.getActivityDetail = async (req, res) => {
         const user_id = req.user_id;
 
         const activity_id = req.params.activity_id;
-        console.log("here");
         var activity = await activityModel.Activities.findByPk(activity_id);
-        console.log("get ac");
         if (activity == null) return res.status(400).send("no activity");
         activity = await returnActivity(activity_id);
         res.status(200).json(activity);
