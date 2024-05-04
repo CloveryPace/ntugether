@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "ntugether.zapto.org:4000",
+  "host": "localhost:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -524,6 +524,9 @@
     },
     "/user/": {
       "get": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -535,45 +538,22 @@
             "name": "email",
             "in": "query",
             "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
           },
           {
-            "name": "body",
-            "in": "body",
+            "name": "query",
+            "in": "query",
+            "description": "取得會員資料",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶名稱"
                 },
                 "email": {
-                  "example": "any"
-                },
-                "phoneNum": {
-                  "example": "any"
-                },
-                "gender": {
-                  "example": "any"
-                },
-                "aboutMe": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶信箱"
                 }
               }
             }
@@ -581,20 +561,147 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
+            "description": "用戶詳細資料",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "members": {
+                    "type": "string",
+                    "example": "{ ... }"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "用戶不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "更新會員資料",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "用戶名稱"
+                },
+                "phoneNum": {
+                  "type": "string",
+                  "example": "電話號碼"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "性別"
+                },
+                "aboutMe": {
+                  "type": "string",
+                  "example": "個人簡介"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "會員資料更新成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Member updated successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "使用者身分驗證錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "authorization fail"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "請至少更新一行",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Please update at least one row."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              {
+                "type": "http",
+                "scheme": "bearer"
+              }
+            ]
+          }
+        ]
+      },
       "delete": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -605,93 +712,234 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "會員刪除成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Member deleted successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "使用者身分驗證錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "authorization fail"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "會員不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Member not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": [
+              {
+                "type": "http",
+                "scheme": "bearer"
+              }
+            ]
+          }
+        ]
       }
     },
     "/user/forgetPassword": {
       "get": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "忘記密碼，輸入信箱後發送驗證碼",
         "parameters": [
           {
             "name": "email",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "用戶信箱，請確定已註冊",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "用戶信箱"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "忘記密碼驗證信發送成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "You have requested to reset your password. Please verify within 10 minute."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "用戶不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       }
     },
     "/user/emailSend": {
       "get": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "email",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "輸入待註冊信箱後發送驗證碼",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "用戶信箱"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "註冊驗證信發送成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "You have requested to reset your password. Please verify within 10 minute."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "409": {
-            "description": "Conflict"
+            "description": "用戶已存在，請使用其他信箱",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User already exists."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       }
     },
     "/user/signup": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Sign up 內容",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "name": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶名稱"
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶信箱"
                 },
                 "birthday": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "2000-01-01"
                 },
                 "gender": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "male"
                 },
                 "password": {
+                  "type": "string",
                   "example": "any"
                 },
                 "code": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "驗證碼"
                 }
               }
             }
@@ -699,35 +947,70 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "建立成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Member created successfully."
+                },
+                "token": {
+                  "type": "string",
+                  "example": "JWT_token"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "Invalid or expired verification code."
           },
           "409": {
-            "description": "Conflict"
+            "description": "Email Conflict",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Email already exists"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       }
     },
     "/user/signin": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "Sign in 內容",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶信箱"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶密碼"
                 }
               }
             }
@@ -737,36 +1020,87 @@
           "200": {
             "description": "OK"
           },
+          "201": {
+            "description": "登入成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Sign in successfully."
+                },
+                "token": {
+                  "type": "string",
+                  "example": "JWT_token"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "401": {
-            "description": "Unauthorized"
+            "description": "密碼錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid credentials"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "用戶不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       }
     },
     "/user/resetPassword": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
             "name": "body",
             "in": "body",
+            "description": "收到驗證信後，重設密碼",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶信箱"
                 },
                 "code": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "驗證碼"
                 },
                 "newPassword": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "用戶新密碼"
                 }
               }
             }
@@ -774,23 +1108,62 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "密碼更改成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Password reset successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "驗證碼錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Invalid or expired verification code"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "用戶不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "網路或其他不明原因錯誤"
           }
         }
       }
     },
     "/user/auth/google": {
       "get": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "Oauth註冊API，bug待修改",
         "responses": {
           "default": {
             "description": ""
@@ -800,7 +1173,10 @@
     },
     "/user/oauth2callback": {
       "get": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "Oauth註冊API，bug待修改",
         "responses": {
           "default": {
             "description": ""
@@ -810,7 +1186,10 @@
     },
     "/user/auth/failure": {
       "get": {
-        "description": "",
+        "tags": [
+          "User"
+        ],
+        "description": "Oauth註冊失敗，bug待修改",
         "responses": {
           "200": {
             "description": "OK"

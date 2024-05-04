@@ -1,38 +1,329 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const mysql = require('mysql');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
-require('dotenv').config();
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 const User = require('../model/userModel');
+const userController = require('../controllers/user_controller');
 // User.sync();
 const authMiddleware = require('../middlewares/authentication');
 
+
+
 // GET routes
-router.get("/", getMember);
-router.get("/forgetPassword", forgetPassword);
-router.get("/emailSend", emailSend)
+router.get(
+  "/",
+  // swagger.description = "取得特定會員資料"
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['query'] = {
+      in: 'query',
+      description: '取得會員資料',
+      required: true,
+      schema: 
+      {
+          "name": "用戶名稱",
+          "email": "用戶信箱"
+      }
+  } */
+  
+  /* #swagger.responses[200] = { 
+      description: '用戶詳細資料',
+      schema: 
+      [{
+        "members": "{ ... }"
+      }]
+    } */ 
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+  userController.getMember
+);
+
+router.get(
+  "/forgetPassword", 
+  // #swagger.tags = ['User']
+  // #swagger.description = '忘記密碼，輸入信箱後發送驗證碼'
+  /* 
+  #swagger.parameters['query'] = {
+      in: 'query',
+      description: '用戶信箱，請確定已註冊',
+      required: true,
+      schema: 
+      {
+          "email": "用戶信箱"
+      }
+  } */
+  /* #swagger.responses[200] = { 
+      description: "忘記密碼驗證信發送成功",
+      schema: {
+            "message": "You have requested to reset your password. Please verify within 10 minute."
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.forgetPassword);
+
+router.get(
+  "/emailSend", 
+  // swagger.description = "信箱註冊驗證碼發送"
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['query'] = {
+      in: 'query',
+      description: '輸入待註冊信箱後發送驗證碼',
+      required: true,
+      schema: 
+      {
+          "email": "用戶信箱"
+      }
+  } */
+  /* #swagger.responses[200] = { 
+      description: "註冊驗證信發送成功",
+      schema: {
+            "message": "You have requested to reset your password. Please verify within 10 minute."
+          }
+      } */
+  /* #swagger.responses[409] = { 
+      description: "用戶已存在，請使用其他信箱",
+      schema: {
+            "error": "User already exists.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.emailSend)
 
 // POST routes
-router.post("/signup", signUp);
-router.post("/signin", signIn);
-router.post("/resetPassword", resetPassword);
+router.post(
+  "/signup",
+  // swagger.description = "註冊，請先至/user/emailSend取得驗證碼"
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Sign up 內容',
+      required: true,
+      schema: 
+      {
+        "name": "用戶名稱",
+        "email": "用戶信箱",
+        "birthday": "2000-01-01",
+        "gender": "male",
+        "password": "any",
+        "code": "驗證碼"
+      }
+  } */
+  /* #swagger.responses[201] = { 
+      description: "建立成功",
+      schema: {
+            "message": "Member created successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "Invalid or expired verification code."
+      } */
+  /* #swagger.responses[409] = {
+      description: "Email Conflict",
+      schema: {
+            "error": "Email already exists"
+        }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.signUp);
+
+router.post(
+  "/signin",
+  // swagger.description = "登入，請先確定已註冊成功" 
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Sign in 內容',
+      required: true,
+      schema: 
+      {
+        "email": "用戶信箱",
+        "password": "用戶密碼",
+      }
+  } */
+  /* #swagger.responses[201] = { 
+      description: "登入成功",
+      schema: {
+            "message": "Sign in successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "密碼錯誤",
+      schema: {
+            "error": "Invalid credentials",
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.signIn);
+
+
+router.post(
+  "/resetPassword",
+  // swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"
+  // #swagger.tags = ['User']
+  /* #swagger.parameters['body'] = {
+    in: 'body',
+    description: '收到驗證信後，重設密碼',
+    required: true,
+    schema: 
+    {
+      "email": "用戶信箱",
+      "code": "驗證碼",
+      "newPassword": "用戶新密碼"
+    }
+} */
+/* #swagger.responses[200] = { 
+    description: "密碼更改成功",
+    schema: {
+          "message": "Password reset successfully"
+        }
+    } */
+/* #swagger.responses[401] = { 
+    description: "驗證碼錯誤",
+    schema: {
+          "error": "Invalid or expired verification code",
+        }
+    } */
+/* #swagger.responses[404] = { 
+    description: "用戶不存在",
+    schema: {
+          "error": "User not found.",
+        }
+    } */
+/* #swagger.responses[500] = { 
+    description: "網路或其他不明原因錯誤"
+    } */
+  
+
+  userController.resetPassword);
 
 // PUT routes
-router.put("/", authMiddleware.authentication, updateMember);
-// router.put("/emailVerify", emailVerify);
+router.put(
+  "/", authMiddleware.authentication, 
+  // swagger.description = "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.tags = ['User']
+  /* #swagger.security = [{
+            "bearerAuth": [
+              {
+                type: 'http',
+                scheme: 'bearer'
+              }
+            ]
+    }] */
+  /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '更新會員資料',
+      required: true,
+      schema: 
+      {
+        "name": "用戶名稱",
+        "phoneNum": "電話號碼",
+        "gender": "性別",
+        "aboutMe": "個人簡介"
+      }
+  } */
+  /* #swagger.responses[200] = { 
+      description: "會員資料更新成功",
+      schema: {
+            "message": "Member updated successfully",
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "使用者身分驗證錯誤",
+      schema: {
+            "message": "authorization fail"
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "請至少更新一行",
+      schema: {
+            "message": "Please update at least one row.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.updateMember);
 
 // DELETE routes
-router.delete("/", authMiddleware.authentication, deleteMember);
+router.delete(
+  "/", authMiddleware.authentication, 
+  // swagger.description = "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.tags = ['User']
+  /* #swagger.security = [{
+            "bearerAuth": [
+              {
+                type: 'http',
+                scheme: 'bearer'
+              }
+            ]
+    }] */
+
+  /* #swagger.responses[200] = { 
+      description: "會員刪除成功",
+      schema: {
+            "message": "Member deleted successfully",
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "使用者身分驗證錯誤",
+      schema: {
+            "message": "authorization fail",
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "會員不存在",
+      schema: {
+             "message": "Member not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.deleteMember);
 
 
 // Configure the Google strategy for use 
@@ -81,445 +372,24 @@ router.use(passport.session());
 
 // Define routes
 router.get('/auth/google',
+// #swagger.description = 'Oauth註冊API，bug待修改'
+// #swagger.tags = ['User']
   passport.authenticate('google', { scope: ['profile', 'email'] }));
 
-router.get('/oauth2callback',
+router.get(
+  '/oauth2callback',
+// #swagger.description = 'Oauth註冊API，bug待修改'
+// #swagger.tags = ['User']
+
   passport.authenticate('google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
     res.redirect('/');
   });
 
 router.get('/auth/failure', (req, res) => {
+  // #swagger.description = 'Oauth註冊失敗，bug待修改'
+  // #swagger.tags = ['User']
   res.send('Failed to authenticate.');
 });
-
-const SECRET_KEY = 'sdm_is_so_fun';
-
-function generateVerificationCode(email) {
-  const timestamp = Date.now();
-  const data = email;
-  const hash = crypto.createHmac('sha256', SECRET_KEY)
-    .update(data)
-    .digest('hex');
-  const code = hash.substring(0, 6); // Take first 6 characters for simplicity
-  return { code, timestamp };
-}
-
-function isVerificationCodeValid(timestamp) {
-  const currentTime = Date.now();
-  const codeTimestamp = parseInt(timestamp, 10); // Parse the timestamp
-  // Check if the current time is within 10 minutes (600,000 milliseconds) of the code's timestamp
-  return (currentTime - codeTimestamp) <= 600000;
-}
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.Email,
-    pass: process.env.Password
-  }
-});
-
-// async function signUp(req, res) {
-//   try {
-//     const { name, email, birthday, gender, password } = req.body;
-//     console.log("email", email);
-//     console.log("name", name);
-//     console.log("birthday", birthday);
-//     console.log("gender", gender);
-//     console.log("password", password);
-
-//     // Hash password
-//     const hashedPassword = await bcrypt.hash(password, 12);
-
-//     // Create user using Sequelize
-//     const newUser = await User.create({
-//       name: name,
-//       email: email,
-//       birthday: birthday,
-//       gender, gender,
-//       password: hashedPassword
-//     });
-
-//     console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
-
-//     // Create json web token
-//     const token = jwt.sign(
-//       { userId: newUser.id }, // Use the newly created user's id
-//       process.env.JWT_SECRET,
-//       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
-//     );
-
-//     const code = generateVerificationCode(email);
-//     // Example email sending code with nodemailer
-//     const transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       host: 'smtp.gmail.com',
-//       port: 465,
-//       secure: true,
-//       auth: {
-//         user: process.env.Email,
-//         pass: process.env.Password
-//       }
-//     });
-
-//     const mailOptions = {
-//       from: process.env.Email,
-//       to: email,
-//       subject: 'NTUgether Email Verification',
-//       text: `Your verification code is: ${code}`
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.log(error);
-//         return res.status(500).send('Error sending email');
-//       } else {
-//         res.send('Verification code sent to your email. Please verify within 10 minutes.');
-//         return res.status(201).json({
-//           message: 'Member created successfully, verification email sent',
-//           token: token, // JWT token
-//         });
-//       }
-//     });
-
-
-//   } catch (error) {
-//     console.log(error);
-//     if (error.name === 'SequelizeUniqueConstraintError') {
-//       return res.status(409).json({ error: "Email already exists" });
-//     }
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// }
-
-async function signUp( req, res){
-  try {
-    const { name, email, birthday, gender, password, code } = req.body;
-    console.log("email", email);
-    console.log("name", name);
-    console.log("birthday", birthday);
-    console.log("gender", gender);
-    console.log("password", password);
-    console.log("code", code);
-
-    const {code: validCode, timestamp} = generateVerificationCode(email);
-    console.log("validCode", validCode);
-    const isValid = isVerificationCodeValid(timestamp);
-
-    // Use email to generate validCode
-    if (code === validCode & isValid) {
-      console.log('Email verified successfully');
-      
-    } else {
-      return res.status(401).send('Invalid or expired verification code');
-    }
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user using Sequelize
-    const newUser = await User.create({
-      name: name,
-      email: email,
-      birthday: birthday,
-      gender, gender,
-      password: hashedPassword
-    });
-
-    console.log(newUser.user_id); // Assuming 'id' is the auto-generated field for user_id
-
-    // Create json web token
-    const token = jwt.sign(
-      { userId: newUser.user_id }, // Use the newly created user's id
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
-    );
-
-    return res.status(201).json({
-      message: 'Member created successfully.',
-      token: token, // JWT token
-    });
-
-  } catch (error) {
-    console.log(error);
-    if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(409).json({ error: "Email already exists" });
-    }
-    return res.status(500).json({ error: "Internal server error" });
-  }
-
-}
-
-async function emailSend ( req, res) {
-  const { email } = req.query;
-  try {
-    const user = await User.findOne({ where: { email: email } });
-
-    if (user) {
-      return res.status(409).send("Email already exists.");
-    } 
-
-    const {code, timestamp} = generateVerificationCode(email);
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.Email,
-        pass: process.env.Password
-      }
-    });
-
-    const mailOptions = {
-      from: process.env.Email,
-      to: email,
-      subject: 'NTUgether Email Verification',
-      text: `Your verification code is: ${code}`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).send('Error sending email');
-      } else {
-        res.send('Verification code sent to your email. Please verify within 10 minutes.');
-      }
-    });
-
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error" });
-  }
-
-}
-
-// async function emailVerify(req, res) {
-//   const { email, code } = req.body;
-
-//   // Re-generate the code based on the current timestamp and compare
-//   const validCode = generateVerificationCode(email);
-//   console.log("validCode", validCode);
-//   console.log("code", code);
-
-//   if (code === validCode) {
-//     try {
-//       // Use Sequelize to update the verified status for the user
-//       const result = await User.update(
-//         { verified: true },
-//         { where: { email: email } }
-//       );
-
-//       if (result[0] > 0) { // result[0] contains the number of affected rows
-//         res.send('Email verified successfully');
-//       } else {
-//         // No rows were updated, which means no user was found with that email
-//         res.status(404).send('No user found with that email');
-//       }
-//     } catch (error) {
-//       console.log(error);
-//       return res.status(500).send('Error updating user verification status');
-//     }
-//   } else {
-//     res.status(401).send('Invalid or expired verification code');
-//   }
-// }
-
-async function signIn(req, res) {
-  try {
-    const { email, password } = req.body; // Extracting email and password from request query
-    console.log("email", email);
-    console.log("password", password);
-
-    // Use Sequelize to find the user by email
-    const user = await User.findOne({
-      where: {
-        email: email,
-      },
-      attributes: ['user_id', 'password'], // Select only the user_id and password fields
-    });
-
-    if (!user) {
-      // If no user found with that email
-      console.log("User does not exist");
-      return res.status(404).json({ error: "User does not exist" });
-    }
-    const { user_id: userId, password: hashedPassword } = user;
-
-    // Compare the provided password with the stored hashed password
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    // Passwords match, create JWT token
-    const token = jwt.sign(
-      { userId: userId },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // Use the same JWT expiry as in signUp
-    );
-    console.log('jwt token', token);
-
-    // Successfully authenticated
-    return res.status(200).json({
-      message: 'Sign in successfully.',
-      jwtToken: token,
-    });
-
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error during authentication" });
-  }
-}
-
-async function forgetPassword(req, res) {
-  try {
-    const { email } = req.query;
-    console.log(email);
-
-    const user = await User.findOne({ where: { email: email } });
-
-    if (!user) {
-      return res.status(404).send("User not found.");
-    }
-
-    const {code, timestamp} = generateVerificationCode(email);
-
-    const mailOptions = {
-      from: process.env.Email,
-      to: email,
-      subject: 'Password Reset Request',
-      text: `You have requested to reset your password. Your verification code is: ${code}. Please verify within 10 minute.`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).send('Error sending email');
-      } else {
-        return res.status(200).json({
-          message: 'You have requested to reset your password. Please verify within 10 minute.',
-        });
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal server error');
-  }
-
-}
-
-async function resetPassword(req, res) {
-  try {
-    const { email, code, newPassword } = req.body;
-
-    const user = await User.findOne({ where: { email: email } });
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-
-    const {code: validCode, timestamp} = generateVerificationCode(email);
-    console.log("validCode", validCode);
-    const isValid = isVerificationCodeValid(timestamp);
-
-    console.log("validCode", validCode);
-    console.log("code", code);
-    if (code === validCode & isValid) {
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
-      const result = await User.update({ password: hashedPassword }, { where: { email: email } });
-
-      if (result[0] > 0) {
-        res.send('Password reset successfully');
-      } else {
-        res.status(404).send('No user found with that email');
-      }
-
-    } else {
-      res.status(401).send('Invalid or expired verification code');
-    }
-
-
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal server error');
-  }
-}
-
-
-async function getMember(req, res) {
-  const { name, email } = req.query;
-  console.log("name", name);
-
-  await User.findOne({
-    where: {
-      name: name,
-      email: email
-    }
-  })
-    .then(results => {
-
-      if (results) {
-        res.json({ members: results });
-
-      } else {
-        res.status(200).send("No member found.");
-      }
-    })
-    .catch(error => {
-      console.error("Error querying the database:", error);
-      res.status(500).send("Internal Server Error");
-    });
-}
-
-async function updateMember(req, res) {
-  const { name, email, phoneNum, gender, aboutMe} = req.body;
-  const user_id = req.user_id;
-  const updateFields = {};
-    if (name) updateFields.name = name;
-    if (email) updateFields.email = email;
-    if (phoneNum) updateFields.phoneNum = phoneNum;
-    if (gender) updateFields.gender = gender;
-    if (aboutMe) updateFields.self_introduction = aboutMe;
-
-  try {
-    // Update the user
-    const [updatedRows] = await User.update(updateFields, { where: { user_id } });
-
-    if (updatedRows > 0) {
-      return res.status(200).send('Member updated successfully');
-    } else {
-      return res.status(404).send('Please update at least one row.');
-    }
-  } catch (error) {
-    console.error('Error updating member:', error);
-    return res.status(500).send('Internal Server Error');
-  }
-}
-
-
-// Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTcxNDYzNTY5MCwiZXhwIjoxNzE0NjM5MjkwfQ.q8p3_dumY9c-bCfu7aoJ7jlJ0uC7zXoWe8jfDE4KR5c
-
-async function deleteMember(req, res) {
-  // const { user_id } = req.body; // Get the id of the member to delete
-  const user_id = req.user_id;
-
-  try {
-    const affectedRows = await User.destroy({ where: { user_id } });
-    if (affectedRows > 0) {
-      return res.status(200).send('Member deleted successfully');
-    } else {
-      return res.status(404).send('Member not found');
-    }
-  } catch (error) {
-    console.log('Error deleting member:', error);
-    return res.status(500).send('Internal Server Error');
-  }
-}
-
 
 module.exports = router;
