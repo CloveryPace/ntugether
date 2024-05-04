@@ -8,13 +8,12 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 
-const sequelize = new Sequelize('ntugetherdb', process.env.DatabaseUserName, process.env.DatabasePassword, {
-    host: 'localhost',
-    dialect: 'mysql'  // this tells Sequelize which database to use
-    // logging: console.log,  // Optional: use console.log for seeing the generated SQL queries
-    // define: {
-    //     freezeTableName: true,  // Optional: this option prevents Sequelize from renaming the tables
-    // }
+const sequelize = new Sequelize(
+    process.env.DB_DATABASE, 
+    process.env.DB_USERNAME,
+    process.env.DB_PASSWORD, {
+    host: process.env.DB_HOST,
+    dialect: 'mysql'
 });
 
 sequelize.authenticate()
