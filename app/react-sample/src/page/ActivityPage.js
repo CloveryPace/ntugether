@@ -11,6 +11,7 @@ import PendingReview from '../components/PendingReview';
 import CommentsBox from '../components/CommentsBox';
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
+import ReviewBox from '../components/ReviewBox';
 import Box from '@mui/material/Box';
 import './Common.css';
 import EditActivityPage from './EditActivityPage'; 
@@ -63,6 +64,40 @@ function ActivityPage() {
   const [editingShow, setEditingShow] = useState(false);
   const [attend, setAttend] = useState(false); // 參加活動
   const handleAttend = () => {
+    if(data.need_review){
+      axios.post(API_LOGIN, {
+        "email": "r12725066@ntu.edu.tw",
+        "password": "a"
+      })
+      .then(function (response) {
+          console.log(response.status, response.data);
+          //儲存token
+          const token = response.data.jwtToken;
+          console.log(token);
+          //設定authorization
+          const bodyParameters = {
+            key: "value",
+          };
+          const config = {bodyParameters,
+              headers: { "authorization": `Bearer ${token}`}
+          };
+  
+          //送加入申請
+          axios.post(API_GET_ACTIVITY_DETAIL + id + 'apply', config)
+            .then(function (res) {
+                console.log(res);
+                alert('已刪除活動');
+            })
+            .catch(function (err) {
+                alert("刪除失敗");
+                console.log(err);
+          });
+      })
+      .catch(function (error) {
+        // 登入中間出錯
+        console.log(error);
+      });
+    }
     setAttend(true);
     alert("參加成功");
   };
@@ -176,23 +211,23 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 加入審核 </Typography></div>
-        <div><PendingReview/></div>
+        <div><PendingReview id={id}/></div>
       </div>
       
       <br/>
       <br/>
 
-      <CommentsBox/>
+      <CommentsBox id={id}/>
 
       <br/>
       <br/>
       
       <Grid container justifyContent="center">
         <Grid item>
-      {attend?
-      <Button variant="contained" color="warning" onClick={handleQuit}> 退出活動 </Button>:
-      <Button variant="contained" color="primary" onClick={handleAttend}> 參加活動 </Button> 
-      } 
+        {attend?
+          <Button variant="contained" color="warning" onClick={handleQuit}> 退出活動 </Button>:
+          <ReviewBox id={id} question={data.application_problem? data.application_problem: "不需審核"} need_review={data.need_review}/>
+        }
       </Grid>
       </Grid>
 

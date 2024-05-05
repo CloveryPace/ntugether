@@ -121,7 +121,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
             };
 
             //更新活動
-            axios.patch(API_GET_ACTIVITY_DETAIL + id,               { 
+            axios.patch(API_GET_ACTIVITY_DETAIL + id, { 
               "id": id,         
               "name": newName,
               "introduction": newIntro,

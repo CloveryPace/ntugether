@@ -1,11 +1,10 @@
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Grid } from '@mui/material';
 import TextField from "@mui/material/TextField";
 import { useRef } from "react";
 
-export default function ReviewBox({data}) {
+export default function ReviewBox({id, question, need_review}) {
     const Answer = useRef();
     const handleSubmit = e => {
         console.log(Answer.current?.value);
@@ -17,7 +16,8 @@ export default function ReviewBox({data}) {
     };
 
     return (
-        <Grid item xs={12} md={4}>
+      <>
+      {need_review?
         <div className="box" style={style}>
           <Stack direction="column" spacing={2}>
             <Typography variant="h5" gutterBottom>立即加入</Typography>
@@ -31,6 +31,9 @@ export default function ReviewBox({data}) {
               <Button variant="contained" color="primary" onClick={handleSubmit}> 送出加入請求 </Button> 
           </Stack>
         </div>
-        </Grid>
+      :
+        <Button variant="contained" color="primary"> 參加活動 </Button>
+      }
+      </>
     );
 }
