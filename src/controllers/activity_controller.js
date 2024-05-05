@@ -268,9 +268,10 @@ exports.deleteActivity = async (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
+        console.log(activity_id);
 
         // Find the activity by ID
-        var activity = await activity_id.Activities.findByPk(activity_id);
+        var activity = await activityModel.Activities.findByPk(activity_id);
 
         // If activity not found, return 404 error
         if (!activity) {
