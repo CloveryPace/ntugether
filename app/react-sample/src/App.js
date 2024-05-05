@@ -19,6 +19,10 @@ import User from './page/User';
 
 import PlanNew from './page/PlanNew';
 import PlanPage from './page/PlanPage';
+import FilterBar from './components/FilterBar';
+import ProgressEdit from './page/ProgressEdit';
+import PlanList from './page/PlanList';
+import PlanManage from './page/PlanManage';
 
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {

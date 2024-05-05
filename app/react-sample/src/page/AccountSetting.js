@@ -45,9 +45,6 @@ const VisuallyHiddenInput = styled('input')({
   });
 
 function AccountSetting() {
-  const style = { 
-    padding: "0 20rem 10rem 20rem",
-  };
   const style2 = { 
     padding: "1rem 0 0 0" 
   };
@@ -85,7 +82,7 @@ function AccountSetting() {
     <ThemeProvider theme={theme}>
     <HeaderBar />
     <UserPageNav selectedTab={4}/> 
-    <div style={style}>
+    <div className='Main'>
         <CssBaseline />
 
     <Grid container spacing={2}>
@@ -103,8 +100,7 @@ function AccountSetting() {
                 <Typography component="h2" variant="h5" align="left">
                   帳號設定
                 </Typography> 
-                <Divider sx={dividerStyle}/>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 , width: 1/2}} >
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1}} >
 
                         <TextField
                                 fullWidth
@@ -158,12 +154,13 @@ function AccountSetting() {
                 flexDirection: 'column'
                 }}
             >
+
+                <Divider sx={dividerStyle}/>
               
                 <Typography component="h2" variant="h5" align="left">
                   社群綁定
                 </Typography> 
-                <Divider sx={dividerStyle}/>
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 , width: 1/2}} >
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }} >
 
                         <TextField
                                 fullWidth
@@ -217,11 +214,10 @@ function AccountSetting() {
                 flexDirection: 'column'
                 }}
             >
-              
+                <Divider sx={dividerStyle}/>
                 <Typography component="h2" variant="h5" align="left">
                   刪除帳號
                 </Typography> 
-                <Divider sx={dividerStyle}/>
                 <Button
                     variant="outlined" color="error"
                     sx={{ mt: 3, mb: 2, width: 1/3}}

@@ -1,18 +1,21 @@
 import React from 'react'
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import LinearProgress from '@mui/material/LinearProgress';
+import Grid from '@mui/material/Grid';
+import { useTheme} from '@mui/material';
+
+
 const { useState } = React;
 
-export default function Progress() {
+export default function Progress(item) {
+  const theme = useTheme();
 
   return (
-    <Box sx={{ minWidth: 275 }}>
+    <Grid item xs={12} md={4}>
       <Card variant="outlined">
         <CardContent  sx={{pb: 0  }}>
           <Typography variant="h5" sx={{mb: 1.5  }}>
@@ -21,7 +24,14 @@ export default function Progress() {
           <Typography variant="body1" sx={{mb: 1.5  }}>
           60%，已完成18個進度，待完成12個進度
           </Typography>
-          <LinearProgress variant="determinate" value={70} sx={{height: 30, mb: 1.5 }} />
+          <LinearProgress variant="determinate" value={item.percentage} 
+                  sx={{ 
+                    height: '10px', 
+                    backgroundColor: '#FFFFFF',
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: theme.palette.secondary.main,
+                    }
+                  }}/>
         
         </CardContent>
         <CardActions sx={{p: '16px'}}>
@@ -29,6 +39,6 @@ export default function Progress() {
       
         </CardActions>
        </Card>
-    </Box>
+    </Grid>
   );
 }

@@ -7,7 +7,7 @@ import PlanAchieveList from './PlanAchieveList';
 export default function MainInform() {
   const theme = useTheme();
   return (
-    <div style={{ backgroundColor: theme.palette.primary.main, padding: 60 }}>
+    <div style={{ backgroundColor: theme.palette.primary.main, padding: "5%" }}>
       <Grid container spacing={6}>
         <Grid item xs={12} md={4}>
           <BasicDateCalendar />

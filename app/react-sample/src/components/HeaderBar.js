@@ -11,7 +11,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Face from '@mui/icons-material/Face';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import MenuIcon from '@mui/icons-material/Menu';
 import { styled, alpha } from '@mui/material/styles';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -23,6 +22,9 @@ import NotificationList from './NotificationList';
 import Divider from '@mui/material/Divider';
 import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { useTranslation } from 'react-i18next';
+import HomeIcon from '@mui/icons-material/Home';
+import './Style.css';
+
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -107,6 +109,7 @@ export default function HeaderBar() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [accountAnchor, setAccountAnchor] = React.useState(null);
   const [languageAnchor, setlanguageAnchor] = React.useState(null);
@@ -121,7 +124,6 @@ export default function HeaderBar() {
   const handleLocationIconClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleLocationSelect = (location) => {
     setSelectedLocation(location);
     setAnchorEl(null);
@@ -154,19 +156,31 @@ export default function HeaderBar() {
   const openLanguageToggl = Boolean(languageAnchor);
 
 
+  const handleSearchClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
+  const isFilterPopoverOpen = Boolean(filterAnchorEl);
+
+
   return (
     <AppBar position="static" sx={{ bgcolor: theme.palette.third.main, maxHeight: '64px' }}>
       <Toolbar>
         {/* Logo and Menu Icon */}
-        <IconButton edge="start" color="icon" aria-label="open drawer">
-          <MenuIcon />
-        </IconButton>
         
-        <Button onClick={() => navigate('/')}>
-        <Typography variant="h6" noWrap>
-        NTUgether
-        </Typography>
-        </Button>
+        <div className="responsiveDiv">
+          <Button onClick={() => navigate('/')}>
+            <Typography variant="h6" noWrap sx={{ textTransform: 'none' }}>
+            NTUgether
+            </Typography>
+          </Button>
+        </div>
+
+        <div className="responsiveDivS">
+          <IconButton aria-label="home" onClick={() => navigate('/')}>
+          <HomeIcon color="icon"/>
+        </IconButton>
+        </div>
         
         {/* Search Input */}
         <Search>
@@ -194,9 +208,11 @@ export default function HeaderBar() {
           startIcon={<LocationOnIcon color="icon"/>}
           sx={{ color: 'black', textTransform: 'none', marginRight: '10px' , width: 100}}
         >
-          <Typography variant="body1" noWrap>
-            {t(selectedLocation)}
-          </Typography>
+          <div className='responsiveDiv'>
+            <Typography variant="body1" noWrap>
+              {t(selectedLocation)}
+            </Typography>
+          </div>
         </Button>
         <Menu
           id="location-menu"
@@ -208,15 +224,16 @@ export default function HeaderBar() {
           }}
         >
           <MenuItem onClick={() => handleLocationSelect('北部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('北部')}</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('中部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('中部')}</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('南部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('南部')}</MenuItem>
-  <MenuItem onClick={() => handleLocationSelect('東部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('東部')}</MenuItem>
+          <MenuItem onClick={() => handleLocationSelect('中部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('中部')}</MenuItem>
+          <MenuItem onClick={() => handleLocationSelect('南部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('南部')}</MenuItem>
+          <MenuItem onClick={() => handleLocationSelect('東部')} sx={{ width: '100px', justifyContent: 'center', textAlign: 'center' }}>{t('東部')}</MenuItem>
         </Menu>
 
 
         <IconButton aria-label="favorite" onClick={() => navigate('/favorite-activity')}>
           <FavoriteBorder color="icon"/>
         </IconButton>
+        
         <IconButton aria-label="notification" onClick={() => toggleNotification()} >
           <Badge badgeContent={4} color="secondary" max={99}>
             <NotificationsIcon color="icon"/>
@@ -224,7 +241,7 @@ export default function HeaderBar() {
         </IconButton>
         {showNotifiaction? 
         <ClickAwayListener onClickAway={() => setShowNotifiaction(false)}>
-        <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-44px, 66px)', zIndex:2}}>
+        <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-10px, 70px)', zIndex:2}}>
           <NotificationList />
         </Paper>
         </ClickAwayListener>: null}

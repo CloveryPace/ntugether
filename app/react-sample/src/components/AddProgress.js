@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 
 const AddProgress = () => {
   // Adjusted to match the data model
-  const [items, setItems] = useState([{ name: '', description: '', time_to_finished: '', need_activity: false }]);
+  const [items, setItems] = useState([{ name: '', time_to_finished: '', need_activity: false }]);
 
   const handleChange = (index, field, value) => {
     const newItems = [...items];
@@ -14,7 +14,7 @@ const AddProgress = () => {
   };
 
   const handleAddClick = () => {
-    setItems([...items, { name: '', description: '', time_to_finished: '', need_activity: false }]);
+    setItems([...items, { name: '', time_to_finished: '', need_activity: false }]);
   };
 
   const handleDeleteClick = (index) => {
@@ -84,15 +84,6 @@ const AddProgress = () => {
                 />
                 }
                 label="需要揪團"
-            />
-          </Box>
-          <Box>
-            <TextField
-                fullWidth
-                label="進度說明"
-                variant="outlined"
-                value={item.description}
-                onChange={(e) => handleChange(index, 'description', e.target.value)}
             />
           </Box>
         </Box>
