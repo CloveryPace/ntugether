@@ -19,6 +19,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
 import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute',
@@ -66,15 +67,32 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const inputRefLocation = useRef();
   const inputRefLimitPerson = useRef();
 
+  const navigate = useNavigate();
+
   const handleUpdate = (event) => {
     event.preventDefault();
 
     // 若為空值，無法儲存
-    if (inputRefName.current.value === "") return;
-    if (inputRefIntro.current.value === "") return;
-    if (!actDate) return;
-    if (inputRefLocation.current.value === "") return;
-    if (inputRefLimitPerson.current.value === "") return;
+    if (inputRefName.current.value === "") {
+      alert("請輸入活動名稱");
+      return;
+    };
+    if (inputRefIntro.current.value === ""){
+      alert("請輸入活動簡介");
+      return;
+    };
+    if (!actDate){
+      alert("請輸入活動時間");
+      return;
+    };
+    if (inputRefLocation.current.value === ""){
+      alert("請輸入活動地點");
+      return;
+    };
+    if (inputRefLimitPerson.current.value === ""){
+      alert("請輸入人數上限");
+      return;
+    };
     
     const newName = inputRefName.current.value;
     const newIntro = inputRefIntro.current.value;
@@ -84,7 +102,6 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
 
     if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review) {
       try {
-        alert("Update!");
         //登入
         axios.post(API_LOGIN, {
           "email": "r12725066@ntu.edu.tw",
@@ -96,35 +113,37 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
             const token = response.data.jwtToken;
 
             //設定authorization
-            const config = { 
-              headers: { 
-                authorization: `Bearer ${token}`
-              }
+            const bodyParameters = {
+              key: "value",
+            };
+            const config = {bodyParameters,
+                headers: { "authorization": `Bearer ${token}`}
             };
 
             //更新活動
-            axios.patch(API_GET_ACTIVITY_DETAIL + id, config, 
-              { 
-                "id": id,         
-                "name": newName,
-                "introduction": newIntro,
-                "date": newTime,
-                "oneTime": OneTime,
-                "type": Type,
-                "need_review": review,
-                "max_participants": newLimitPerson,
-                "location": newLocation
-              }
+            axios.patch(API_GET_ACTIVITY_DETAIL + id,               { 
+              "id": id,         
+              "name": newName,
+              "introduction": newIntro,
+              "date": newTime,
+              "oneTime": OneTime,
+              "type": Type,
+              "need_review": review,
+              "max_participants": newLimitPerson,
+              "location": newLocation
+            },
+              config
             )
-              .then(function (res) {
-                  console.log(res);
-                  alert('更新成功(*´∀`)~♥');
-                  onHide();
-              })
-              .catch(function (err) {
-                  alert("更新失敗");
-                  console.log(err);
-            });
+            .then(function (res) {
+                console.log(res);
+                alert('更新成功(*´∀`)~♥');
+                window.location.reload(false);
+                onHide();
+            })
+            .catch(function (err) {
+                alert("更新失敗");
+                console.log(err);
+          });
         })
         .catch(function (error) {
           // 登入中間出錯
@@ -208,7 +227,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
       setActDate(dateData);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (id) => {
     axios.post(API_LOGIN, {
       "email": "r12725066@ntu.edu.tw",
       "password": "a"
@@ -217,12 +236,13 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
         console.log(response.status, response.data);
         //儲存token
         const token = response.data.jwtToken;
+        console.log(token);
         //設定authorization
         const bodyParameters = {
-          key: "value"
+          key: "value",
         };
         const config = {bodyParameters,
-            headers: { authorization: `Bearer ${token}` }
+            headers: { "authorization": `Bearer ${token}`}
         };
 
         //刪除活動
@@ -231,6 +251,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
               console.log(res);
               alert('已刪除活動');
               onHide();
+              navigate('/activitylist');
           })
           .catch(function (err) {
               alert("刪除失敗");

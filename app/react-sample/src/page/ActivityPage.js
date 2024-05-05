@@ -158,7 +158,7 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動地點 </Typography></div>
-        <div><Typography variant="h6"> {data.position? data.position: "尚無活動地點資料"} </Typography></div>
+        <div><Typography variant="h6"> {data.location? data.location: "尚無活動地點資料"} </Typography></div>
       </div>
 
       <div style={container}>

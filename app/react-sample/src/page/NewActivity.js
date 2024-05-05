@@ -111,8 +111,7 @@ function NewActivity() {
                 activityData
             };
             const config = {bodyParameters,
-                headers: { "authorization": `Bearer ${token}`},
-                activityData
+                headers: { "authorization": `Bearer ${token}`}
             };
 
             //建立活動
