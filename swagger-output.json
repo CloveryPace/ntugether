@@ -1128,12 +1128,12 @@
         }
       }
     },
-    "/user/auth/google": {
+    "/user/auth/google/signup": {
       "get": {
         "tags": [
           "User"
         ],
-        "description": "Oauth註冊API，bug待修改",
+        "description": "Oauth註冊API，請注意不要跟/user/signup之信箱相同",
         "responses": {
           "default": {
             "description": ""
@@ -1141,12 +1141,38 @@
         }
       }
     },
-    "/user/oauth2callback": {
+    "/user/oauth2callback/signup": {
       "get": {
         "tags": [
           "User"
         ],
-        "description": "Oauth註冊API，bug待修改",
+        "description": "OAuth callback for signup. Redirects to home page on success.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/auth/google/login": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "Oauth登入API",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/user/oauth2callback/login": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "description": "OAuth callback for login. Redirects to home page on success.",
         "responses": {
           "default": {
             "description": ""
@@ -1159,7 +1185,7 @@
         "tags": [
           "User"
         ],
-        "description": "Oauth註冊失敗，bug待修改",
+        "description": "Oauth驗證失敗API",
         "responses": {
           "200": {
             "description": "OK"

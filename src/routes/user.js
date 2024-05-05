@@ -311,16 +311,17 @@ router.delete(
 
 
 // Configure the Google strategy for use 
-passport.use(new GoogleStrategy({
+passport.use('signup-google',new GoogleStrategy({
   clientID: process.env.googleClientID,
   clientSecret: process.env.googleClientSecret,
-  callbackURL: "/user/oauth2callback"
+  callbackURL: "/user/oauth2callback/signup"
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
       const user = await User.findOne({ where: { oauthId: profile.id } });
       if (user) {
-        return done(null, user);
+        return done(new Error('User already exist.'));
+        // return done(null, user);
       } else {
         const newUser = await User.create({
           oauthId: profile.id,
@@ -330,6 +331,25 @@ passport.use(new GoogleStrategy({
         });
         return done(null, newUser);
       }
+    } catch (error) {
+      return done(error);
+
+    }
+  }
+));
+
+passport.use('login-google', new GoogleStrategy({
+  clientID: process.env.googleClientID,
+  clientSecret: process.env.googleClientSecret,
+  callbackURL: "/user/oauth2callback/login"
+},
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const user = await User.findOne({ where: { oauthId: profile.id } });
+      if (!user) {
+        return done(new Error('User not found.'));
+      }
+      return done(null, user); //'登入成功'
     } catch (error) {
       return done(error);
     }
@@ -354,24 +374,44 @@ router.use(session({
 router.use(passport.initialize());
 router.use(passport.session());
 
-// Define routes
-router.get('/auth/google',
-// #swagger.description = 'Oauth註冊API，bug待修改'
-// #swagger.tags = ['User']
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Signup route
+router.get('/auth/google/signup',
+  // #swagger.description = 'Oauth註冊API，請注意不要跟/user/signup之信箱相同'
+  // #swagger.tags = ['User']
+  passport.authenticate('signup-google', { scope: ['profile', 'email'] })
+);
 
 router.get(
-  '/oauth2callback',
-// #swagger.description = 'Oauth註冊API，bug待修改'
-// #swagger.tags = ['User']
-
-  passport.authenticate('google', { failureRedirect: '/auth/failure' }),
+  '/oauth2callback/signup',
+  // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
+  // #swagger.tags = ['User']
+  passport.authenticate('signup-google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
     res.redirect('/');
-  });
+  }
+);
+
+// Login route
+router.get('/auth/google/login',
+  // #swagger.description = 'Oauth登入API'
+  // #swagger.tags = ['User']
+  passport.authenticate('login-google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/oauth2callback/login',
+  // #swagger.description = 'OAuth callback for login. Redirects to home page on success.'
+  // #swagger.tags = ['User']
+  passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
+  (req, res) => {
+    res.redirect('/');
+  }
+);
+
+
 
 router.get('/auth/failure', (req, res) => {
-  // #swagger.description = 'Oauth註冊失敗，bug待修改'
+  // #swagger.description = 'Oauth驗證失敗API'
   // #swagger.tags = ['User']
   res.send('Failed to authenticate.');
 });
