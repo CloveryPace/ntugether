@@ -72,9 +72,9 @@ function NewActivity() {
         introduction: '',
         date: '',
         inviteName: '',
-        oneTime: '',
+        is_one_time: '',
         type: '',
-        need_review: '',
+        need_reviewed: '',
         country: "Taiwan",
         max_participants: '',
         location: '',
@@ -193,7 +193,7 @@ function NewActivity() {
                         label="輸入活動簡介"
                     />
                     <Typography variant="h6"> 一次性活動 </Typography>
-                    <RadioGroup aria-label="onetime" name="oneTime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue="一次性活動">
+                    <RadioGroup aria-label="is_one_time" name="is_one_time" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue="一次性活動">
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
                             <ItemOneTime> 
@@ -208,7 +208,7 @@ function NewActivity() {
                         ))}
                     </RadioGroup>
                     <Typography variant="h6"> 加入審核 </Typography>
-                    <RadioGroup aria-label="need_review" name="need_review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
+                    <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
                             <ItemReview> 

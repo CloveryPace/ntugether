@@ -86,20 +86,57 @@ function ActivityPage() {
           axios.post(API_GET_ACTIVITY_DETAIL + id + 'apply', config)
             .then(function (res) {
                 console.log(res);
-                alert('已刪除活動');
+                setAttend(true);
+                alert('已送出申請');
             })
             .catch(function (err) {
-                alert("刪除失敗");
+                alert("送出失敗");
                 console.log(err);
           });
       })
       .catch(function (error) {
         // 登入中間出錯
+        alert("送出失敗");
         console.log(error);
       });
     }
-    setAttend(true);
-    alert("參加成功");
+    else{
+      // 不需審核
+      axios.post(API_LOGIN, {
+        "email": "r12725066@ntu.edu.tw",
+        "password": "a"
+      })
+      .then(function (response) {
+          console.log(response.status, response.data);
+          //儲存token
+          const token = response.data.jwtToken;
+          console.log(token);
+          //設定authorization
+          const bodyParameters = {
+            key: "value",
+          };
+          const config = {bodyParameters,
+              headers: { "authorization": `Bearer ${token}`}
+          };
+  
+          //送加入申請
+          axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', config)
+            .then(function (res) {
+                console.log(res);
+                setAttend(true);
+                alert('已加入');
+            })
+            .catch(function (err) {
+                alert("加入失敗");
+                console.log(err);
+          });
+      })
+      .catch(function (error) {
+        // 登入中間出錯
+        alert("參加失敗");
+        console.log(error);
+      });
+    }
   };
   const handleQuit = () => {
     setAttend(false);
@@ -133,7 +170,7 @@ function ActivityPage() {
             <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
             <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
             <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={data.is_one_time? "一次性活動": "長期性活動"}/>
-            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_review? "需審核": "不需審核"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_reviewed? "需審核": "不需審核"}/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={"ID: " + id}/>
           </Stack>
@@ -150,9 +187,10 @@ function ActivityPage() {
             max_participants={data.max_participants? data.max_participants: ""}
             ActivityAtendee=""
             oneTime={data.is_one_time? data.is_one_time: ""}
-            need_review={data.need_review? data.need_review: ""}
+            need_reviewed={data.need_reviewed? data.need_reviewed: ""}
             type={data.type? data.type: "未指定"}
             id={id}
+            application_problem={data.application_problem? data.application_problem: ""}
           />
           }
       </Box>
@@ -226,7 +264,7 @@ function ActivityPage() {
         <Grid item>
         {attend?
           <Button variant="contained" color="warning" onClick={handleQuit}> 退出活動 </Button>:
-          <ReviewBox id={id} question={data.application_problem? data.application_problem: "不需審核"} need_review={data.need_review}/>
+          <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
         }
       </Grid>
       </Grid>

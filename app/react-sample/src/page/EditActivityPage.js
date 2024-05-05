@@ -53,11 +53,12 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_review, type}) {
+export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_review, type, application_problem}) {
   const [OneTime, setOneTime] = useState(oneTime); // 一次性活動: true, 長期性活動：false
   const [review, setReview] = useState(need_review); // 需審核: true, 不需審核：false
   const [Type, setType] = useState(type); // 活動類型
   const [actDate, setActDate] = useState(dayjs(date)); 
+  const [ID, serID] = useState(id);
 
   const defaultreview = review ? "需審核" : "不需審核";
   const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
@@ -66,6 +67,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const inputRefIntro = useRef();
   const inputRefLocation = useRef();
   const inputRefLimitPerson = useRef();
+  const inputRefreviewquestion = useRef();
 
   const navigate = useNavigate();
 
@@ -99,8 +101,9 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     const newTime = actDate;
     const newLocation = inputRefLocation.current.value;
     const newLimitPerson = inputRefLimitPerson.current.value;
+    const newReviewQuestion = inputRefreviewquestion.current.value;
 
-    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review) {
+    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review || newReviewQuestion !== application_problem) {
       try {
         //登入
         axios.post(API_LOGIN, {
@@ -120,17 +123,19 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 headers: { "authorization": `Bearer ${token}`}
             };
 
+            console.log(id);
             //更新活動
             axios.patch(API_GET_ACTIVITY_DETAIL + id, { 
               "id": id,         
               "name": newName,
               "introduction": newIntro,
               "date": newTime,
-              "oneTime": OneTime,
+              "is_one_time": OneTime,
               "type": Type,
-              "need_review": review,
+              "need_reviewed": review,
               "max_participants": newLimitPerson,
-              "location": newLocation
+              "location": newLocation,
+              "application_problem": newReviewQuestion
             },
               config
             )
@@ -246,7 +251,8 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
         };
 
         //刪除活動
-        axios.delete(API_GET_ACTIVITY_DETAIL + id, config)
+        console.log(id);
+        axios.delete(API_GET_ACTIVITY_DETAIL + ID, config)
           .then(function (res) {
               console.log(res);
               alert('已刪除活動');
@@ -376,6 +382,16 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                         </Grid>
                         ))}
                     </RadioGroup>
+                    <Typography variant="h6"> </Typography>
+                    <TextField
+                        variant="outlined"
+                        defaultValue={application_problem}
+                        inputRef={inputRefreviewquestion}
+                        autoFocus
+                        fullWidth
+                        name="application_problem"
+                        label="輸入審核題目"
+                    />
             </Grid>
           </Grid>
 

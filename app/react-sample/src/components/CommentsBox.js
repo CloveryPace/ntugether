@@ -36,10 +36,12 @@ export default function CommentsBox({ id }) {
           //儲存token
           const token = response.data.jwtToken;
           //設定authorization
-          const config = {
-              headers: { authorization: `Bearer ${token}`}
+          const bodyParameters = {
+            key: "value",
           };
-
+          const config = {bodyParameters,
+              headers: { "authorization": `Bearer ${token}`}
+          };
           //取得活動留言資訊
           axios.get(API_GET_ACTIVITY_DETAIL + id + '/discussion', config)
             .then(function (res) {
