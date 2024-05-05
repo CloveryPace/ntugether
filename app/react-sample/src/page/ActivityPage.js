@@ -79,13 +79,6 @@ function ActivityPage() {
     display: "flex" 
   };
 
-  const discussion = {
-    display: 'flex',
-    '@media (max-width: 600px)': {
-      display: 'block',
-    },
-  }
-
   return (
     <ThemeProvider theme={theme}>
       <HeaderBar />
@@ -115,15 +108,16 @@ function ActivityPage() {
           <EditActivityPage /** 編輯視窗 */
             show={editingShow}
             onHide={() => setEditingShow(false)}
-            ActivityName="活動名稱"
-            ActivityIntro="XXXXXX"
-            ActivityTime="01/01/2024"
-            ActivityLocation="台大"
-            ActivityLimitPerson="5"
+            name={data.name? data.name: ""}
+            introduction={data.introduction? data.introduction: ""}
+            date={data.date? data.date: ""}
+            location={data.location? data.location: ""}
+            max_participants={data.max_participants? data.max_participants: ""}
             ActivityAtendee=""
-            ActivityOnetime={false}
-            ActivityReview={false}
-            ActivityType={"運動"}
+            oneTime={data.is_one_time? data.is_one_time: ""}
+            need_review={data.need_review? data.need_review: ""}
+            type={data.type? data.type: "未指定"}
+            id={id}
           />
           }
       </Box>

@@ -17,6 +17,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
+import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import axios from 'axios';
 
 const style = {
   position: 'absolute',
@@ -50,11 +52,11 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-export default function EditActivityPage({ onHide, show, ActivityName, ActivityIntro, ActivityTime, ActivityLocation, ActivityLimitPerson, ActivityAtendee, ActivityOnetime, ActivityReview, ActivityType}) {
-  const [oneTime, setOneTime] = useState(ActivityOnetime); // 一次性活動: true, 長期性活動：false
-  const [review, setReview] = useState(ActivityReview); // 需審核: true, 不需審核：false
-  const [type, setType] = useState(ActivityType); // 活動類型
-  const [actDate, setActDate] = useState(dayjs(ActivityTime)); 
+export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_review, type}) {
+  const [OneTime, setOneTime] = useState(oneTime); // 一次性活動: true, 長期性活動：false
+  const [review, setReview] = useState(need_review); // 需審核: true, 不需審核：false
+  const [Type, setType] = useState(type); // 活動類型
+  const [actDate, setActDate] = useState(dayjs(date)); 
 
   const defaultreview = review ? "需審核" : "不需審核";
   const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
@@ -64,75 +66,130 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
   const inputRefLocation = useRef();
   const inputRefLimitPerson = useRef();
 
-  const handleUpdate = () => {
+  const handleUpdate = (event) => {
+    event.preventDefault();
+
+    // 若為空值，無法儲存
     if (inputRefName.current.value === "") return;
     if (inputRefIntro.current.value === "") return;
     if (!actDate) return;
     if (inputRefLocation.current.value === "") return;
     if (inputRefLimitPerson.current.value === "") return;
-
+    
     const newName = inputRefName.current.value;
     const newIntro = inputRefIntro.current.value;
     const newTime = actDate;
     const newLocation = inputRefLocation.current.value;
     const newLimitPerson = inputRefLimitPerson.current.value;
 
-    if (newName !== ActivityName) {
+    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review) {
       try {
-        alert("Update Activity Name!");
+        alert("Update!");
+        //登入
+        axios.post(API_LOGIN, {
+          "email": "r12725066@ntu.edu.tw",
+          "password": "a"
+        })
+        .then(function (response) {
+            console.log(response.status, response.data);
+            //儲存token
+            const token = response.data.jwtToken;
+
+            //設定authorization
+            const config = { 
+              headers: { 
+                authorization: `Bearer ${token}`
+              }
+            };
+
+            //更新活動
+            axios.patch(API_GET_ACTIVITY_DETAIL + id, config, 
+              { 
+                "id": id,         
+                "name": newName,
+                "introduction": newIntro,
+                "date": newTime,
+                "oneTime": OneTime,
+                "type": Type,
+                "need_review": review,
+                "max_participants": newLimitPerson,
+                "location": newLocation
+              }
+            )
+              .then(function (res) {
+                  console.log(res);
+                  alert('更新成功(*´∀`)~♥');
+                  onHide();
+              })
+              .catch(function (err) {
+                  alert("更新失敗");
+                  console.log(err);
+            });
+        })
+        .catch(function (error) {
+          // 登入中間出錯
+          console.log(error);
+        }); 
+
       } catch (error) {
+        //更新出錯
         alert("Error: Failed to update activity name");
       }
     }
-    if (newIntro !== ActivityIntro) {
+
+
+    // 確認哪個欄位有更改過
+    /*
+    if (newIntro !== introduction) {
       try {
         alert("Update Activity introduction!");
       } catch (error) {
         alert("Error: Failed to update activity introduction");
       }
     }
-    if (!newTime.isSame(dayjs(ActivityTime)) ) {
+    if (!newTime.isSame(dayjs(date)) ) {
       try {
         alert("Update Activity time!");
       } catch (error) {
         alert("Error: Failed to update activity time");
       }
     }
-    if (newLocation !== ActivityLocation) {
+    if (newLocation !== location) {
       try {
         alert("Update Activity location!");
       } catch (error) {
         alert("Error: Failed to update activity location");
       }
     }
-    if (newLimitPerson !== ActivityLimitPerson) {
+    if (newLimitPerson !== max_participants) {
       try {
         alert("Update Activity limit person!");
       } catch (error) {
         alert("Error: Failed to update activity limit person");
       }
     }
-    if (oneTime !== ActivityOnetime) {
+    if (OneTime !== oneTime) {
       try {
         alert("更新是否為一次性活動!");
       } catch (error) {
         alert("錯誤");
       }
     }
-    if (type !== ActivityType) {
+    if (Type !== type) {
       try {
         alert("更新活動類別!");
       } catch (error) {
         alert("錯誤");
       }
     }
-    if (review !== ActivityReview) {
+    if (review !== need_review) {
       try {
         alert("更新是否需審核!");
       } catch (error) {
         alert("錯誤");
       }
     }
+    */
   };
 
   const handleOneTimeChange = (event) => {
@@ -151,6 +208,41 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
       setActDate(dateData);
   };
 
+  const handleDelete = () => {
+    axios.post(API_LOGIN, {
+      "email": "r12725066@ntu.edu.tw",
+      "password": "a"
+    })
+    .then(function (response) {
+        console.log(response.status, response.data);
+        //儲存token
+        const token = response.data.jwtToken;
+        //設定authorization
+        const bodyParameters = {
+          key: "value"
+        };
+        const config = {bodyParameters,
+            headers: { authorization: `Bearer ${token}` }
+        };
+
+        //刪除活動
+        axios.delete(API_GET_ACTIVITY_DETAIL + id, config)
+          .then(function (res) {
+              console.log(res);
+              alert('已刪除活動');
+              onHide();
+          })
+          .catch(function (err) {
+              alert("刪除失敗");
+              console.log(err);
+        });
+    })
+    .catch(function (error) {
+      // 登入中間出錯
+      console.log(error);
+    });
+  };
+
   return (
     <div>
       <Modal
@@ -163,10 +255,11 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
 
           <Grid container spacing={10}>
             <Grid item xs={12} md={6}>
+              <Button variant="contained" color="error" onClick={handleDelete}> 刪除活動 </Button>
               <Typography variant="h6">活動名稱</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={ActivityName}
+                      defaultValue={name}
                       inputRef={inputRefName}
                       autoFocus
                       fullWidth
@@ -176,7 +269,7 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
                 <Typography variant="h6">活動簡介</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={ActivityIntro}
+                      defaultValue={introduction}
                       inputRef={inputRefIntro}
                       autoFocus
                       fullWidth
@@ -198,7 +291,7 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
                 <Typography variant="h6">活動地點</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={ActivityLocation}
+                      defaultValue={location}
                       inputRef={inputRefLocation}
                       autoFocus
                       fullWidth
@@ -208,7 +301,7 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
                 <Typography variant="h6">人數上限</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={ ActivityLimitPerson}
+                      defaultValue={max_participants}
                       inputRef={inputRefLimitPerson}
                       autoFocus
                       fullWidth
@@ -218,7 +311,7 @@ export default function EditActivityPage({ onHide, show, ActivityName, ActivityI
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6"> 活動類型 </Typography>
-                  <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={ActivityType}>
+                  <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={type}>
                       {['運動', '讀書會', "出遊"].map((value) => (
                       <Grid item>
                           <ItemTag> 

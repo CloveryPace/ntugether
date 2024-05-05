@@ -65,6 +65,7 @@ function NewActivity() {
     const [need_review, setReview] = useState(false); // 需審核: true, 不需審核：false
     const [type, setType] = useState('運動'); // 活動類型
     const [actDate, setActDate] = useState(dayjs('2024-05-30')); 
+    const [Token, setToken] = useState('')
 
     const [activityData, setActivityData] = useState({
         name: '',
@@ -102,21 +103,20 @@ function NewActivity() {
             console.log(response.status, response.data);
             //儲存token
             const token = response.data.jwtToken;
+            setToken(response.data.jwtToken);
 
             //設定authorization
-
             const bodyParameters = {
-                key: "value"
+                key: "value",
+                activityData
             };
-
-            const config = {
-                headers: { 
-                    authorization: `Bearer ${token}`,
-                }
+            const config = {bodyParameters,
+                headers: { "authorization": `Bearer ${token}`},
+                activityData
             };
 
             //建立活動
-            axios.post(API_CREATE_ACTIVITY, bodyParameters, config)
+            axios.post(API_CREATE_ACTIVITY, bodyParameters.activityData, config)
                 .then(function (res) {
                     console.log(res);
                     alert('成功(*´∀`)~♥');
