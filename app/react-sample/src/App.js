@@ -80,6 +80,10 @@ function App() {
             <Route exact path='/follow-members' element={<FollowAccount/>}/>
           </Route>
           {/* <Route path='/follow-members' element={<FollowAccount />} /> */}
+          <Route exact path='/planManage' element={<PlanManage/>}>
+            <Route exact path='/planManage' element={<PlanManage/>}/>
+          </Route>
+          {/* <Route path='/planManage' element={<PlanManage />} /> */}
 
         </Routes>
         </BrowserRouter>
