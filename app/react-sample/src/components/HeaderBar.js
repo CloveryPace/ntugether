@@ -235,7 +235,7 @@ export default function HeaderBar() {
         </IconButton>
         
         <IconButton aria-label="notification" onClick={() => toggleNotification()} >
-          <Badge badgeContent={4} color="secondary" max={99}>
+          <Badge badgeContent={2} color="secondary" max={99}>
             <NotificationsIcon color="icon"/>
           </Badge>
         </IconButton>
@@ -268,7 +268,7 @@ export default function HeaderBar() {
           {t('個人頁面')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={() => navigate('/activityattendpage')} sx={{ justifyContent: 'center'}}>
         {t('活動紀錄')}
         </MenuItem>
         <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>

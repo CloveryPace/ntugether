@@ -14,6 +14,7 @@ import { styled } from '@mui/material/styles';
 import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import Divider from '@mui/material/Divider';
+import { useTranslation } from 'react-i18next';
 
 
 const { useState } = React;
@@ -67,21 +68,20 @@ function AccountSetting() {
       password: data.get('password'),
     });
   };
-  const defaultTheme = createTheme();
+
+  const { t, i18n } = useTranslation();
 
 
   const [name, setName] = useState('MyName');
   const [phone, setPhone] = useState('091111111');
   const [email, setEmail] = useState('hello@gmail.com');
-  const [gender, setGender] = useState('female');
-  const [tag, setTag] = useState('tag');
 
 
 
   return (
     <ThemeProvider theme={theme}>
     <HeaderBar />
-    <UserPageNav selectedTab={4}/> 
+    <UserPageNav selectedTab={3}/> 
     <div className='Main'>
         <CssBaseline />
 
@@ -98,7 +98,7 @@ function AccountSetting() {
             >
               
                 <Typography component="h2" variant="h5" align="left">
-                  帳號設定
+                  {t('帳號設定')}
                 </Typography> 
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1}} >
 
@@ -106,7 +106,7 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label="Name"
+                                label={t('姓名')}
                                 value={name}
                                 onChange={(event) => {
                                 setName(event.target.value);
@@ -116,7 +116,7 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label="Email"
+                                label={t('電子郵件')}
                                 value={email}
                                 onChange={(event) => {
                                 setEmail(event.target.value);
@@ -126,7 +126,7 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label="Phone"
+                                label={t('手機號碼')}
                                 value={phone}
                                 onChange={(event) => {
                                 setPhone(event.target.value);
@@ -138,7 +138,7 @@ function AccountSetting() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Modify
+                            {t('修改')}
                         </Button>
                     </Box>
             </Box>
@@ -158,48 +158,10 @@ function AccountSetting() {
                 <Divider sx={dividerStyle}/>
               
                 <Typography component="h2" variant="h5" align="left">
-                  社群綁定
+                  {t('社群綁定')}
                 </Typography> 
-                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }} >
-
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label="Name"
-                                value={name}
-                                onChange={(event) => {
-                                setName(event.target.value);
-                                }}
-                            />
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label="Email"
-                                value={email}
-                                onChange={(event) => {
-                                setEmail(event.target.value);
-                                }}
-                            />
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label="Phone"
-                                value={phone}
-                                onChange={(event) => {
-                                setPhone(event.target.value);
-                                }}
-                            />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Modify
-                        </Button>
+                    <Box sx={{ mt: 1 }} >
+                    <Button variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('綁定 Google 帳號')}</Button>
                     </Box>
             </Box>
             
@@ -216,13 +178,13 @@ function AccountSetting() {
             >
                 <Divider sx={dividerStyle}/>
                 <Typography component="h2" variant="h5" align="left">
-                  刪除帳號
+                  {t('刪除帳號')}
                 </Typography> 
                 <Button
                     variant="outlined" color="error"
                     sx={{ mt: 3, mb: 2, width: 1/3}}
                 >
-                    刪除此帳號
+                    {t('刪除此帳號')}
                 </Button>
             </Box>
             
