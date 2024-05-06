@@ -14,6 +14,9 @@ const app = express();
 var cors = require('cors');
 app.use(cors());
 
+// ADD for Oauth
+app.options('*', cors());
+
 // use routes
 app.use("/application", application_routes);
 app.use("/activity", activity_routes);

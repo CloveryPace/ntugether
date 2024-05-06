@@ -862,7 +862,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "信箱註冊驗證碼發送",
         "parameters": [
           {
             "name": "email",

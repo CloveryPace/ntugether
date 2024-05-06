@@ -93,7 +93,7 @@ router.get(
 
 router.get(
   "/emailSend", 
-  // swagger.description = "信箱註冊驗證碼發送"
+  // #swagger.description = "信箱註冊驗證碼發送"
   // #swagger.tags = ['User']
   /* 
   
