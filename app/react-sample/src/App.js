@@ -24,6 +24,7 @@ import ProgressEdit from './page/ProgressEdit';
 import PlanList from './page/PlanList';
 import PlanManage from './page/PlanManage';
 
+
 // TODO: user沒有jwt時，redirect到login頁面
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
           <Route path='/activityattendpage' element={<ActivityAttendPage />} />
           <Route path='/favorite-activity' element={<FollowActivity />} />
           <Route path='/follow-members' element={<FollowAccount />} />
+          <Route path='/planManage' element={<PlanManage />} />
 
         </Routes>
         </BrowserRouter>

@@ -81,7 +81,7 @@ function AccountSetting() {
   return (
     <ThemeProvider theme={theme}>
     <HeaderBar />
-    <UserPageNav selectedTab={4}/> 
+    <UserPageNav selectedTab={3}/> 
     <div className='Main'>
         <CssBaseline />
 
