@@ -367,13 +367,11 @@ async function resetPassword(req, res) {
 
 
 async function getMember(req, res) {
-  const { name, email } = req.query;
-  console.log("name", name);
+  const user_id = req.user_id;
 
   await User.findOne({
     where: {
-      name: name,
-      email: email
+     user_id: user_id,
     }
   })
     .then(results => {
@@ -389,6 +387,23 @@ async function getMember(req, res) {
       console.error("Error querying the database:", error);
       res.status(500).send("Internal Server Error");
     });
+}
+
+async function getAllMembers(req, res) {
+  try {
+    const user_id = req.user_id;
+    const users = await User.findAll();
+
+    if (users.length > 0){
+      return res.status(200).json({members: users});
+    } else {
+      return res.status(404).send("No users found.");
+    }
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error")
+  }
 }
 
 async function updateMember(req, res) {
@@ -439,6 +454,7 @@ async function deleteMember(req, res) {
 // Export the getMember function
 module.exports = {
     getMember: getMember,
+    getAllMembers: getAllMembers,
     forgetPassword: forgetPassword,
     emailSend: emailSend,
     signUp: signUp,

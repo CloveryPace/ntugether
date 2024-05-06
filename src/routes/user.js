@@ -16,20 +16,10 @@ const authMiddleware = require('../middlewares/authentication');
 
 // GET routes
 router.get(
-  "/",
+  "/", authMiddleware.authentication, 
   // swagger.description = "取得特定會員資料"
   // #swagger.tags = ['User']
   /* 
-  #swagger.parameters['query'] = {
-      in: 'query',
-      description: '取得會員資料',
-      required: true,
-      schema: 
-      {
-          "name": "用戶名稱",
-          "email": "用戶信箱"
-      }
-  } */
   
   /* #swagger.responses[200] = { 
       description: '用戶詳細資料',
@@ -49,6 +39,32 @@ router.get(
       } */
 
   userController.getMember
+);
+
+router.get(
+  "/allMembers", authMiddleware.authentication, 
+  // swagger.description = "取得所有會員資料"
+  // #swagger.tags = ['User']
+  /* 
+  
+  /* #swagger.responses[200] = { 
+      description: '用戶詳細資料',
+      schema: 
+      [{
+        "members": "{ ... }"
+      }]
+    } */ 
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+  userController.getAllMembers
 );
 
 router.get(
