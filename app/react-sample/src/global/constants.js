@@ -7,7 +7,8 @@ export const API_GOOGLE_LOGIN = `${API_HOST}/user/auth/google/login`;
 export const API_GOOGLE_SIGNUP = `${API_HOST}/user/auth/google/signup`;
 
 
-export const API_CREATE_ACTIVITY = `${API_HOST}/Activity`;
 export const API_RESET_PASSWORD = `${API_HOST}/user/resetPassword`;
 export const API_FORGET_PASSWORD = `${API_HOST}/user/forgetPassword`;
 export const API_GET_USER = `${API_HOST}/user`;
+export const API_CREATE_ACTIVITY = `${API_HOST}/activity`;
+export const API_GET_ACTIVITY_DETAIL = `${API_HOST}/activity/`;
