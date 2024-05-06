@@ -16,30 +16,35 @@ import { API_LOGIN } from '../global/constants';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Divider from '@mui/material/Divider';
+import { setAuthToken } from "../utils";
+import Loading from '../components/Loading';
+import React from 'react';
 
-// TODO remove, this demo shouldn't need to reset the theme.
+const { useState } = React;
 
 export default function Login() {
   const { t, i18n } = useTranslation();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
+    setLoading(true);
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-    axios.put(API_LOGIN, { 
+    
+    axios.post(API_LOGIN, { 
         email: data.get('email'),
         password: data.get('password')
       
       })
       .then(function (response) {
-        console.log(response);
-        // jwt = response.data.jwtToken;
+        setLoading(false);
+        setAuthToken(response.data.jwtToken);
         window.location.assign('/');
       })
       .catch(function (error) {
-        console.log(error);
+        setLoading(false);
+        setError(true);
       });
   };
 
@@ -64,6 +69,7 @@ export default function Login() {
             <Typography component="h1" variant="h5">
               {t('登入')}
             </Typography>
+            {error && <Typography color="error">{t('帳號或密碼錯誤')}</Typography>}
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 ,width: '100%'}}>
               <TextField
                 margin="normal"
@@ -74,6 +80,7 @@ export default function Login() {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                color={error ?  'warning':'primary'}
               />
               <TextField
                 margin="normal"
@@ -84,6 +91,7 @@ export default function Login() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                color={error ?  'warning':'primary'}
               />
               {/* <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
@@ -131,6 +139,7 @@ export default function Login() {
           }}
         />
       </Grid>
+      {loading && <Loading/>}
     </ThemeProvider>
   );
 }

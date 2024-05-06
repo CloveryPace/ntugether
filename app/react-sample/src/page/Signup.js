@@ -18,11 +18,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-import { API_SIGN_UP, API_SIGN_UP_OTP, API_GOOGLE_LOGIN } from '../global/constants';
+import { API_EMAIL_VERIFY, API_SIGN_UP, API_GOOGLE_SIGNUP } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import theme from '../components/Theme'; 
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
+import {setAuthToken} from '../utils';
 
 const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
 const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
@@ -77,13 +79,15 @@ const { useState } = React;
 export default function Signup() {
   const { t, i18n } = useTranslation();
 
-  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp
-  const [signupSuccess, setSignupSuccess] = useState(false); // 1: signup form, 2: signup otp
+  const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp, 3: signup success
+  const [signupSuccess, setSignupSuccess] = useState(); 
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [gender, setGender] = useState('');
   const [email, setEmail] = useState('');
+  const [birthday, setBirthday] = useState(dayjs('2022-04-17'));
+  const [username, setUserName] = useState('');
 
   const [error, setError] = useState('');
 
@@ -92,32 +96,41 @@ export default function Signup() {
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
 
+    if(password !== confirmPassword || testingpasswordStrength(password) !== PasswordStrength.STRONG){
+      setError(true);
+      console.log('error');
+    }else{
+      setError(false);
+    }
+
     data = new FormData(event.currentTarget);
 
     //todo: validate form
-    if (!error) {
-      // Submit form
+    if (error) {
+      alert(error);
+    }else{
+    
+      axios.get(API_EMAIL_VERIFY, {params:{ 
+        // name: data.get('name'),
+        email: data.get('email'),
+        // password: data.get('password'),
+        // gender: data.get('gender'),
+        // birthday: data.get('birthday')
+      }}, {
+        headers: {
+          'Access-Control-Allow-Origin': true
+        }
+      })
+      .then(function (response) {
+        console.log(response);
+        setSignupStatus(2);
+
+      })
+      .catch(function (error) {
+        console.log(error);
+        setSignupSuccess(false);
+      });
     }
-    axios.post(API_SIGN_UP, { 
-      // name: data.get('name'),
-      email: data.get('email'),
-      // password: data.get('password'),
-      // gender: data.get('gender'),
-      // birthday: data.get('birthday')
-    }, {
-      headers: {
-        'Access-Control-Allow-Origin': true
-      }
-    })
-    .then(function (response) {
-      console.log(response);
-      setSignupStatus(2);
-
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
-
   }
 
   const [otp, setOtp] = useState('');
@@ -127,11 +140,12 @@ export default function Signup() {
   }
   const handleComplete = (value) => {
     console.log(value);
-    axios.put(API_SIGN_UP_OTP, { 
-      name: data.get('name'),
-      password: data.get('password'),
+    console.log(data);
+    axios.post(API_SIGN_UP, { 
+      name: username,
+      password: password,
       gender: gender,
-      birthday: data.get('birthday'),
+      birthday: birthday,
       code: value,
       email: email
     
@@ -142,14 +156,16 @@ export default function Signup() {
       setTimeout(function() {
         window.location.assign('/');
       }, 5000);
+      setAuthToken(response.data.jwtToken);
     })
     .catch(function (error) {
       console.log(error);
+      setSignupSuccess(false);
     });
   }
 
   const googleLogin = () => {
-    axios.get(API_GOOGLE_LOGIN, {
+    axios.get(API_GOOGLE_SIGNUP, {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
@@ -179,6 +195,10 @@ export default function Signup() {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
+  
+  const handleUserNameChange = (event) => {
+    setUserName(event.target.value);
+  };
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -200,7 +220,7 @@ export default function Signup() {
           <Typography component="h1" variant="h5">
             {t('註冊')}
           </Typography>
-          {signupStatus == 1 && signupSuccess == false ? 
+          {signupStatus == 1 ? 
           <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
@@ -213,6 +233,8 @@ export default function Signup() {
                   id="Name"
                   label={t('姓名')} 
                   autoFocus
+                  value={username}
+                  onChange={handleUserNameChange} 
                 />
               </Grid>
               
@@ -239,6 +261,8 @@ export default function Signup() {
                     label={t('生日')}
                     name="birthday"
                     id="birthday"
+                    value={birthday}
+                    onChange={(newValue) => setBirthday(newValue)}
                     />
                 </LocalizationProvider>
 
@@ -279,7 +303,7 @@ export default function Signup() {
                   value={password}
                   onChange={handlePasswordChange}
                 />
-                <CheckPasswordStrength password={password} />
+                <CheckPasswordStrength password={password}/>
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -319,14 +343,18 @@ export default function Signup() {
                 </Link>
               </Grid>
             </Grid>
-            </Box> : 
+            </Box> : null
+          }
+              {
+                signupStatus == 2? 
                 <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
-                style={{marginTop:20}} />
+                style={{marginTop:20}} />:
+                null
               }
               {
-                signupSuccess == true && signupStatus == 2? 
+                signupSuccess == true && signupStatus == 3? 
                 <Box>
-                <Typography component="body1" variant="body1">
+                <Typography component="body" variant="body1">
                   {t('註冊成功，將在 5 秒後跳轉至登入頁面')}</Typography>
                   <Typography component="body" variant="body1">
                   {t('或是直接前往')}<Link href={'/'}>{t('首頁')}</Link></Typography></Box> : 

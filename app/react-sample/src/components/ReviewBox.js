@@ -5,9 +5,12 @@ import TextField from "@mui/material/TextField";
 import { useRef } from "react";
 import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
+import { getAuthToken } from '../utils';
+import { useState } from 'react';
 
 export default function ReviewBox({id, question, need_reviewed, attendfuction}) {
     const Answer = useRef();
+    const [userToken, setUserToken] = useState(getAuthToken());
     const handleSubmit = e => {
         console.log(Answer.current?.value);
     };  
@@ -19,20 +22,21 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
 
     // 參加api
     const handleAttend = () => {
+      const token = userToken;
+      console.log(token);
       if(need_reviewed){
         if (Answer.current?.value === ""){
           alert("請輸入回答");
         }
         else {
-        axios.post(API_LOGIN, {
-          "email": "r12725066@ntu.edu.tw",
-          "password": "a"
-        })
-        .then(function (response) {
-            console.log(response.status, response.data);
-            //儲存token
-            const token = response.data.jwtToken;
-            console.log(token);
+        // axios.post(API_LOGIN, {
+        //   "email": "r12725066@ntu.edu.tw",
+        //   "password": "a"
+        // })
+        // .then(function (response) {
+        //     console.log(response.status, response.data);
+        //     //儲存token
+            
             //設定authorization
             const bodyParameters = {
               key: "value",
@@ -57,25 +61,25 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
                   alert("送出失敗");
                   console.log(err);
             });
-        })
-        .catch(function (error) {
-          // 登入中間出錯
-          alert("送出失敗");
-          console.log(error);
-        });
+        // })
+        // .catch(function (error) {
+        //   // 登入中間出錯
+        //   alert("送出失敗");
+        //   console.log(error);
+        // });
         }
       }
       else{
         // 不需審核
-        axios.post(API_LOGIN, {
-          "email": "r12725066@ntu.edu.tw",
-          "password": "a"
-        })
-        .then(function (response) {
-            console.log(response.status, response.data);
-            //儲存token
-            const token = response.data.jwtToken;
-            console.log(token);
+        // axios.post(API_LOGIN, {
+        //   "email": "r12725066@ntu.edu.tw",
+        //   "password": "a"
+        // })
+        // .then(function (response) {
+        //     console.log(response.status, response.data);
+        //     //儲存token
+        //     const token = response.data.jwtToken;
+        //     console.log(token);
             //設定authorization
             const bodyParameters = {
               key: "value",
@@ -95,12 +99,12 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
                   alert("加入失敗");
                   console.log(err);
             });
-        })
-        .catch(function (error) {
-          // 登入中間出錯
-          alert("參加失敗");
-          console.log(error);
-        });
+        // })
+        // .catch(function (error) {
+        //   // 登入中間出錯
+        //   alert("參加失敗");
+        //   console.log(error);
+        // });
       }
     };
 

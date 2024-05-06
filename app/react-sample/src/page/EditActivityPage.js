@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { getAuthToken } from '../utils';
 
 const style = {
   position: 'absolute',
@@ -59,6 +60,8 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const [Type, setType] = useState(type); // 活動類型
   const [actDate, setActDate] = useState(dayjs(date)); 
   const [ID, serID] = useState(id);
+  const [userToken, setUserToken] = useState(getAuthToken());
+
 
   const defaultreview = review ? "需審核" : "不需審核";
   const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
@@ -106,14 +109,14 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review || newReviewQuestion !== application_problem) {
       try {
         //登入
-        axios.post(API_LOGIN, {
-          "email": "r12725066@ntu.edu.tw",
-          "password": "a"
-        })
-        .then(function (response) {
-            console.log(response.status, response.data);
-            //儲存token
-            const token = response.data.jwtToken;
+        // axios.post(API_LOGIN, {
+        //   "email": "r12725066@ntu.edu.tw",
+        //   "password": "a"
+        // })
+        // .then(function (response) {
+        //     console.log(response.status, response.data);
+        //     //儲存token
+            const token = userToken;
 
             //設定authorization
             const bodyParameters = {
@@ -153,11 +156,11 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 alert("更新失敗");
               }
           });
-        })
-        .catch(function (error) {
-          // 登入中間出錯
-          console.log(error);
-        }); 
+        
+        // .catch(function (error) {
+        //   // 登入中間出錯
+        //   console.log(error);
+        // }); 
 
       } catch (error) {
         //更新出錯

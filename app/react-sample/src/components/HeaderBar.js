@@ -150,6 +150,13 @@ export default function HeaderBar() {
     setAccountAnchor(null);
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+
+    navigate('/login');
+  }
+
 
   const open = Boolean(anchorEl);
   const openAccountList = Boolean(accountAnchor);
@@ -235,7 +242,7 @@ export default function HeaderBar() {
         </IconButton>
         
         <IconButton aria-label="notification" onClick={() => toggleNotification()} >
-          <Badge badgeContent={4} color="secondary" max={99}>
+          <Badge badgeContent={2} color="secondary" max={99}>
             <NotificationsIcon color="icon"/>
           </Badge>
         </IconButton>
@@ -268,10 +275,10 @@ export default function HeaderBar() {
           {t('個人頁面')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={() => navigate('/activityattendpage')} sx={{ justifyContent: 'center'}}>
         {t('活動紀錄')}
         </MenuItem>
-        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={() => navigate('/planManage')} sx={{ justifyContent: 'center'}}>
         {t('進度紀錄')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
@@ -280,7 +287,7 @@ export default function HeaderBar() {
         aria-expanded={openLanguageToggl ? 'true' : undefined}>
           繁體中文/English
         </MenuItem>
-        <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={logout} sx={{ justifyContent: 'center'}}>
             <Button variant="contained">
             {t('登出')}
             </Button>

@@ -11,9 +11,11 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
 import axios from 'axios';
 import { Grid } from '@mui/material';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getAuthToken } from '../utils';
 
 export default function ActivityComponent({data, key}) {
+    const [userToken, setUserToken] = useState(getAuthToken());
     const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -23,15 +25,15 @@ export default function ActivityComponent({data, key}) {
     // TODO: navigate到特定活動頁面（參數：ID）
     useEffect(() => {
     //登入
-    axios.post(API_LOGIN, {
-      "email": "r12725066@ntu.edu.tw",
-      "password": "a"
-    })
-    .then(function (response) {
-        console.log(response.status, response.data);
-        //儲存token
-        const token = response.data.jwtToken;
-        //設定authorization
+    // axios.post(API_LOGIN, {
+    //   "email": "r12725066@ntu.edu.tw",
+    //   "password": "a"
+    // })
+    // .then(function (response) {
+    //     console.log(response.status, response.data);
+    //     //儲存token
+        const token = userToken;
+    //     //設定authorization
         const config = {
             headers: { 
               authorization: `Bearer ${token}`
@@ -47,10 +49,10 @@ export default function ActivityComponent({data, key}) {
             alert("error");
           });
 
-      })
-      .catch(function (error) {
-          console.log(error);
-      });
+      // })
+      // .catch(function (error) {
+      //     console.log(error);
+      // });
     }, [key]);
 
     return (

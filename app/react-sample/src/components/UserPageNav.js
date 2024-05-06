@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import './Style.css';
+import { useTranslation } from 'react-i18next';
 
 function samePageLinkNavigation(event) {
 
@@ -40,6 +41,7 @@ const { useState } = React;
 
 export default function UserPageNav({selectedTab}) {
   const [value, setValue] = useState(selectedTab);
+  const { t, i18n } = useTranslation();
 
   return (
     <div>
@@ -52,10 +54,10 @@ export default function UserPageNav({selectedTab}) {
             role="navigation"
             centered
           > 
-            <LinkTab label="個人頁面" href="/userprofile" selected={selectedTab === 0? true : false}/>
-            <LinkTab label="活動紀錄" href="/activityattendpage"  selected={selectedTab === 1? true : false}/>
-            <LinkTab label="計畫紀錄" href="/planManage"  selected={selectedTab === 2? true : false}/>
-            <LinkTab label="帳戶設定" href="/setting"  selected={selectedTab === 3? true : false}/>
+            <LinkTab label={t("個人頁面")} href="/userprofile" selected={selectedTab === 0? true : false}/>
+            <LinkTab label={t("活動紀錄")} href="/activityattendpage"  selected={selectedTab === 1? true : false}/>
+            <LinkTab label={t("進度紀錄")} href="/planManage"  selected={selectedTab === 2? true : false}/>
+            <LinkTab label={t("帳戶設定")} href="/setting"  selected={selectedTab === 3? true : false}/>
 
           </Tabs>
         </Box>
