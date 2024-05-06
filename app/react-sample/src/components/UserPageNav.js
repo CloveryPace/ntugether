@@ -56,9 +56,8 @@ export default function UserPageNav({selectedTab}) {
           > 
             <LinkTab label={t("個人頁面")} href="/userprofile" selected={selectedTab === 0? true : false}/>
             <LinkTab label={t("活動紀錄")} href="/activityattendpage"  selected={selectedTab === 1? true : false}/>
-            <LinkTab label={t("揪團紀錄")} href="/#"  selected={selectedTab === 2? true : false}/>
-            <LinkTab label={t("進度管理")} href="/#"  selected={selectedTab === 3? true : false}/>
-            <LinkTab label={t("帳戶設定")} href="/setting"  selected={selectedTab === 4? true : false}/>
+            <LinkTab label={t("進度管理")} href="/#"  selected={selectedTab === 2? true : false}/>
+            <LinkTab label={t("帳戶設定")} href="/setting"  selected={selectedTab === 3? true : false}/>
 
           </Tabs>
         </Box>

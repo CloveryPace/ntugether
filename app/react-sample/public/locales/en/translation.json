@@ -49,13 +49,16 @@
     "姓名": "Name",
     "已經發送驗證碼到您的信箱，請輸入驗證碼和新密碼": "The verification code has been sent to your email, please enter the verification code and new password",
     "驗證碼": "Verification code",
-    "帳號設定": "Account settings",
+    "帳戶設定": "Account settings",
     "社群綁定": "Social Login",
     "綁定 Google 帳號": "Bind Google account",
     "刪除帳號": "Delete account",
     "刪除此帳號": "Delete this account",
     "修改": "Modify",
-    "手機號碼": "Phone number"
+    "手機號碼": "Phone number",
+    "進度管理": "Progress",
+    "新密碼": "New password",
+    "再次輸入新密碼": "Confirm new password"
 
 
 

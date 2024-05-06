@@ -2,26 +2,28 @@ import HeaderBar from '../components/HeaderBar';
 import './Common.css';
 
 import Stack from '@mui/material/Stack';
-import Chip from '@mui/material/Chip';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { cyan, yellow, orange } from '@mui/material/colors';
-import { Divider, Grid, Paper } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import './Common.css';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
+import { API_GET_USER } from '../global/constants';
+import { getAuthToken } from '../utils';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
 
 const { useState } = React;
 
@@ -52,12 +54,17 @@ const VisuallyHiddenInput = styled('input')({
   });
 
 function UserProfile() {
-  const style2 = { 
-    padding: "1rem 0 0 0" 
-  };
-  const instyle = { 
-    padding: "3rem 0 0 0" 
-  };
+  const { t, i18n } = useTranslation();
+  const [userToken, setUserToken] = useState(getAuthToken());
+
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [gender, setGender] = useState('');
+  const [tag, setTag] = useState('');
+  const [about, setAbout] = useState('');
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -65,15 +72,49 @@ function UserProfile() {
       email: data.get('email'),
       password: data.get('password'),
     });
+    axios.put(API_GET_USER, {
+      name: name,
+      phoneNum: phone,
+      gender: gender,
+      aboutMe: about
+    }, {headers:{
+      authorization: 'bearer ' + userToken
+    }}).then(function (response) {
+      alert('修改成功');
+      console.log(response);
+    }).catch(function (error) {
+      console.log(error);
+    })
   };
-  const defaultTheme = createTheme();
 
+  useEffect(() => {
+    getUserData();
+  }, []);
 
-  const [name, setName] = useState('MyName');
-  const [phone, setPhone] = useState('091111111');
-  const [email, setEmail] = useState('hello@gmail.com');
-  const [gender, setGender] = useState('female');
-  const [tag, setTag] = useState('tag');
+  const getUserData = () => {
+    axios.get(API_GET_USER, {headers:{ 
+      authorization: 'bearer ' + userToken
+    
+    }})
+    .then(function (response) {
+      console.log(response.data.members);
+        setName(response.data.members.name? response.data.members.name : '');
+        setEmail(response.data.members.email);
+        setPhone(response.data.members.phoneNum? response.data.members.phoneNum : '');
+        setGender(response.data.members.gender? response.data.members.gender : '');
+        setTag(response.data.members.tag? response.data.members.tag : '');
+        setAbout(response.data.members.self_introduction? response.data.members.self_introduction : '');
+        
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  
+  };
+
+  const handleGenderChange = (event) => {
+    setGender(event.target.value);
+  };
 
 
 
@@ -130,8 +171,7 @@ function UserProfile() {
                         <TextField
                                 margin="normal"
                                 fullWidth
-                                id="outlined-controlled"
-                                label="Name"
+                                label={t('姓名')}
                                 value={name}
                                 onChange={(event) => {
                                 setName(event.target.value);
@@ -140,8 +180,7 @@ function UserProfile() {
                         <TextField
                                 margin="normal"
                                 fullWidth
-                                id="outlined-controlled"
-                                label="Email"
+                                label={t('電子郵件')}
                                 value={email}
                                 onChange={(event) => {
                                 setEmail(event.target.value);
@@ -150,53 +189,60 @@ function UserProfile() {
                         <TextField
                                 fullWidth
                                 margin="normal"
-                                id="outlined-controlled"
-                                label="Phone"
+                                label={t('手機號碼')}
                                 value={phone}
                                 onChange={(event) => {
                                 setPhone(event.target.value);
                                 }}
                             />
                         
-                            
-                            
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label="Gender"
+                            <FormControl fullWidth margin="normal">
+
+                              <InputLabel id="label_gender">{t('性別')}</InputLabel>
+                              <Select
+                                labelId="label_gender"
+                                id="gender"
+                                name="gender"
                                 value={gender}
-                                onChange={(event) => {
-                                setGender(event.target.value);
-                                }}
-                            />
+                                label="Gender"
+                                onChange={handleGenderChange}
+                                
+                              >
+                                <MenuItem value={1}>{t('男性')}</MenuItem>
+                                <MenuItem value={2}>{t('女性')}</MenuItem>
+                              </Select>
+                              </FormControl>
 
                         <TextField
                                 fullWidth
                                 margin="normal"
                                 id="outlined-multiline-static"
-                                label="About me"
+                                label={t('關於我')}
                                 multiline
                                 rows={4}
                                 defaultValue="Default Value"
+                                value={about}
+                                onChange={(event) => {
+                                  setAbout(event.target.value);
+                                }}
                                 />
-                        <TextField
+                        {/* <TextField
                                 fullWidth
                                 margin="normal"
-                                id="outlined-controlled"
                                 label="Tag"
                                 value={tag}
                                 onChange={(event) => {
                                 setTag(event.target.value);
                                 }}
-                            />
+                            /> */}
+                            {/* 暫時隱藏 */}
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Modify
+                            {t('修改')}
                         </Button>
                     </Box>
                 </Stack> 

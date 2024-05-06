@@ -73,8 +73,8 @@ function AccountSetting() {
 
 
   const [name, setName] = useState('MyName');
-  const [phone, setPhone] = useState('091111111');
-  const [email, setEmail] = useState('hello@gmail.com');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
 
 
 
@@ -116,7 +116,8 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label={t('電子郵件')}
+                                label={t('新密碼')}
+                                type="password"
                                 value={email}
                                 onChange={(event) => {
                                 setEmail(event.target.value);
@@ -126,7 +127,8 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label={t('手機號碼')}
+                                label={t('再次輸入修改密碼')}
+                                type="password"
                                 value={phone}
                                 onChange={(event) => {
                                 setPhone(event.target.value);

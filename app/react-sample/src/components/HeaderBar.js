@@ -150,6 +150,13 @@ export default function HeaderBar() {
     setAccountAnchor(null);
   };
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userInfo");
+
+    navigate('/login');
+  }
+
 
   const open = Boolean(anchorEl);
   const openAccountList = Boolean(accountAnchor);
@@ -280,7 +287,7 @@ export default function HeaderBar() {
         aria-expanded={openLanguageToggl ? 'true' : undefined}>
           繁體中文/English
         </MenuItem>
-        <MenuItem onClick={handleClose} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={logout} sx={{ justifyContent: 'center'}}>
             <Button variant="contained">
             {t('登出')}
             </Button>

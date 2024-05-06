@@ -18,7 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-import { API_EMAIL_VERIFY, API_SIGN_UP, API_GOOGLE_LOGIN } from '../global/constants';
+import { API_EMAIL_VERIFY, API_SIGN_UP, API_GOOGLE_SIGNUP } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import theme from '../components/Theme'; 
@@ -165,7 +165,7 @@ export default function Signup() {
   }
 
   const googleLogin = () => {
-    axios.get(API_GOOGLE_LOGIN, {
+    axios.get(API_GOOGLE_SIGNUP, {
       headers: {
         'Access-Control-Allow-Origin': '*'
       }
