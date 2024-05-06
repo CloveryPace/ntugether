@@ -8,26 +8,28 @@ import Typography from '@mui/material/Typography';
 import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthToken } from '../utils';
 
 export default function ActivityList() {
   const [data, setData] = useState([]);
+  const [userToken, setUserToken] = useState(getAuthToken());
+
 
   useEffect(() => {
     console.log('execute function in useEffect');
-
     //登入
-    axios.post(API_LOGIN, {
-      "email": "r12725066@ntu.edu.tw",
-      "password": "a"
-    })
-    .then(function (response) {
-        console.log(response.status, response.data);
-        //儲存token
-        const token = response.data.jwtToken;
+    // axios.post(API_LOGIN, {
+    //   "email": "r12725066@ntu.edu.tw",
+    //   "password": "a"
+    // })
+    // .then(function (response) {
+    //     console.log(response.status, response.data);
+    //     //儲存token
+    //     const token = response.data.jwtToken;
         //設定authorization
         const config = {
             headers: { 
-              authorization: `Bearer ${token}`
+              authorization: `Bearer ${userToken}`
             }
         };
         //取得活動list
@@ -41,10 +43,10 @@ export default function ActivityList() {
             alert("error");
           });
 
-      })
-      .catch(function (error) {
-          console.log(error);
-      });
+      // })
+      // .catch(function (error) {
+      //     console.log(error);
+      // });
     }, []);
   
 

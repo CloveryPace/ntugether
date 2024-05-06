@@ -19,23 +19,26 @@ import {useLocation} from 'react-router-dom';
 import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useEffect } from 'react';
+import { getAuthToken } from '../utils';
 
 function ActivityPage() {
   const { state } = useLocation();
   const { id } = state; // Read values passed on state
   const [data, setData] = useState([]);
+  const [userToken, setUserToken] = useState(getAuthToken());
+
 
   useEffect(() => {
     //登入
-    async function runEffect(){
-    await axios.post(API_LOGIN, {
-      "email": "r12725066@ntu.edu.tw",
-      "password": "a"
-    })
-    .then(function (response) {
-        console.log(response.status, response.data);
+    // async function runEffect(){
+    // await axios.post(API_LOGIN, {
+    //   "email": "r12725066@ntu.edu.tw",
+    //   "password": "a"
+    // })
+    // .then(function (response) {
+    //     console.log(response.status, response.data);
         //儲存token
-        const token = response.data.jwtToken;
+        const token = userToken;
         //設定authorization
         const config = {
             headers: { 
@@ -53,26 +56,26 @@ function ActivityPage() {
             alert("error");
           });
 
-      })
-      .catch(function (error) {
-          console.log(error);
-      });
-      }
-      runEffect();
-  }, [id]);
+      }, [id]);
+      // .catch(function (error) {
+      //     console.log(error);
+      // });
+      // }
+      // runEffect();
+  // }, [id]);
 
   const [editingShow, setEditingShow] = useState(false);
   const [attend, setAttend] = useState(false); // 參加活動
   const handleAttend = () => {
     if(data.need_review){
-      axios.post(API_LOGIN, {
-        "email": "r12725066@ntu.edu.tw",
-        "password": "a"
-      })
-      .then(function (response) {
-          console.log(response.status, response.data);
+      // axios.post(API_LOGIN, {
+      //   "email": "r12725066@ntu.edu.tw",
+      //   "password": "a"
+      // })
+      // .then(function (response) {
+      //     console.log(response.status, response.data);
           //儲存token
-          const token = response.data.jwtToken;
+          const token = userToken;
           console.log(token);
           //設定authorization
           const bodyParameters = {
@@ -93,23 +96,23 @@ function ActivityPage() {
                 alert("送出失敗");
                 console.log(err);
           });
-      })
-      .catch(function (error) {
-        // 登入中間出錯
-        alert("送出失敗");
-        console.log(error);
-      });
+      
+      // .catch(function (error) {
+      //   // 登入中間出錯
+      //   alert("送出失敗");
+      //   console.log(error);
+      // });
     }
     else{
       // 不需審核
-      axios.post(API_LOGIN, {
-        "email": "r12725066@ntu.edu.tw",
-        "password": "a"
-      })
-      .then(function (response) {
-          console.log(response.status, response.data);
+      // axios.post(API_LOGIN, {
+      //   "email": "r12725066@ntu.edu.tw",
+      //   "password": "a"
+      // })
+      // .then(function (response) {
+          // console.log(response.status, response.data);
           //儲存token
-          const token = response.data.jwtToken;
+          const token = userToken;
           console.log(token);
           //設定authorization
           const bodyParameters = {
@@ -130,13 +133,13 @@ function ActivityPage() {
                 alert("加入失敗");
                 console.log(err);
           });
-      })
-      .catch(function (error) {
-        // 登入中間出錯
-        alert("參加失敗");
-        console.log(error);
-      });
-    }
+      }
+    //   .catch(function (error) {
+    //     // 登入中間出錯
+    //     alert("參加失敗");
+    //     console.log(error);
+    //   });
+    // }
   };
   const handleQuit = () => {
     setAttend(false);

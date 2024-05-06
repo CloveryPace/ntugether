@@ -24,6 +24,7 @@ import dayjs from 'dayjs';
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
 import theme from '../components/Theme'; 
+import { getAuthToken } from '../utils';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -65,7 +66,7 @@ function NewActivity() {
     const [need_review, setReview] = useState(false); // 需審核: true, 不需審核：false
     const [type, setType] = useState('運動'); // 活動類型
     const [actDate, setActDate] = useState(dayjs('2024-05-30')); 
-    const [Token, setToken] = useState('')
+    const [userToken, setUserToken] = useState(getAuthToken());
 
     const [activityData, setActivityData] = useState({
         name: '',
@@ -95,15 +96,14 @@ function NewActivity() {
         console.log(activityData);
         
         //登入
-        axios.post(API_LOGIN, {
-            "email": "r12725066@ntu.edu.tw",
-            "password": "a"
-        })
-        .then(function (response) {
-            console.log(response.status, response.data);
-            //儲存token
-            const token = response.data.jwtToken;
-            setToken(response.data.jwtToken);
+        // axios.post(API_LOGIN, {
+        //     "email": "r12725066@ntu.edu.tw",
+        //     "password": "a"
+        // })
+        // .then(function (response) {
+        //     console.log(response.status, response.data);
+        //     //儲存token
+            const token = userToken;
 
             //設定authorization
             const bodyParameters = {
@@ -125,10 +125,10 @@ function NewActivity() {
                     alert("新增失敗");
                     console.log(err);
             });
-        })
-        .catch(function (error) {
-            console.log(error);
-        }); 
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // }); 
 
     };
 

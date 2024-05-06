@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import { useRef } from "react";
+import { getAuthToken } from '../utils';
 
 const style = {
   margin: "0.5rem"
@@ -18,6 +19,7 @@ const style = {
 
 export default function CommentsBox({ id }) {
     const [data, setData] = useState([]); //留言資料
+    const [userToken, setUserToken] = useState(getAuthToken());
     const inputRef = useRef();
 
     const subtitle = { 
@@ -26,15 +28,15 @@ export default function CommentsBox({ id }) {
 
     useEffect(() => {
       //登入
-      async function runEffect(){
-      await axios.post(API_LOGIN, {
-        "email": "r12725066@ntu.edu.tw",
-        "password": "a"
-      })
-      .then(function (response) {
-          console.log(response.status, response.data);
+      // async function runEffect(){
+      // await axios.post(API_LOGIN, {
+      //   "email": "r12725066@ntu.edu.tw",
+      //   "password": "a"
+      // })
+      // .then(function (response) {
+      //     console.log(response.status, response.data);
           //儲存token
-          const token = response.data.jwtToken;
+          const token = userToken;
           //設定authorization
           const bodyParameters = {
             key: "value",
@@ -58,12 +60,12 @@ export default function CommentsBox({ id }) {
               console.log("取得留言出現錯誤");
             });
   
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-        }
-        runEffect();
+        // })
+        // .catch(function (error) {
+        //     console.log(error);
+        // });
+        // }
+        // runEffect();
     }, [id]);
 
     // 留言

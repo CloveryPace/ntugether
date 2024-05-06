@@ -8,9 +8,11 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import Chip from '@mui/material/Chip';
+import { getAuthToken } from '../utils';
 
 export default function PendingReview({id}) {
     const [data, setData] = useState([]);
+    const [userToken, setUserToken] = useState(getAuthToken());
     const style = { 
       display: "flex",
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -25,15 +27,15 @@ export default function PendingReview({id}) {
       };
       useEffect(() => {
         //登入
-        async function runEffect(){
-        await axios.post(API_LOGIN, {
-          "email": "r12725066@ntu.edu.tw",
-          "password": "a"
-        })
-        .then(function (response) {
-            console.log(response.status, response.data);
+        // async function runEffect(){
+        // await axios.post(API_LOGIN, {
+        //   "email": "r12725066@ntu.edu.tw",
+        //   "password": "a"
+        // })
+        // .then(function (response) {
+        //     console.log(response.status, response.data);
             //儲存token
-            const token = response.data.jwtToken;
+            const token = userToken;
             //設定authorization
             const config = {
                 headers: { 
@@ -52,12 +54,12 @@ export default function PendingReview({id}) {
                 console.log("取得審請錯誤");
               });
     
-          })
-          .catch(function (error) {
-              console.log(error);
-          });
-          }
-          runEffect();
+          // })
+          // .catch(function (error) {
+          //     console.log(error);
+          // });
+          // }
+          // runEffect();
       }, [id]);
 
     return (
