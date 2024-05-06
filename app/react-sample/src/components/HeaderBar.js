@@ -278,7 +278,7 @@ export default function HeaderBar() {
         <MenuItem onClick={() => navigate('/activityattendpage')} sx={{ justifyContent: 'center'}}>
         {t('活動紀錄')}
         </MenuItem>
-        <MenuItem onClick={() => navigate('#')} sx={{ justifyContent: 'center'}}>
+        <MenuItem onClick={() => navigate('/planManage')} sx={{ justifyContent: 'center'}}>
         {t('進度紀錄')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />

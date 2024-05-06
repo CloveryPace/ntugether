@@ -181,10 +181,10 @@ function User() {
               <Typography variant='body1'>簡介簡介簡介簡介簡介簡介簡介簡介簡介簡介</Typography>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              Item Two
+              尚無活動紀錄
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-              Item Three
+              尚無進度紀錄
             </CustomTabPanel>
           </Box>
           <Box>

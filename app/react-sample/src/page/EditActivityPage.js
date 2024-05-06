@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { getAuthToken } from '../utils';
 
 const style = {
   position: 'absolute',
