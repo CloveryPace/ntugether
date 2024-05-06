@@ -42,8 +42,13 @@ export default function CommentsBox({ id }) {
           const config = {bodyParameters,
               headers: { "authorization": `Bearer ${token}`}
           };
+
           //取得活動留言資訊
-          axios.get(API_GET_ACTIVITY_DETAIL + id + '/discussion', config)
+          axios.get(API_GET_ACTIVITY_DETAIL + id + '/discussion', {
+              "limit": 10,
+              "offset": 0
+            }, 
+            config)
             .then(function (res) {
               console.log(res.data);
               setData(res.data);

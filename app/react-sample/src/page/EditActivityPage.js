@@ -146,8 +146,12 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 onHide();
             })
             .catch(function (err) {
+              if (err.message === "Request failed with status code 403"){
+                alert("非活動建立者無權限更新活動");
+              }
+              else{
                 alert("更新失敗");
-                console.log(err);
+              }
           });
         })
         .catch(function (error) {
@@ -260,8 +264,12 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
               navigate('/activitylist');
           })
           .catch(function (err) {
-              alert("刪除失敗");
-              console.log(err);
+              if (err.message === "Request failed with status code 403"){
+                alert("非活動建立者無權限刪除活動");
+              }
+              else{
+                alert("刪除失敗");
+              }
         });
     })
     .catch(function (error) {

@@ -20,6 +20,10 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
     // 參加api
     const handleAttend = () => {
       if(need_reviewed){
+        if (Answer.current?.value === ""){
+          alert("請輸入回答");
+        }
+        else {
         axios.post(API_LOGIN, {
           "email": "r12725066@ntu.edu.tw",
           "password": "a"
@@ -36,12 +40,18 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
             const config = {bodyParameters,
                 headers: { "authorization": `Bearer ${token}`}
             };
+            //回答
+            const response_ans = 
+            {
+              application_response: Answer.current?.value
+            }
     
             //送加入申請
-            axios.post(API_GET_ACTIVITY_DETAIL + id + 'apply', config)
+            axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', response_ans, config)
               .then(function (res) {
                   console.log(res);
                   alert('已送出申請');
+                  window.location.reload(false);
               })
               .catch(function (err) {
                   alert("送出失敗");
@@ -53,6 +63,7 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
           alert("送出失敗");
           console.log(error);
         });
+        }
       }
       else{
         // 不需審核
@@ -74,10 +85,11 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
             };
     
             //送加入申請
-            axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', config)
+            axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', "", config)
               .then(function (res) {
                   console.log(res);
                   alert('已加入');
+                  window.location.reload(false);
               })
               .catch(function (err) {
                   alert("加入失敗");
@@ -105,11 +117,11 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
                 label="輸入回答"
                 inputRef={Answer}
                 />
-              <Button variant="contained" color="primary" onClick={handleSubmit}> 送出加入請求 </Button> 
+              <Button variant="contained" color="primary" onClick={handleAttend}> 送出加入請求 </Button> 
           </Stack>
         </div>
       :
-        <Button variant="contained" color="primary"> 參加活動 </Button>
+        <Button variant="contained" color="primary" onClick={handleAttend}> 參加活動 </Button>
       }
       </>
     );

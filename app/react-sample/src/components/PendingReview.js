@@ -12,12 +12,14 @@ import Chip from '@mui/material/Chip';
 export default function PendingReview({id}) {
     const [data, setData] = useState([]);
     const style = { 
+      display: "flex",
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '1rem',
-      spacing: "5rem"
+      spacing: "5rem",
+      direction: "row"
     };
     const component = { 
-        width: "40rem",
+        width: "10rem",
         border: '1.5px solid rgba(0, 0, 0, 0.1)',
         padding: '1rem'
       };
@@ -66,16 +68,11 @@ export default function PendingReview({id}) {
             (data.map((comment) => {
               return (
                 <div style = {component}>
-                    <Stack direction="row" spacing={45}>
-                        <Stack direction="row" spacing={3}>
-                            <Chip avatar={<Avatar>M</Avatar>} label={comment.applicant.username? comment.applicant.username: "未知"} />
-                            <p> {comment.application_response? comment.application_response: "未回答"} </p>
-                        </Stack>
-                        <Stack direction="row" spacing={1}>
-                            <Button variant="contained" color="primary"> 加入 </Button> 
-                            <Button variant="contained" color="primary"> 刪除 </Button> 
-                        </Stack>
-                    </Stack >
+                  <Chip avatar={<Avatar>M</Avatar>} label={comment.is_approved? comment.is_approved: "未知"} />
+                  <p> {comment.application_response? comment.application_response: "未回答"} </p>
+                  <Button variant="contained" color="primary"> 加入 </Button> 
+                  <p></p>
+                  <Button variant="contained" color="primary"> 刪除 </Button> 
                 </div>
               );
             })):
