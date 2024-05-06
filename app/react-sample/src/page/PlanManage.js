@@ -9,6 +9,7 @@ import { Divider } from '@mui/material';
 
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
+import UserPageNav from '../components/UserPageNav'
 
 import './Common.css';
 
@@ -19,6 +20,7 @@ function PlanManage() {
   return (
     <ThemeProvider theme={theme}>
       <HeaderBar />
+      <UserPageNav selectedTab={2}/> 
       <div className='Main'>
         <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} style={{ marginBottom: '20px' }} >
             <Typography variant="h4"> 參與紀錄 </Typography>

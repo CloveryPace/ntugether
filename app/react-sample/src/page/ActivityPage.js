@@ -247,10 +247,19 @@ function ActivityPage() {
       <br/>
       <br/>
 
-      <div style={container}>
+      <Box
+      sx={{
+        display: 'flex',
+        mb: '20px',
+        mt: '20px',
+        '@media (max-width: 600px)': {
+          display: 'block', 
+        },
+      }}
+      >
         <div style={subtitle}><Typography variant="h6"> 加入審核 </Typography></div>
         <div><PendingReview id={id}/></div>
-      </div>
+      </Box>
       
       <br/>
       <br/>
