@@ -2,10 +2,7 @@
 import React, { useState } from 'react';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import Divider from '@mui/material/Divider'
 import Grid from '@mui/material/Grid'
-import Paper from '@mui/material/Paper'
-import TextField from '@mui/material/TextField'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import { ThemeProvider } from '@mui/material/styles';
@@ -14,16 +11,132 @@ import PendingReview from '../components/PendingReview';
 import CommentsBox from '../components/CommentsBox';
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
+import ReviewBox from '../components/ReviewBox';
 import Box from '@mui/material/Box';
 import './Common.css';
 import EditActivityPage from './EditActivityPage'; 
+import {useLocation} from 'react-router-dom';
+import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 function ActivityPage() {
+  const { state } = useLocation();
+  const { id } = state; // Read values passed on state
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    //登入
+    async function runEffect(){
+    await axios.post(API_LOGIN, {
+      "email": "r12725066@ntu.edu.tw",
+      "password": "a"
+    })
+    .then(function (response) {
+        console.log(response.status, response.data);
+        //儲存token
+        const token = response.data.jwtToken;
+        //設定authorization
+        const config = {
+            headers: { 
+              authorization: `Bearer ${token}`
+            }
+        };
+        //取得活動資訊
+        axios.get(API_GET_ACTIVITY_DETAIL + id, config)
+          .then(function (res) {
+            console.log(res.data);
+            setData(res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            alert("error");
+          });
+
+      })
+      .catch(function (error) {
+          console.log(error);
+      });
+      }
+      runEffect();
+  }, [id]);
+
   const [editingShow, setEditingShow] = useState(false);
   const [attend, setAttend] = useState(false); // 參加活動
   const handleAttend = () => {
-    setAttend(true);
-    alert("參加成功");
+    if(data.need_review){
+      axios.post(API_LOGIN, {
+        "email": "r12725066@ntu.edu.tw",
+        "password": "a"
+      })
+      .then(function (response) {
+          console.log(response.status, response.data);
+          //儲存token
+          const token = response.data.jwtToken;
+          console.log(token);
+          //設定authorization
+          const bodyParameters = {
+            key: "value",
+          };
+          const config = {bodyParameters,
+              headers: { "authorization": `Bearer ${token}`}
+          };
+  
+          //送加入申請
+          axios.post(API_GET_ACTIVITY_DETAIL + id + 'apply', config)
+            .then(function (res) {
+                console.log(res);
+                setAttend(true);
+                alert('已送出申請');
+            })
+            .catch(function (err) {
+                alert("送出失敗");
+                console.log(err);
+          });
+      })
+      .catch(function (error) {
+        // 登入中間出錯
+        alert("送出失敗");
+        console.log(error);
+      });
+    }
+    else{
+      // 不需審核
+      axios.post(API_LOGIN, {
+        "email": "r12725066@ntu.edu.tw",
+        "password": "a"
+      })
+      .then(function (response) {
+          console.log(response.status, response.data);
+          //儲存token
+          const token = response.data.jwtToken;
+          console.log(token);
+          //設定authorization
+          const bodyParameters = {
+            key: "value",
+          };
+          const config = {bodyParameters,
+              headers: { "authorization": `Bearer ${token}`}
+          };
+  
+          //送加入申請
+          axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', config)
+            .then(function (res) {
+                console.log(res);
+                setAttend(true);
+                alert('已加入');
+            })
+            .catch(function (err) {
+                alert("加入失敗");
+                console.log(err);
+          });
+      })
+      .catch(function (error) {
+        // 登入中間出錯
+        alert("參加失敗");
+        console.log(error);
+      });
+    }
   };
   const handleQuit = () => {
     setAttend(false);
@@ -37,13 +150,6 @@ function ActivityPage() {
   const container = { 
     display: "flex" 
   };
-
-  const discussion = {
-    display: 'flex',
-    '@media (max-width: 600px)': {
-      display: 'block',
-    },
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -61,11 +167,12 @@ function ActivityPage() {
     >
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Stack direction="row" spacing={3}>
-            <Typography variant="h4">活動名稱</Typography>
-            <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-            <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label="一次性"/>
-            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
-            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
+            <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
+            <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+            <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={data.is_one_time? "一次性活動": "長期性活動"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_reviewed? "需審核": "不需審核"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
+            <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={"ID: " + id}/>
           </Stack>
           <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
         </Stack>
@@ -73,15 +180,17 @@ function ActivityPage() {
           <EditActivityPage /** 編輯視窗 */
             show={editingShow}
             onHide={() => setEditingShow(false)}
-            ActivityName="活動名稱"
-            ActivityIntro="XXXXXX"
-            ActivityTime="01/01/2024"
-            ActivityLocation="台大"
-            ActivityLimitPerson="5"
+            name={data.name? data.name: ""}
+            introduction={data.introduction? data.introduction: ""}
+            date={data.date? data.date: ""}
+            location={data.location? data.location: ""}
+            max_participants={data.max_participants? data.max_participants: ""}
             ActivityAtendee=""
-            ActivityOnetime={false}
-            ActivityReview={false}
-            ActivityType={"運動"}
+            oneTime={data.is_one_time? data.is_one_time: ""}
+            need_reviewed={data.need_reviewed? data.need_reviewed: ""}
+            type={data.type? data.type: "未指定"}
+            id={id}
+            application_problem={data.application_problem? data.application_problem: ""}
           />
           }
       </Box>
@@ -99,35 +208,35 @@ function ActivityPage() {
           sx={{
               marginBottom: '10px'
         }}>
-          <Typography variant="h4">活動名稱</Typography>
+          <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
           <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
         </Stack>
         <Stack direction="row" spacing={3}>
-          <Chip avatar={<Avatar>M</Avatar>} label="創建者 名稱" />
-          <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label="一次性"/>
-          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
-          <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
+          <Chip avatar={<Avatar>M</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+          <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={data.is_one_time? "一次性活動": "長期性活動"}/>
+          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={data.need_review? "需審核": "不需審核"}/>
+          <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
         </Stack>
       </Box>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動簡介 </Typography></div>
-        <div><Typography variant="h6"> xxxxx </Typography></div>
+        <div><Typography variant="h6"> {data.introduction? data.introduction: "尚無活動簡介"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動時間 </Typography></div>
-        <div><Typography variant="h6"> 2024/01/01 20:00 </Typography></div>
+        <div><Typography variant="h6"> {data.date? data.date: "尚無活動時間資料"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 活動地點 </Typography></div>
-        <div><Typography variant="h6"> xxxxx </Typography></div>
+        <div><Typography variant="h6"> {data.location? data.location: "尚無活動地點資料"} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> 人數上限 </Typography></div>
-        <div><Typography variant="h6"> 5 </Typography></div>
+        <div><Typography variant="h6"> {data.max_participants? data.max_participants: "尚無人數上限"} </Typography></div>
       </div>
 
       <div style={container}>
@@ -149,23 +258,23 @@ function ActivityPage() {
       }}
       >
         <div style={subtitle}><Typography variant="h6"> 加入審核 </Typography></div>
-        <div><PendingReview/></div>
+        <div><PendingReview id={id}/></div>
       </Box>
       
       <br/>
       <br/>
 
-      <CommentsBox/>
+      <CommentsBox id={id}/>
 
       <br/>
       <br/>
       
       <Grid container justifyContent="center">
         <Grid item>
-      {attend?
-      <Button variant="contained" color="warning" onClick={handleQuit}> 退出活動 </Button>:
-      <Button variant="contained" color="primary" onClick={handleAttend}> 參加活動 </Button> 
-      } 
+        {attend?
+          <Button variant="contained" color="warning" onClick={handleQuit}> 退出活動 </Button>:
+          <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
+        }
       </Grid>
       </Grid>
 

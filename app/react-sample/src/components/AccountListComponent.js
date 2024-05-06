@@ -1,10 +1,8 @@
 import * as React from 'react'; 
 
 import AccountComponent from './AccountComponent';
-import Button from '@mui/material/Button';
-
+import ActivityComponent from './ActivityComponent';
 import { Grid } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import { API_CREATE_ACTIVITY } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -35,12 +33,12 @@ export default function AccountListComponent() {
         <AccountComponent />
         <AccountComponent />
         
-           {/* { (data.map((activity) => {
+           { (data.map((activity) => {
               return (
                 <ActivityComponent data={activity} key={activity.id} />
               );
             }))
-          } */}
+          }
 
       </Grid>
     );
