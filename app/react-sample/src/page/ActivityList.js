@@ -1,33 +1,29 @@
 // 顯示多活動資訊方塊（ActivityComponent）
 
-
-import ActivityListComponent from "../components/ActivityListComponent.js";
-import { ThemeProvider } from '@mui/material/styles';
-import { Typography} from '@mui/material';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { useNavigate } from 'react-router-dom';
-
-import theme from '../components/Theme'; 
-import HeaderBar from '../components/HeaderBar';
-
-import './Common.css';
-
+import ActivityComponent from "../components/ActivityComponent";
 
 function ActivityList() {
-  const navigate = useNavigate();
+
+  const style = { 
+    padding: "3rem"
+  };
+  const instyle = { 
+    padding: "1.5rem 0 0 0" 
+  };
 
   return (
-    <ThemeProvider theme={theme}>
-      <HeaderBar />
-      <div className='Main'>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} style={{ marginBottom: '20px' }} >
-        <Typography variant="h4"> 活動列表 </Typography>
-        <Button variant="contained" color="primary" onClick={() => navigate('/newactivity')}> 新增活動 </Button> 
+    <div style={style}>
+
+      <Stack direction="row" spacing={1.5} className='m-16'>
+        <h3> 活動列表 </h3> 
       </Stack>
-      <ActivityListComponent/>
+
+      <div style={instyle}>
+        <ActivityComponent></ActivityComponent>
       </div>
-    </ThemeProvider>
+
+    </div>
   );
 }
 
