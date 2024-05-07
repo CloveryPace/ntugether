@@ -3,6 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
+activity_id = 20
 
 
 def signup():
@@ -27,6 +28,7 @@ def signup():
 def signin():
     payload = json.dumps({
         "email": "daniel.bb0321@gmail.com",
+        # "email": "b09611028@ntu.edu.tw",
         # "email": "r12725066@ntu.edu.tw",
         "password": "pwd"
         # "password": "a"
@@ -61,7 +63,7 @@ def create_activity():
             "name": "example Activity",
             "introduction": "Introduction of Activity",
             "date": "2024-04-27T11:56:53.727Z",
-            "need_review": True,
+            "need_reviewed": True,
             "country": "Taiwan",
             "max_participants": 10,
             "location": "Taipei",
@@ -148,7 +150,7 @@ def apply():
         }
     )
     res = requests.post(
-        url=f"{host}/activity/13/apply",
+        url=f"{host}/activity/{activity_id}/apply",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -194,7 +196,7 @@ def remove_user():
 
 def get_activity_applications():
     res = requests.get(
-        url=f"{host}/activity/13/application",
+        url=f"{host}/activity/{activity_id}/application",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"

@@ -30,6 +30,61 @@ async function returnActivity(activity_id) {
     return activity;
 };
 
+async function needReviewApply(req, res, activity_id, user_id) {
+    // console.log(activityNeedReview);
+
+    // if (
+    //     !activityModel.ActivityParticipantStatus.findOne({
+    //         where: {
+    //             joined_activities: activity_id,
+    //             participants: user_id
+    //         }
+    //     })
+    // ) return res.status(403).send("participant existed");
+    const applicantExist = await activityModel.Applications.findOne({
+        where: {
+            applicant_id: user_id,
+            activity_id: activity_id
+        }
+    });
+
+    if (applicantExist) return res.status(409).send("Applicant already exist.");
+
+    const application_response = req.body.application_response; // TODO: need to check if the paramter exists
+
+    activityModel.Applications.create(
+        {
+            application_response: application_response,
+            applicant_id: user_id,
+            activity_id: activity_id,
+        }
+    );
+
+    return res.status(201).send("Successfully send the application");
+}
+
+async function noReviewApply(req, res, activity_id, user_id) {
+    participantsExist = await activityModel.ActivityParticipantStatus.findOne({
+        where: {
+            joined_activities: activity_id,
+            participants: user_id,
+        }
+    });
+
+    if (participantsExist) return res.status(400).send("applier has already joined");
+
+
+    // update participants
+    await activityModel.ActivityParticipantStatus.create(
+        {
+            joined_activities: activity_id,
+            participants: user_id
+        }
+    );
+    return res.status(200).send("joined!");
+
+}
+
 /**
  * sync all the model used in the controller 
  */
@@ -137,6 +192,7 @@ exports.createActivity = async (req, res) => {
     };
     */
 
+    var newActivity = null;
     try {
         const user_id = req.user_id;
 
@@ -146,10 +202,19 @@ exports.createActivity = async (req, res) => {
         // body.check_by_organizer = req.body.check_by_organizer;
         body.created_user_id = user_id;
 
-        const newActivity = await activityModel.Activities.create(body);
-        res.status(201).send("Successfully create an Activity");
+        newActivity = await activityModel.Activities.create(body);
+
+        // update participants
+        await activityModel.ActivityParticipantStatus.create(
+            {
+                joined_activities: newActivity.activity_id,
+                participants: user_id
+            }
+        );
+        res.status(201).json({ message: "Successfully create an Activity", activity_id: newActivity.activity_id });
     }
     catch (error) {
+        if (newActivity) newActivity.destroy();
         console.error("Error creating activity", error);
         res.status(500).json({ error: "Internal server error" });
     }
@@ -401,49 +466,29 @@ exports.applyActivity = async (req, res) => {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
-        const activityNeedReview = await activityModel.Activities.findOne({
-            where: {
-              need_reviewed: true, 
-              activity_id: activity_id 
-            }
-          });        
-        const applicantExist = await activityModel.Applications.findOne({
-            where: {
-              applicant_id: user_id, 
-              activity_id: activity_id 
-            }
-          });
-
-        if (applicantExist) return res.status(409).send("Applicant already exist.");
-        if (!activityNeedReview) return res.status(400).send("Activity doesn't need to apply.");
-        // console.log(activityNeedReview);
 
         if (!activity) return res.status(400).send("Activity not found");
 
-        // if (
-        //     !activityModel.ActivityParticipantStatus.findOne({
-        //         where: {
-        //             joined_activities: activity_id,
-        //             participants: user_id
-        //         }
-        //     })
-        // ) return res.status(403).send("participant existed");
-
-        const application_response = req.body.application_response; // TODO: need to check if the paramter exists
-
-        activityModel.Applications.create(
-            {
-                application_response: application_response,
-                applicant_id: user_id,
-                activity_id: activity_id,
+        const activityNeedReview = await activityModel.Activities.findOne({
+            where: {
+                need_reviewed: true,
+                activity_id: activity_id
             }
-        );
+        });
 
-        res.status(201).send("Successfully send the application");
+        console.log("need review", activityNeedReview);
+
+        if (activityNeedReview) return needReviewApply(req, res, activity_id, user_id);
+
+        return noReviewApply(req, res, activity_id, user_id);
     } catch (error) {
         console.error('Error applying for activity:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+};
+
+exports.joinActivity = async (req, res) => {
+
 };
 
 exports.leaveActivity = async (req, res) => { }; // NOTE: not specified yet

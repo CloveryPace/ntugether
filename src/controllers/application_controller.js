@@ -79,7 +79,7 @@ exports.approve = async (req, res) => {
         // get applicant
         const applicant_id = application.applicant_id;
 
-        participantsExist = activityModel.ActivityParticipantStatus.findOne({
+        participantsExist = await activityModel.ActivityParticipantStatus.findOne({
             where: {
                 joined_activities: activity_id,
                 participants: applicant_id,

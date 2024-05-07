@@ -76,6 +76,7 @@ router.patch("/:activity_id/remove-user", authMiddleware.authentication, activit
  */
 router.post("/:activity_id/apply", authMiddleware.authentication, activityController.applyActivity);
 
+
 /**
  * ROUTES: /activity/{activity_id}/discussion
  * METHOD: GET
