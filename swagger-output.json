@@ -379,35 +379,14 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "application_response": {
-                  "example": "any"
-                }
-              }
-            }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
-          },
           "400": {
             "description": "Bad Request"
           },
           "401": {
             "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "409": {
-            "description": "Conflict"
           },
           "500": {
             "description": "Internal Server Error"
@@ -1186,28 +1165,8 @@
         ],
         "description": "OAuth callback for signup. Redirects to home page on success.",
         "responses": {
-          "200": {
-            "description": "Google Oauth註冊成功",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "success"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User authenticated successfully"
-                },
-                "token": {
-                  "type": "string",
-                  "example": "jwt_token"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
+          "default": {
+            "description": ""
           }
         }
       }
