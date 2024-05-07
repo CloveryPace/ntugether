@@ -1183,8 +1183,28 @@
         ],
         "description": "OAuth callback for signup. Redirects to home page on success.",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Google Oauth註冊成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User authenticated successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "jwt_token"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -1209,8 +1229,28 @@
         ],
         "description": "OAuth callback for login. Redirects to home page on success.",
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "Google Oauth登入成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User authenticated successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "example": "jwt_token"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }

@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 var router = express.Router();
 router.use(bodyParser.json());
@@ -327,7 +329,7 @@ router.delete(
 
 
 // Configure the Google strategy for use 
-passport.use('signup-google',new GoogleStrategy({
+passport.use('signup-google', new GoogleStrategy({
   clientID: process.env.googleClientID,
   clientSecret: process.env.googleClientSecret,
   callbackURL: "/user/oauth2callback/signup"
@@ -336,9 +338,13 @@ passport.use('signup-google',new GoogleStrategy({
     try {
       const user = await User.findOne({ where: { oauthId: profile.id } });
       if (user) {
-        return done(new Error('User already exist.'));
-        // return done(null, user);
+        return done(null, user);
       } else {
+        const existingEmailUser = await User.findOne({ where: { email: profile.emails[0].value } });
+        if (existingEmailUser) {
+          // Email already exists in the database, send a custom error message
+          return done(null, false, { message: 'Email already registered' });
+        }
         const newUser = await User.create({
           oauthId: profile.id,
           email: profile.emails[0].value,
@@ -347,6 +353,7 @@ passport.use('signup-google',new GoogleStrategy({
         });
         return done(null, newUser);
       }
+
     } catch (error) {
       return done(error);
 
@@ -401,9 +408,29 @@ router.get(
   '/oauth2callback/signup',
   // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
   // #swagger.tags = ['User']
-  passport.authenticate('signup-google', { failureRedirect: '/auth/failure' }),
+  /* #swagger.responses[200] = { 
+      description: "Google Oauth註冊成功",
+      schema: {
+            "status": "success",
+            "message": "User authenticated successfully",
+            "token": "jwt_token"
+          }
+      } */
+  passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
   (req, res) => {
-    res.redirect('/');
+    const user = req.user;
+    const token = jwt.sign(
+      { id: user.id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' } 
+    );
+
+    res.status(200).json ({
+      status: 'success',
+      message: 'User authenticated successfully',
+      token
+    })
+    // res.redirect('/');
   }
 );
 
@@ -418,9 +445,28 @@ router.get(
   '/oauth2callback/login',
   // #swagger.description = 'OAuth callback for login. Redirects to home page on success.'
   // #swagger.tags = ['User']
+  /* #swagger.responses[200] = { 
+      description: "Google Oauth登入成功",
+      schema: {
+            "status": "success",
+            "message": "User authenticated successfully",
+            "token": "jwt_token"
+          }
+      } */
   passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
-    res.redirect('/');
+    const user = req.user;
+    const token = jwt.sign(
+      { id: user.id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' } 
+    );
+    res.status(200).json ({
+      status: 'success',
+      message: 'User authenticated successfully',
+      token
+    })
+    // res.redirect('/');
   }
 );
 
@@ -429,7 +475,7 @@ router.get(
 router.get('/auth/failure', (req, res) => {
   // #swagger.description = 'Oauth驗證失敗API'
   // #swagger.tags = ['User']
-  res.send('Failed to authenticate.');
+  return res.send('Failed to authenticate.');
 });
 
 module.exports = router;
