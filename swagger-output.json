@@ -13,7 +13,10 @@
   "paths": {
     "/application/{application_id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Activity"
+        ],
+        "description": "活動創立者可以檢視特定審核",
         "parameters": [
           {
             "name": "application_id",
@@ -29,7 +32,39 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "回傳特定審核id情況",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_id": {
+                  "type": "number",
+                  "example": 11
+                },
+                "application_response": {
+                  "type": "string",
+                  "example": "審核回覆"
+                },
+                "is_approved": {
+                  "type": "string",
+                  "example": "true"
+                },
+                "applicant_id": {
+                  "type": "number",
+                  "example": 16
+                },
+                "Applicant": {
+                  "type": "string",
+                  "example": "用戶資料"
+                },
+                "Activity": {
+                  "type": "string",
+                  "example": "activity_id"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -48,7 +83,10 @@
     },
     "/application/{application_id}/approve": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Activity"
+        ],
+        "description": "活動創立者可以進行問題審核，目前直接call這個API就會審核成功，自動將通過審核用戶加入活動參與者清單",
         "parameters": [
           {
             "name": "application_id",
@@ -64,7 +102,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "審核成功，將通過審核用戶加入參與者清單",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "approved!"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -83,6 +133,9 @@
     },
     "/activity/": {
       "get": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -152,6 +205,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -175,6 +231,9 @@
     },
     "/activity/{activity_id}": {
       "get": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -205,6 +264,9 @@
         }
       },
       "patch": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -250,6 +312,9 @@
         }
       },
       "delete": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -285,7 +350,10 @@
     },
     "/activity/{activity_id}/application": {
       "get": {
-        "description": "",
+        "tags": [
+          "Activity"
+        ],
+        "description": "活動創建者可以檢視特定活動的所有待審核列表",
         "parameters": [
           {
             "name": "activity_id",
@@ -301,7 +369,35 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "回傳待審核名單",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_id": {
+                  "type": "string",
+                  "example": "待審核者id"
+                },
+                "application_response": {
+                  "type": "string",
+                  "example": "審核回覆"
+                },
+                "is_approved": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "applicant_id": {
+                  "type": "number",
+                  "example": 16
+                },
+                "activity_id": {
+                  "type": "number",
+                  "example": 3
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "Unauthorized"
@@ -320,7 +416,10 @@
     },
     "/activity/{activity_id}/remove-user": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Activity"
+        ],
+        "description": "活動創建者移除活動中的用戶",
         "parameters": [
           {
             "name": "activity_id",
@@ -336,11 +435,13 @@
           {
             "name": "body",
             "in": "body",
+            "description": "要移除的用戶id",
             "schema": {
               "type": "object",
               "properties": {
-                "user_id": {
-                  "example": "any"
+                "remove_user_id": {
+                  "type": "string",
+                  "example": "用戶id"
                 }
               }
             }
@@ -359,6 +460,9 @@
           "403": {
             "description": "Forbidden"
           },
+          "404": {
+            "description": "Not Found"
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -367,7 +471,59 @@
     },
     "/activity/{activity_id}/apply": {
       "post": {
-        "description": "",
+        "tags": [
+          "Activity"
+        ],
+        "description": "不論是否需要審核的活動都是使用這個API，不須審核的將直接加入。所有用戶都可以call這個API，但是活動建立者會被擋掉",
+        "parameters": [
+          {
+            "name": "activity_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "需要審核活動的審核問題",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_response": {
+                  "type": "string",
+                  "example": "審核回覆"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/activity/{activity_id}/participants": {
+      "get": {
+        "tags": [
+          "Activity"
+        ],
+        "description": "回傳活動所有參與者，目前只有ID，無法回傳參與者名稱",
         "parameters": [
           {
             "name": "activity_id",
@@ -382,6 +538,9 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "400": {
             "description": "Bad Request"
           },
@@ -396,6 +555,9 @@
     },
     "/activity/{activity_id}/discussion": {
       "get": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -436,6 +598,9 @@
         }
       },
       "post": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {
@@ -483,6 +648,9 @@
     },
     "/activity/{activity_id}/leave": {
       "post": {
+        "tags": [
+          "Activity"
+        ],
         "description": "",
         "parameters": [
           {

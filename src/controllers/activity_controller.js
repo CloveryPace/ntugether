@@ -30,17 +30,8 @@ async function returnActivity(activity_id) {
     return activity;
 };
 
-async function needReviewApply(req, res, activity_id, user_id) {
-    // console.log(activityNeedReview);
-
-    // if (
-    //     !activityModel.ActivityParticipantStatus.findOne({
-    //         where: {
-    //             joined_activities: activity_id,
-    //             participants: user_id
-    //         }
-    //     })
-    // ) return res.status(403).send("participant existed");
+async function needReviewApply(req, res, activity_id, user_id, application_response) {
+    
     const applicantExist = await activityModel.Applications.findOne({
         where: {
             applicant_id: user_id,
@@ -50,20 +41,20 @@ async function needReviewApply(req, res, activity_id, user_id) {
 
     if (applicantExist) return res.status(409).send("Applicant already exist.");
 
-    const application_response = req.body.application_response; // TODO: need to check if the paramter exists
-
-    activityModel.Applications.create(
-        {
-            application_response: application_response,
-            applicant_id: user_id,
-            activity_id: activity_id,
-        }
-    );
-
+    // const application_response = req.body.application_response; // TODO: need to check if the paramter exists
+    if (application_response !== undefined){
+        activityModel.Applications.create(
+            {
+                application_response: application_response,
+                applicant_id: user_id,
+                activity_id: activity_id,
+            }
+        );
+    }
     return res.status(201).send("Successfully send the application");
 }
 
-async function noReviewApply(req, res, activity_id, user_id) {
+async function noReviewApply(req, res, activity_id, user_id) { // add participant_name
     participantsExist = await activityModel.ActivityParticipantStatus.findOne({
         where: {
             joined_activities: activity_id,
@@ -79,6 +70,7 @@ async function noReviewApply(req, res, activity_id, user_id) {
         {
             joined_activities: activity_id,
             participants: user_id
+            // participant_name: participant_name
         }
     );
     return res.status(200).send("joined!");
@@ -408,6 +400,28 @@ exports.getAllApplications = async (req, res) => {
     }
 };
 
+exports.getAllParticipants = async (req, res) => {
+
+    try {
+        // const user_id = req.user_id;
+
+        const activity_id = req.params.activity_id;
+        var activity = await activityModel.Activities.findByPk(activity_id);
+        if (activity == null) return res.status(400).send("no activity");
+
+        const participants = await activityModel.ActivityParticipantStatus.findAll({
+            where : {
+                joined_activities: activity_id
+            }
+        });
+        res.status(200).json(participants);
+    } catch (error) {
+        console.error("Error getting participants list.", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+};
+
 /**
  * remove the join user for specific activity, only activity creator can do this
  * @param {*} req 
@@ -428,21 +442,27 @@ exports.removeUser = async (req, res) => {
         if (!activity) return res.status(400).send("Activity not found");
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
-        const remove_user_ids = req.body.user_id; // array
-        for (const remove_id of remove_user_ids) {
+        // const remove_user_ids = req.body.user_id; // array
+        const remove_id = req.body.remove_user_id;
+        // for (const remove_id of remove_user_ids) {
 
-            participant = await activityModel.ActivityParticipantStatus.findOne(
-                {
-                    where: {
-                        joined_activities: activity_id,
-                        participants: remove_id
-                    }
+        participant = await activityModel.ActivityParticipantStatus.findOne(
+            {
+                where: {
+                    joined_activities: activity_id,
+                    participants: remove_id
                 }
-            );
-            if (participant) participant.destroy();
+            }
+        );
+        if (participant) {
+            participant.destroy();
+            res.status(200).send("users removed");
+        } else {
+            res.status(404).send("Participants not found.")
         }
+        // }
 
-        res.status(200).send("users removed");
+        // res.status(200).send("users removed");
 
     } catch (error) {
         console.error('Error removing participants:', error);
@@ -461,13 +481,16 @@ exports.applyActivity = async (req, res) => {
         "application_response": "string"
     }
     */
-
+   const { application_response } = req.body
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
+        
         const activity = await activityModel.Activities.findByPk(activity_id);
+        // const participant_name = await User.findByPk(user_id);
 
         if (!activity) return res.status(400).send("Activity not found");
+        if (activity.created_user_id === user_id) return res.status(403).send("Activity creator should not applied.")
 
         const activityNeedReview = await activityModel.Activities.findOne({
             where: {
@@ -477,10 +500,9 @@ exports.applyActivity = async (req, res) => {
         });
 
         console.log("need review", activityNeedReview);
+        if (activityNeedReview) return needReviewApply(req, res, activity_id, user_id, application_response);
 
-        if (activityNeedReview) return needReviewApply(req, res, activity_id, user_id);
-
-        return noReviewApply(req, res, activity_id, user_id);
+        return noReviewApply(req, res, activity_id, user_id); //add , participant_name
     } catch (error) {
         console.error('Error applying for activity:', error);
         res.status(500).json({ error: 'Internal server error' });
