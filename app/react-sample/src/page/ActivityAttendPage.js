@@ -9,14 +9,12 @@ import './Common.css';
 import UserPageNav from '../components/UserPageNav';
 
 function ActivityAttendPage() {
-    const style = { 
-        padding: "0 10rem 10rem 10rem",
-    };
+
     return (
         <ThemeProvider theme={theme}>
             <HeaderBar />
             <UserPageNav selectedTab={1}/> 
-            <div style={style}>
+            <div className='Main'>
             <Typography variant="h5"> 參與紀錄 </Typography>
             <Typography variant="h6"> 即將開始 </Typography>
             <ActivityListComponent/>

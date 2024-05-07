@@ -85,6 +85,20 @@ function App() {
           </Route>
           {/* <Route path='/planManage' element={<PlanManage />} /> */}
 
+
+          <Route exact path='/planPage' element={<PrivateRoute/>}>
+            <Route exact path='/planPage' element={<PlanPage/>}/>
+          </Route>
+
+          <Route exact path='/planNew' element={<PrivateRoute/>}>
+            <Route exact path='/planNew' element={<PlanNew/>}/>
+          </Route>
+
+          <Route exact path='/planList' element={<PrivateRoute/>}>
+            <Route exact path='/planList' element={<PlanList/>}/>
+          </Route>
+
+
         </Routes>
         </BrowserRouter>
     </ThemeProvider>

@@ -279,7 +279,7 @@ export default function HeaderBar() {
         {t('活動紀錄')}
         </MenuItem>
         <MenuItem onClick={() => navigate('/planManage')} sx={{ justifyContent: 'center'}}>
-        {t('進度紀錄')}
+        {t('計畫紀錄')}
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem onClick={handleLanguageClick} sx={{ justifyContent: 'center'}} id="language-button" aria-controls={openLanguageToggl ? 'language-menu' : undefined}

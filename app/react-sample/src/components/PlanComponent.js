@@ -8,8 +8,10 @@ import Typography from '@mui/material/Typography';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import PeopleIcon from '@mui/icons-material/People';
 import { Grid } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function PlanComponent({data}) {
+  const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'
@@ -19,7 +21,7 @@ export default function PlanComponent({data}) {
 
     return (
         <Grid item xs={12} md={4}>
-        <div className="box" style={style}>
+        <div className="box" style={style}onClick={() => navigate('/planPage')}>
           <Stack direction="column">
             <div> 
             <Typography variant="h5" gutterBottom>進度計畫名稱</Typography>
@@ -45,7 +47,6 @@ export default function PlanComponent({data}) {
               </Stack>
 
             </div>
-              <Button variant="contained" color="primary"> 查看 </Button> 
           </Stack>
         </div>
         </Grid>

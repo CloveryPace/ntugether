@@ -13,59 +13,30 @@ import UserPageNav from '../components/UserPageNav'
 
 import './Common.css';
 
+import AttendedPlanListComponent from "../components/AttendedPlanListComponent";
+
 
 function PlanManage() {
   const navigate = useNavigate();
 
   return (
     <ThemeProvider theme={theme}>
-      <HeaderBar />
-      <UserPageNav selectedTab={2}/> 
-      <div className='Main'>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} style={{ marginBottom: '20px' }} >
-            <Typography variant="h4"> 參與紀錄 </Typography>
-
-            <Button variant="contained" color="primary" onClick={() => navigate('/newactivity')}> 切換至已結束計畫 </Button> 
-        </Stack>
-    
-        <Grid container spacing={2}>
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-
-        </Grid>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-        <Button sx={{ my: 2 }}><Typography>查看更多</Typography></Button> 
-        </div>
-
-        <Divider sx={{ mb: 4 }}/>
-
-        <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} style={{ marginBottom: '20px' }} >
-            <Typography variant="h4"> 發起紀錄 </Typography>
-
-            <Button variant="contained" color="primary" onClick={() => navigate('/newactivity')}> 切換至已結束計畫 </Button> 
-        </Stack>
-    
-        <Grid container spacing={2}>
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-            <Progress />
-
-        </Grid>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-        <Button sx={{ my: 2 }}><Typography>查看更多</Typography></Button> 
-        </div>
-
-
-
-      </div>
-    </ThemeProvider>
+    <HeaderBar />
+    <UserPageNav selectedTab={2}/> 
+    <div className='Main'>
+    <Typography variant="h5"> 參與紀錄 </Typography>
+    <Typography variant="h6"> 即將開始 </Typography>
+    <AttendedPlanListComponent/>
+    <Typography variant="h6"> 已結束 </Typography>
+    <AttendedPlanListComponent/>
+    <Divider />
+    <Typography variant="h5"> 發起紀錄 </Typography>
+    <Typography variant="h6"> 即將開始 </Typography>
+    <AttendedPlanListComponent/>
+    <Typography variant="h6"> 已結束 </Typography>
+    <AttendedPlanListComponent/>
+    </div>
+</ThemeProvider>
   );
 }
 

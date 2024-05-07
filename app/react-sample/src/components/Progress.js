@@ -8,15 +8,17 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import { useTheme} from '@mui/material';
 
+import { useNavigate } from 'react-router-dom';
 
 const { useState } = React;
 
 export default function Progress(item) {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Grid item xs={12} md={4}>
-      <Card variant="outlined">
+      <Card variant="outlined" onClick={() => navigate('/planPage')}>
         <CardContent  sx={{pb: 0  }}>
           <Typography variant="h5" sx={{mb: 1.5  }}>
           進度計畫名稱
@@ -34,10 +36,6 @@ export default function Progress(item) {
                   }}/>
         
         </CardContent>
-        <CardActions sx={{p: '16px'}}>
-          <Button variant="contained" fullWidth="true">查看</Button>
-      
-        </CardActions>
        </Card>
     </Grid>
   );
