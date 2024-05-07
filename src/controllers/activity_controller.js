@@ -400,19 +400,34 @@ exports.applyActivity = async (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        const activity = activityModel.Activities.findByPk(activity_id);
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        const activityNeedReview = await activityModel.Activities.findOne({
+            where: {
+              need_reviewed: true, 
+              activity_id: activity_id 
+            }
+          });        
+        const applicantExist = await activityModel.Applications.findOne({
+            where: {
+              applicant_id: user_id, 
+              activity_id: activity_id 
+            }
+          });
 
+        if (applicantExist) return res.status(409).send("Applicant already exist.");
+        if (!activityNeedReview) return res.status(400).send("Activity doesn't need to apply.");
+        // console.log(activityNeedReview);
 
         if (!activity) return res.status(400).send("Activity not found");
 
-        if (
-            !activityModel.ActivityParticipantStatus.findOne({
-                where: {
-                    joined_activities: activity_id,
-                    participants: user_id
-                }
-            })
-        ) return res.status(403).send("participant existed");
+        // if (
+        //     !activityModel.ActivityParticipantStatus.findOne({
+        //         where: {
+        //             joined_activities: activity_id,
+        //             participants: user_id
+        //         }
+        //     })
+        // ) return res.status(403).send("participant existed");
 
         const application_response = req.body.application_response; // TODO: need to check if the paramter exists
 

@@ -85,6 +85,7 @@ exports.approve = async (req, res) => {
                 participants: applicant_id,
             }
         });
+        console.log("participantsExist", participantsExist);
 
         if (participantsExist) return res.status(400).send("participant has already joined");
 
@@ -96,12 +97,13 @@ exports.approve = async (req, res) => {
         );
 
         // update participants
-        activityModel.ActivityParticipantStatus.create(
+        const join = await activityModel.ActivityParticipantStatus.create(
             {
                 joined_activities: activity_id,
                 participants: applicant_id
             }
         );
+        console.log("join", join);
         res.status(200).send("approved!");
 
     } catch (error) {

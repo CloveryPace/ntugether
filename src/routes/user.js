@@ -408,14 +408,7 @@ router.get(
   '/oauth2callback/signup',
   // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
   // #swagger.tags = ['User']
-  /* #swagger.responses[200] = { 
-      description: "Google Oauth註冊成功",
-      schema: {
-            "status": "success",
-            "message": "User authenticated successfully",
-            "token": "jwt_token"
-          }
-      } */
+  
   passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
   (req, res) => {
     const user = req.user;
@@ -425,12 +418,13 @@ router.get(
       { expiresIn: '1h' } 
     );
 
-    res.status(200).json ({
-      status: 'success',
-      message: 'User authenticated successfully',
-      token
-    })
-    // res.redirect('/');
+    // res.status(200).json ({
+    //   status: 'success',
+    //   message: 'User authenticated successfully',
+    //   token
+    // })
+    res.cookie('token', token, { httpOnly: true, secure: true });
+    res.redirect('/');
   }
 );
 
@@ -461,12 +455,13 @@ router.get(
       process.env.JWT_SECRET, 
       { expiresIn: '1h' } 
     );
-    res.status(200).json ({
-      status: 'success',
-      message: 'User authenticated successfully',
-      token
-    })
-    // res.redirect('/');
+    // res.status(200).json ({
+    //   status: 'success',
+    //   message: 'User authenticated successfully',
+    //   token
+    // })
+    res.cookie('token', token, { httpOnly: true, secure: true });
+    res.redirect('/');
   }
 );
 
