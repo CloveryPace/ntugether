@@ -16,7 +16,7 @@ import Box from '@mui/material/Box';
 import './Common.css';
 import EditActivityPage from './EditActivityPage'; 
 import {useLocation} from 'react-router-dom';
-import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import { API_GET_USER, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { getAuthToken } from '../utils';
@@ -26,7 +26,8 @@ function ActivityPage() {
   const { id } = state; // Read values passed on state
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
-
+  const [userId, setUserId] = useState('');
+  const [creatorId, setCreatorId] = useState('');
 
   useEffect(() => {
     //登入
@@ -45,17 +46,32 @@ function ActivityPage() {
               authorization: `Bearer ${token}`
             }
         };
-        //取得活動資訊
-        axios.get(API_GET_ACTIVITY_DETAIL + id, config)
+
+        //取得使用者id
+        axios.get(API_GET_USER, config)
           .then(function (res) {
-            console.log(res.data);
-            setData(res.data);
+            setUserId(res.data.members['user_id']);
+            console.log("userId");
+            console.log(res.data.members['user_id']);
           })
           .catch(function (err) {
             console.log(err);
             alert("error");
           });
 
+        //取得活動資訊
+        axios.get(API_GET_ACTIVITY_DETAIL + id, config)
+          .then(function (res) {
+            console.log(res.data);
+            setData(res.data);
+            console.log("creatorId")
+            console.log(res.data.created_user_id);
+            setCreatorId(res.data.created_user_id);
+          })
+          .catch(function (err) {
+            console.log(err);
+            alert("error");
+          });
       }, [id]);
       // .catch(function (error) {
       //     console.log(error);
@@ -177,7 +193,13 @@ function ActivityPage() {
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={data.type? data.type: "未指定"}/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={"ID: " + id}/>
           </Stack>
-          <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
+          {(userId === creatorId)? 
+            <>
+            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button>
+            </>
+            :
+            <p></p>
+          }
         </Stack>
         {editingShow &&
           <EditActivityPage /** 編輯視窗 */
@@ -212,7 +234,13 @@ function ActivityPage() {
               marginBottom: '10px'
         }}>
           <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
-          <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button> 
+          {(userId === creatorId)? 
+            <>
+            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> 編輯活動 </Button>
+            </>
+            :
+            <p></p>
+          }
         </Stack>
         <Stack direction="row" spacing={3}>
           <Chip avatar={<Avatar>M</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
