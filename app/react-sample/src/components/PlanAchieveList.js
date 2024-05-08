@@ -28,7 +28,7 @@ export default function PlanAchieveList() {
   return (
     <div>
       <Typography variant="h5" gutterBottom>
-      {t('進度達成比例')}
+      {t('計畫達成比例')}
       </Typography>
       <List>
         {planAchieve.slice(0, displayCount).map((item, index) => (
