@@ -38,6 +38,7 @@ export default function AccountComponent({data}) {
           maxWidth: '100%',
           flexGrow: 1,
           display: 'block',
+          cursor: 'pointer',
           backgroundColor: (theme) =>
             theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         }}

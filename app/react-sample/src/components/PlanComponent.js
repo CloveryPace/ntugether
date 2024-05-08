@@ -14,14 +14,15 @@ export default function PlanComponent({data}) {
   const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
-      padding: '2rem'
+      padding: '2rem',
+      cursor: 'pointer'
     };
 
     // TODO: navigate到特定進度計畫頁面（參數：ID）
 
     return (
         <Grid item xs={12} md={4}>
-        <div className="box" style={style}onClick={() => navigate('/planPage')}>
+        <div className="box" style={style} onClick={() => navigate('/planPage')} >
           <Stack direction="column">
             <div> 
             <Typography variant="h5" gutterBottom>進度計畫名稱</Typography>

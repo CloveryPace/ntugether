@@ -16,8 +16,8 @@ function ActivityAttendPage() {
             <HeaderBar />
             <UserPageNav selectedTab={1}/> 
             <div className='Main'>
-            <Typography variant="h5"> 參與紀錄 </Typography>
-            <Typography variant="h6"> 即將開始 </Typography>
+            <Typography variant="h5"> {t('參與紀錄')} </Typography>
+            <Typography variant="h6"> {t('即將開始')} </Typography>
             <ActivityListComponent/>
             <Typography variant="h6"> {t('已結束')} </Typography>
             <ActivityListComponent/>

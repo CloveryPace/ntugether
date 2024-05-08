@@ -16,7 +16,7 @@ export default function Progress(item) {
   const navigate = useNavigate();
   return (
     <Grid item xs={12} md={4}>
-      <Card variant="outlined" onClick={() => navigate('/planPage')}>
+      <Card variant="outlined" onClick={() => navigate('/planPage')} sx={{cursor: 'pointer'}}>
         <CardContent  sx={{pb: 0  }}>
           <Typography variant="h5" sx={{mb: 1.5  }}>
           進度計畫名稱
