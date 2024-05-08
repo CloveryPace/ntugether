@@ -11,8 +11,8 @@ const User = require('../model/userModel');
 const SECRET_KEY = 'sdm_is_so_fun';
 
 function generateVerificationCode(email) {
-  const timestamp = Date.now();
-  const data = email;
+  const timestamp = Math.floor(Date.now() / (10 * 60 * 1000));;
+  const data = email + timestamp;
   const hash = crypto.createHmac('sha256', SECRET_KEY)
     .update(data)
     .digest('hex');
@@ -37,79 +37,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.Password
   }
 });
-
-// async function signUp(req, res) {
-//   try {
-//     const { name, email, birthday, gender, password } = req.body;
-//     console.log("email", email);
-//     console.log("name", name);
-//     console.log("birthday", birthday);
-//     console.log("gender", gender);
-//     console.log("password", password);
-
-//     // Hash password
-//     const hashedPassword = await bcrypt.hash(password, 12);
-
-//     // Create user using Sequelize
-//     const newUser = await User.create({
-//       name: name,
-//       email: email,
-//       birthday: birthday,
-//       gender, gender,
-//       password: hashedPassword
-//     });
-
-//     console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
-
-//     // Create json web token
-//     const token = jwt.sign(
-//       { userId: newUser.id }, // Use the newly created user's id
-//       process.env.JWT_SECRET,
-//       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
-//     );
-
-//     const code = generateVerificationCode(email);
-//     // Example email sending code with nodemailer
-//     const transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       host: 'smtp.gmail.com',
-//       port: 465,
-//       secure: true,
-//       auth: {
-//         user: process.env.Email,
-//         pass: process.env.Password
-//       }
-//     });
-
-//     const mailOptions = {
-//       from: process.env.Email,
-//       to: email,
-//       subject: 'NTUgether Email Verification',
-//       text: `Your verification code is: ${code}`
-//     };
-
-//     transporter.sendMail(mailOptions, (error, info) => {
-//       if (error) {
-//         console.log(error);
-//         return res.status(500).send('Error sending email');
-//       } else {
-//         res.send('Verification code sent to your email. Please verify within 10 minutes.');
-//         return res.status(201).json({
-//           message: 'Member created successfully, verification email sent',
-//           token: token, // JWT token
-//         });
-//       }
-//     });
-
-
-//   } catch (error) {
-//     console.log(error);
-//     if (error.name === 'SequelizeUniqueConstraintError') {
-//       return res.status(409).json({ error: "Email already exists" });
-//     }
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// }
 
 async function signUp( req, res){
   try {
@@ -212,37 +139,6 @@ async function emailSend ( req, res) {
   }
 
 }
-
-// async function emailVerify(req, res) {
-//   const { email, code } = req.body;
-
-//   // Re-generate the code based on the current timestamp and compare
-//   const validCode = generateVerificationCode(email);
-//   console.log("validCode", validCode);
-//   console.log("code", code);
-
-//   if (code === validCode) {
-//     try {
-//       // Use Sequelize to update the verified status for the user
-//       const result = await User.update(
-//         { verified: true },
-//         { where: { email: email } }
-//       );
-
-//       if (result[0] > 0) { // result[0] contains the number of affected rows
-//         res.send('Email verified successfully');
-//       } else {
-//         // No rows were updated, which means no user was found with that email
-//         res.status(404).send('No user found with that email');
-//       }
-//     } catch (error) {
-//       console.log(error);
-//       return res.status(500).send('Error updating user verification status');
-//     }
-//   } else {
-//     res.status(401).send('Invalid or expired verification code');
-//   }
-// }
 
 async function signIn(req, res) {
   try {
@@ -430,8 +326,6 @@ async function updateMember(req, res) {
   }
 }
 
-
-// Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTcxNDYzNTY5MCwiZXhwIjoxNzE0NjM5MjkwfQ.q8p3_dumY9c-bCfu7aoJ7jlJ0uC7zXoWe8jfDE4KR5c
 
 async function deleteMember(req, res) {
   // const { user_id } = req.body; // Get the id of the member to delete
