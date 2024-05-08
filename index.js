@@ -24,6 +24,11 @@ app.use("/user", user_routes);
 app.use("/plan", plan_routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// Health check
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
 // run server
 port = 4000;
 app.listen(port, () => {
