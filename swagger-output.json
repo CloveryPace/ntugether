@@ -5,12 +5,22 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:4000",
+  "host": "ntugether.zapto.org:4000",
   "basePath": "/",
   "schemes": [
     "http"
   ],
   "paths": {
+    "/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/application/{application_id}": {
       "get": {
         "tags": [
