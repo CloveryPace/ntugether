@@ -127,7 +127,7 @@ function AccountSetting() {
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label={t('再次輸入修改密碼')}
+                                label={t('再次輸入新密碼')}
                                 type="password"
                                 value={phone}
                                 onChange={(event) => {

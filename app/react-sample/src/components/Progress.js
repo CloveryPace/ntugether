@@ -7,13 +7,13 @@ import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import { useTheme} from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
 
 const { useState } = React;
 
 export default function Progress(item) {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   return (
     <Grid item xs={12} md={4}>
       <Card variant="outlined">

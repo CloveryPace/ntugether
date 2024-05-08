@@ -9,10 +9,13 @@ import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 export default function ActivityList() {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
+  const { t, i18n } = useTranslation();
+
 
 
   useEffect(() => {
@@ -64,7 +67,7 @@ export default function ActivityList() {
 
       </Grid>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-      <Button sx={{ my: 2 }}><Typography>查看更多</Typography></Button> 
+      <Button sx={{ my: 2 }}><Typography>{t('查看更多')}</Typography></Button> 
     </div>
     </div>
     );
