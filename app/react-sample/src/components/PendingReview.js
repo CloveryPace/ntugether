@@ -26,40 +26,26 @@ export default function PendingReview({id}) {
         padding: '1rem'
       };
       useEffect(() => {
-        //登入
-        // async function runEffect(){
-        // await axios.post(API_LOGIN, {
-        //   "email": "r12725066@ntu.edu.tw",
-        //   "password": "a"
-        // })
-        // .then(function (response) {
-        //     console.log(response.status, response.data);
-            //儲存token
-            const token = userToken;
-            //設定authorization
-            const config = {
-                headers: { 
-                  authorization: `Bearer ${token}`
-                }
-            };
-            //取得申請
-            axios.get(API_GET_ACTIVITY_DETAIL + id + '/application', config)
-              .then(function (res) {
-                console.log(res.data);
-                console.log("取得審請成功");
-                setData(res.data);
-              })
-              .catch(function (err) {
-                console.log(err);
-                console.log("取得審請錯誤");
-              });
-    
-          // })
-          // .catch(function (error) {
-          //     console.log(error);
-          // });
-          // }
-          // runEffect();
+        //儲存token
+        const token = userToken;
+        //設定authorization
+        const config = {
+            headers: { 
+              authorization: `Bearer ${token}`
+            }
+        };
+        //取得申請
+        axios.get(API_GET_ACTIVITY_DETAIL + id + '/application', config)
+          .then(function (res) {
+            console.log(res.data);
+            console.log("取得申請成功");
+            setData(res.data);
+          })
+          .catch(function (err) {
+            console.log(err);
+            console.log("取得申請錯誤");
+          });
+
       }, [id]);
 
     return (
@@ -81,7 +67,8 @@ export default function PendingReview({id}) {
             <div style = {component}>
                 尚無申請資料
             </div>
-          }
+            }
+            
             </Stack>
         </div>
     );
