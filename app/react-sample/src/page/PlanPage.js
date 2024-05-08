@@ -15,11 +15,13 @@ import HeaderBar from '../components/HeaderBar';
 import Box from '@mui/material/Box';
 import MyProgress from '../components/MyProgress';
 import ProgressAttendee from '../components/ProgressAttendee';
-
+import { useTranslation } from 'react-i18next';
 import './Common.css';
 
 function PlanPage() {
   window.scrollTo(0, 0); //讓進入畫面在上方
+  const { t, i18n } = useTranslation();
+
   const subtitle = { 
     width: "160px" 
   };
@@ -55,7 +57,7 @@ function PlanPage() {
             <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label="需審核"/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label="type"/>
           </Stack>
-          <Button variant="contained" color="primary"> 編輯計畫 </Button> 
+          <Button variant="contained" color="primary"> {t('編輯計畫')} </Button> 
         </Stack>
       </Box>
       <Box
@@ -83,22 +85,22 @@ function PlanPage() {
       </Box>
 
       <div style={container}>
-        <div style={subtitle}><Typography variant="h6"> 計畫目標 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('計畫目標')} </Typography></div>
         <div><Typography variant="h6"> xxxxx </Typography></div>
       </div>
 
       <div style={container}>
-        <div style={subtitle}><Typography variant="h6"> 計畫介紹 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('計畫介紹')} </Typography></div>
         <div><Typography variant="h6"> xxxxx </Typography></div>
       </div>
 
       <div style={container}>
-        <div style={subtitle}><Typography variant="h6"> 計畫時間 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('計畫時間')} </Typography></div>
         <div><Typography variant="h6"> 2024/04/01 - 2024/04/31 </Typography></div>
       </div>
 
       <div style={container}>
-        <div style={subtitle}><Typography variant="h6"> 參加者 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('參加者')} </Typography></div>
         <div style={{alignSelf: 'center'}}><Avatar alt="Remy Sharp"/></div>
       </div>
 
@@ -112,7 +114,7 @@ function PlanPage() {
         },
       }}
       >
-        <div style={subtitle}><Typography variant="h6"> 我的進度 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('我的進度')} </Typography></div>
         <div style={{ flexGrow: 1 }}><MyProgress/></div>
       </Box>
 
@@ -126,7 +128,7 @@ function PlanPage() {
         },
       }}
       >
-        <div style={subtitle}><Typography variant="h6"> 參加者的進度 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('參加者進度')} </Typography></div>
         <ProgressAttendee />
       </Box>
 
@@ -140,7 +142,7 @@ function PlanPage() {
         },
       }}
       >
-        <div style={subtitle}><Typography variant="h6"> 討論串 </Typography></div>
+        <div style={subtitle}><Typography variant="h6"> {t('討論串')} </Typography></div>
         <div style={{ flexGrow: 1 }}>
           <Paper style={{ padding: "30px 30px", width: '100%', boxSizing: 'border-box'}}>
             <Grid container wrap="nowrap" spacing={2}>

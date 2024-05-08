@@ -7,7 +7,6 @@ import Typography from '@mui/material/Typography';
 import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import { useTheme} from '@mui/material';
-
 import { useNavigate } from 'react-router-dom';
 
 const { useState } = React;
@@ -15,10 +14,9 @@ const { useState } = React;
 export default function Progress(item) {
   const theme = useTheme();
   const navigate = useNavigate();
-
   return (
     <Grid item xs={12} md={4}>
-      <Card variant="outlined" onClick={() => navigate('/planPage')}>
+      <Card variant="outlined" onClick={() => navigate('/planPage')} sx={{cursor: 'pointer'}}>
         <CardContent  sx={{pb: 0  }}>
           <Typography variant="h5" sx={{mb: 1.5  }}>
           進度計畫名稱

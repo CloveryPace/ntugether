@@ -58,11 +58,42 @@
     "手機號碼": "Phone number",
     "進度管理": "Progress",
     "新密碼": "New password",
-    "再次輸入新密碼": "Confirm new password"
-
-
-
-
-
-
+    "再次輸入新密碼": "Confirm new password",
+    "參與紀錄": "Participation record",
+    "切換至已結束計畫": "Switch to completed plan",
+    "發起紀錄": "Initiation record",
+    "即將開始": "Upcoming",
+    "已結束": "Completed",
+    "帳號設定": "Account settings",
+    "編輯計畫": "Edit plan",
+    "討論串": "Discussion",
+    "參加者進度": "Participants' progress",
+    "我的進度": "My progress",
+    "參加者": "Participants",
+    "計畫時間": "Plan time",
+    "計畫介紹": "Plan introduction",
+    "計畫目標": "Plan goal",
+    "活動收藏": "Favorite activities",
+    "會員追蹤": "Follow members",
+    "取消追蹤": "Unfollow",
+    "追蹤": "Follow",
+    "近期活動": "Recent activities",
+    "追蹤人數": "Followers",
+    "活動發起": "Activity init",
+    "進度發起": "Plan init",
+    "活動名稱": "Activity name",
+    "關於": "About",
+    "活動發起紀錄": "Activity initiation record",
+    "進度發起紀錄": "Plan initiation record",
+    "簡介": "Introduction",
+    "聯絡方式": "Contact",
+    "▲ 隱藏細項": "▲ Hide details",
+    "▼ 展開細項": "▼ Show details",
+    "熱門計畫": "Hot plans",
+    "計畫類別": "Plan category",
+    "查看所有計畫": "View all plans",
+    "新增活動": "Add activity",
+    "新增計畫": "Add plan",
+    "追蹤清單": "My Follow List",
+    "或": "or"
  }

@@ -12,6 +12,7 @@ import SendIcon from '@mui/icons-material/Send';
 import Button from '@mui/material/Button';
 import { useRef } from "react";
 import { getAuthToken } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 const style = {
   margin: "0.5rem"
@@ -21,6 +22,7 @@ export default function CommentsBox({ id }) {
     const [data, setData] = useState([]); //留言資料
     const [userToken, setUserToken] = useState(getAuthToken());
     const inputRef = useRef();
+    const { t, i18n } = useTranslation();
 
     const subtitle = { 
         width: "150px" 
@@ -124,7 +126,7 @@ export default function CommentsBox({ id }) {
           },
         }}
         >
-          <div style={subtitle}><Typography variant="h6"> 討論串 </Typography></div>
+          <div style={subtitle}><Typography variant="h6"> {t('討論串')} </Typography></div>
             <Paper style={{ padding: "30px 30px", width: "100%" }}>
 
               { (data.map((comment) => {

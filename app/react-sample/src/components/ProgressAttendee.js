@@ -7,11 +7,14 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
 import LinearProgress from '@mui/material/LinearProgress';
+import { useTranslation } from 'react-i18next';
 const { useState } = React;
 
 export default function ProgressAttendee() {
   const [progress, setProgress] = useState(70);
   const [showProgress, setShowProgress] = useState(false);
+  const { t, i18n } = useTranslation();
+
 
   const toggleProgress = () => {
     setShowProgress(!showProgress);
@@ -40,7 +43,7 @@ export default function ProgressAttendee() {
         </CardContent>
         <CardActions sx={{p: '16px'}}>
           { 
-            showProgress? <Button variant="text" onClick={toggleProgress} >▲ 隱藏細項</Button> : <Button variant="text" onClick={toggleProgress}>▼ 展開細項</Button>
+            showProgress? <Button variant="text" onClick={toggleProgress} >{t('▲ 隱藏細項')}</Button> : <Button variant="text" onClick={toggleProgress}>{t('▼ 展開細項')}</Button>
 
           }          
         </CardActions>

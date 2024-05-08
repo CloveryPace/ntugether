@@ -59,7 +59,7 @@ export default function ActivityComponent({data, key}) {
         <Grid item xs={12} md={4}>
         <div className="box" style={style}>
           <Stack direction="column">
-            <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })}>
+            <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })} style={{cursor: 'pointer'}}>
             <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名活動"}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={data.type || "未指定"}/>

@@ -23,6 +23,8 @@ import { useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { useTranslation } from 'react-i18next';
+
 const { useState } = React;
 
 const tagTheme = createTheme({
@@ -100,6 +102,7 @@ function User() {
 
 
   const [value, setValue] = React.useState(0);
+  const { t, i18n } = useTranslation();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -131,25 +134,25 @@ function User() {
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}} >
-                  <Typography variant="body1"> 追蹤人數 </Typography>
+                  <Typography variant="body1"> {t('追蹤人數')} </Typography>
                   <Typography variant="body1"> 100 </Typography>
                 </Stack>
                 </Grid>
                 <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}}>
-                  <Typography variant="body1"> 活動發起 </Typography>
+                  <Typography variant="body1"> {t('活動發起')} </Typography>
                   <Typography variant="body1"> 100 </Typography>
                 </Stack>
                 </Grid>
                 <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}}>
-                  <Typography variant="body1"> 進度發起 </Typography>
+                  <Typography variant="body1"> {t('進度發起')} </Typography>
                   <Typography variant="body1"> 100 </Typography>
                 </Stack>
                 </Grid>
                 </Grid>
                 <Stack direction="row" spacing={2} sx={{mt:1}}>
-                  <Button variant="contained" fullWidth>追蹤</Button>
+                  <Button variant="contained" fullWidth>{t('追蹤')}</Button>
 
                 </Stack>
                 </Grid>
@@ -164,20 +167,20 @@ function User() {
               variant="fullWidth"
               aria-label="full width tabs example"
             >
-              <Tab label="關於" {...a11yProps(0)} />
-              <Tab label="活動發起紀錄" {...a11yProps(1)} />
-              <Tab label="進度發起紀錄" {...a11yProps(2)} />
+              <Tab label={t("關於")} {...a11yProps(0)} />
+              <Tab label={t("活動發起紀錄")} {...a11yProps(1)} />
+              <Tab label={t("進度發起紀錄")} {...a11yProps(2)} />
             </Tabs>
             <CustomTabPanel value={value} index={0}>
             <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={"健身"}/>
                 <Chip color="secondary" label={"英文交流"}/>
               </Stack >
-              <Typography variant='h5'>簡介</Typography>
+              <Typography variant='h5'>{t('簡介')}</Typography>
               <Typography variant='body1'>簡介簡介簡介簡介簡介簡介簡介簡介簡介簡介</Typography>
               
               <Divider />
-              <Typography variant='h5'>聯絡方式</Typography>
+              <Typography variant='h5'>{t('聯絡方式')}</Typography>
               <Typography variant='body1'>簡介簡介簡介簡介簡介簡介簡介簡介簡介簡介</Typography>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>

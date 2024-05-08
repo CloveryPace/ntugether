@@ -13,13 +13,14 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-
+import { useTranslation } from 'react-i18next';
 
 
 import { Grid } from '@mui/material';
 
 export default function AccountComponent({data}) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const theme = useTheme();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -37,6 +38,7 @@ export default function AccountComponent({data}) {
           maxWidth: '100%',
           flexGrow: 1,
           display: 'block',
+          cursor: 'pointer',
           backgroundColor: (theme) =>
             theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         }}
@@ -60,12 +62,12 @@ export default function AccountComponent({data}) {
               </Typography>
             </Grid>
             <Grid item>
-              <Button variant="contained" onClick={() => navigate('')}>取消追蹤</Button>
+              <Button variant="contained" onClick={() => navigate('')}>{t('取消追蹤')}</Button>
             </Grid>
           </Grid>
           <Grid item>
             <Typography variant="subtitle1" component="div">
-              近期活動
+              {t('近期活動')}
             </Typography>
           </Grid>
         </Grid>

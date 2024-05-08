@@ -158,7 +158,7 @@ export default function ForgetPassword() {
             <Typography variant="body1">
             {t('回到')} <Link href={'./login'} variant="body2">
                     {t('登入')}
-                  </Link> 或 <Link href={'./signup'} variant="body2">
+                  </Link> {t('或')} <Link href={'./signup'} variant="body2">
                   {t('註冊')}
                   </Link>。
             </Typography>
