@@ -364,7 +364,7 @@ passport.use('signup-google', new GoogleStrategy({
 passport.use('login-google', new GoogleStrategy({
   clientID: process.env.googleClientID,
   clientSecret: process.env.googleClientSecret,
-  callbackURL: "user/oauth2callback/login"
+  callbackURL: "/user/oauth2callback/login"
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -412,10 +412,11 @@ router.get(
   passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
   (req, res) => {
     const user = req.user;
+    console.log(user.user_id);
     const token = jwt.sign(
-      { id: user.id }, 
+      { userId: user.user_id }, 
       process.env.JWT_SECRET, 
-      { expiresIn: '1h' } 
+      { expiresIn: process.env.JWT_EXPIRES_IN } 
     );
 
     // res.status(200).json ({
@@ -424,7 +425,7 @@ router.get(
     //   token
     // })
     console.log(token);
-    res.cookie('token', token, { httpOnly: false, secure: false });
+    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org'  });
     res.redirect('http://ntugether.zapto.org:3000');
   }
 );
@@ -451,17 +452,19 @@ router.get(
   passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
     const user = req.user;
+    console.log(user.user_id);
     const token = jwt.sign(
-      { id: user.id }, 
+      { userId: user.user_id }, 
       process.env.JWT_SECRET, 
-      { expiresIn: '1h' } 
+      { expiresIn: process.env.JWT_EXPIRES_IN } 
     );
     // res.status(200).json ({
     //   status: 'success',
     //   message: 'User authenticated successfully',
     //   token
     // })
-    res.cookie('token', token, { httpOnly: false, secure: false });
+    console.log(token);
+    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org' });
     res.redirect('http://ntugether.zapto.org:3000');
   }
 );
