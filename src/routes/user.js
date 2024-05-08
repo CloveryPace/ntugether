@@ -364,7 +364,7 @@ passport.use('signup-google', new GoogleStrategy({
 passport.use('login-google', new GoogleStrategy({
   clientID: process.env.googleClientID,
   clientSecret: process.env.googleClientSecret,
-  callbackURL: "/user/oauth2callback/login"
+  callbackURL: "user/oauth2callback/login"
 },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -423,8 +423,9 @@ router.get(
     //   message: 'User authenticated successfully',
     //   token
     // })
-    res.cookie('token', token, { httpOnly: false, secure: true });
-    res.redirect('/');
+    console.log(token);
+    res.cookie('token', token, { httpOnly: false, secure: false });
+    res.redirect('http://ntugether.zapto.org:3000');
   }
 );
 
@@ -460,8 +461,8 @@ router.get(
     //   message: 'User authenticated successfully',
     //   token
     // })
-    res.cookie('token', token, { httpOnly: false, secure: true });
-    res.redirect('/');
+    res.cookie('token', token, { httpOnly: false, secure: false });
+    res.redirect('http://ntugether.zapto.org:3000');
   }
 );
 

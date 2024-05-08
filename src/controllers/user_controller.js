@@ -50,10 +50,10 @@ async function signUp( req, res){
 
     const {code: validCode, timestamp} = generateVerificationCode(email);
     console.log("validCode", validCode);
-    const isValid = isVerificationCodeValid(timestamp);
+    // const isValid = isVerificationCodeValid(timestamp);
 
     // Use email to generate validCode
-    if (code === validCode & isValid) {
+    if (code === validCode ) {
       console.log('Email verified successfully');
       
     } else {
@@ -235,11 +235,11 @@ async function resetPassword(req, res) {
 
     const {code: validCode, timestamp} = generateVerificationCode(email);
     console.log("validCode", validCode);
-    const isValid = isVerificationCodeValid(timestamp);
+    // const isValid = isVerificationCodeValid(timestamp);
 
     console.log("validCode", validCode);
     console.log("code", code);
-    if (code === validCode & isValid) {
+    if (code === validCode) {
       const hashedPassword = await bcrypt.hash(newPassword, 12);
       const result = await User.update({ password: hashedPassword }, { where: { email: email } });
 
