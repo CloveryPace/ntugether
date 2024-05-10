@@ -15,7 +15,9 @@ import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import Divider from '@mui/material/Divider';
 import { useTranslation } from 'react-i18next';
-
+import { USER } from '../global/constants';
+import { getAuthToken } from '../utils';
+import axios from 'axios';
 
 const { useState } = React;
 
@@ -46,12 +48,6 @@ const VisuallyHiddenInput = styled('input')({
   });
 
 function AccountSetting() {
-  const style2 = { 
-    padding: "1rem 0 0 0" 
-  };
-  const instyle = { 
-    padding: "3rem 0 0 0" 
-  };
   const dividerStyle = {
     p: 0,
     width: '100%',
@@ -75,7 +71,32 @@ function AccountSetting() {
   const [name, setName] = useState('MyName');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
+  const [userToken, setUserToken] = useState(getAuthToken());
 
+  const confirmDelete = () => {
+    if (window.confirm(t("確定要刪除帳號嗎?"))) {
+      deleteUser();
+    }
+  }
+
+
+  const deleteUser = () => {
+    const token = userToken;
+    
+    axios.delete(USER,{
+      headers: { "authorization": `Bearer ${token}`}
+    })
+    .then(function (response) {
+      
+      alert("success");
+      window.location.assign('/login');
+    })
+    .catch(function (err) {
+      console.log(err);
+      alert("error");
+    });
+ 
+  }
 
 
   return (
@@ -185,6 +206,7 @@ function AccountSetting() {
                 <Button
                     variant="outlined" color="error"
                     sx={{ mt: 3, mb: 2, width: 1/3}}
+                    onClick={() => {confirmDelete()}}
                 >
                     {t('刪除此帳號')}
                 </Button>
