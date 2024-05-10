@@ -71,7 +71,7 @@ function NewActivity() {
     const [activityData, setActivityData] = useState({
         name: '',
         introduction: '',
-        date: '',
+        date: "2024/01/01",
         inviteName: '',
         is_one_time: '',
         type: '',
