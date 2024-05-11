@@ -39,7 +39,7 @@ function ActivityPage() {
     // .then(function (response) {
     //     console.log(response.status, response.data);
         //儲存token
-        const token = userToken;
+        const token = getAuthToken();
         //設定authorization
         const config = {
             headers: { 
