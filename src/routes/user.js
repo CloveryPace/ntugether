@@ -40,8 +40,7 @@ router.get(
       description: "網路或其他不明原因錯誤"
       } */
 
-  userController.getMember
-);
+  userController.getMember);
 
 router.get(
   "/allMembers", authMiddleware.authentication, 
@@ -66,8 +65,7 @@ router.get(
       description: "網路或其他不明原因錯誤"
       } */
 
-  userController.getAllMembers
-);
+  userController.getAllMembers);
 
 router.get(
   "/forgetPassword", 
@@ -136,7 +134,7 @@ router.post(
         "password": "any",
         "code": "驗證碼"
       }
-  } */
+    } */
   /* #swagger.responses[201] = { 
       description: "建立成功",
       schema: {
@@ -303,7 +301,7 @@ router.delete(
             ]
     }] */
 
-  /* #swagger.responses[200] = { 
+  /* #swagger.responses[204] = { 
       description: "會員刪除成功",
       schema: {
             "message": "Member deleted successfully",

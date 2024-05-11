@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "ntugether.zapto.org:4000",
+  "host": "localhost:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -24,7 +24,7 @@
     "/application/{application_id}": {
       "get": {
         "tags": [
-          "Activity"
+          "Activity Application"
         ],
         "description": "活動創立者可以檢視特定審核",
         "parameters": [
@@ -37,6 +37,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -47,8 +49,8 @@
               "type": "object",
               "properties": {
                 "application_id": {
-                  "type": "number",
-                  "example": 11
+                  "type": "string",
+                  "example": "審核id"
                 },
                 "application_response": {
                   "type": "string",
@@ -56,19 +58,24 @@
                 },
                 "is_approved": {
                   "type": "string",
-                  "example": "true"
+                  "example": "是否已被審核"
                 },
                 "applicant_id": {
-                  "type": "number",
-                  "example": 16
+                  "type": "string",
+                  "example": "審核者id"
                 },
                 "Applicant": {
-                  "type": "string",
-                  "example": "用戶資料"
+                  "type": "object",
+                  "properties": {
+                    "用戶欄位": {
+                      "type": "string",
+                      "example": "用戶資訊"
+                    }
+                  }
                 },
                 "Activity": {
                   "type": "string",
-                  "example": "activity_id"
+                  "example": "待審核申請的活動id"
                 }
               },
               "xml": {
@@ -76,14 +83,35 @@
               }
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "authorization failed",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到該Application",
+            "schema": {
+              "type": "string",
+              "example": "Application not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -94,7 +122,7 @@
     "/application/{application_id}/approve": {
       "patch": {
         "tags": [
-          "Activity"
+          "Activity Application"
         ],
         "description": "活動創立者可以進行問題審核，目前直接call這個API就會審核成功，自動將通過審核用戶加入活動參與者清單",
         "parameters": [
@@ -107,6 +135,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -114,26 +144,52 @@
           "200": {
             "description": "審核成功，將通過審核用戶加入參與者清單",
             "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string",
-                  "example": "approved!"
-                }
-              },
+              "type": "string",
+              "example": "approved!",
               "xml": {
                 "name": "main"
               }
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "該申請已被通過",
+            "schema": {
+              "type": "string",
+              "example": "application has been approved",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "authorization failed",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到該Application",
+            "schema": {
+              "type": "string",
+              "example": "Application not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -146,11 +202,13 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "取得活動列表",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -204,10 +262,24 @@
             "description": "OK"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "mode 未填或不符合格式",
+            "schema": {
+              "type": "string",
+              "example": "invalid mode",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -218,20 +290,95 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "創立活動",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "創立活動",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "活動名稱"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "活動介紹"
+                },
+                "date": {
+                  "type": "string",
+                  "example": "日期"
+                },
+                "country": {
+                  "type": "string",
+                  "example": "縣市"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "地點"
+                },
+                "max_participants": {
+                  "type": "string",
+                  "example": "最大參與人數"
+                },
+                "need_reviewed": {
+                  "type": "string",
+                  "example": "是否需要創立者審核"
+                },
+                "is_one_time": {
+                  "type": "string",
+                  "example": "是否為一次性活動"
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "審核問題"
+                },
+                "check_by_organizer": {
+                  "type": "string",
+                  "example": "是否需要創立者審查出席情況"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "創立活動成功，回傳活動id",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Successfully create an Activity"
+                },
+                "activity_id": {
+                  "type": "string",
+                  "example": "活動id"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -244,7 +391,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "取得該單一活動的資料",
         "parameters": [
           {
             "name": "activity_id",
@@ -255,18 +402,116 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "回傳該活動相關資料",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "activity_id": {
+                  "type": "string",
+                  "example": "活動id"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "活動名稱"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "活動介紹"
+                },
+                "date": {
+                  "type": "string",
+                  "example": "日期"
+                },
+                "country": {
+                  "type": "string",
+                  "example": "縣市"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "地點"
+                },
+                "max_participants": {
+                  "type": "string",
+                  "example": "最大參與人數"
+                },
+                "need_reviewed": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "is_one_time": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "審核問題"
+                },
+                "check_by_organizer": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "created_user_id": {
+                  "type": "string",
+                  "example": "創立者id"
+                },
+                "Creator": {
+                  "type": "object",
+                  "properties": {
+                    "用戶欄位": {
+                      "type": "string",
+                      "example": "創立用戶資訊"
+                    }
+                  }
+                },
+                "Participants": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "用戶欄位": {
+                        "type": "string",
+                        "example": "參與用戶資訊"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到該活動",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Activity not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -277,7 +522,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "修改該單一活動",
         "parameters": [
           {
             "name": "activity_id",
@@ -288,6 +533,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -305,16 +552,95 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "回傳update後資料",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "活動名稱"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "活動介紹"
+                },
+                "date": {
+                  "type": "string",
+                  "example": "日期"
+                },
+                "country": {
+                  "type": "string",
+                  "example": "縣市"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "地點"
+                },
+                "max_participants": {
+                  "type": "string",
+                  "example": "最大參與人數"
+                },
+                "need_reviewed": {
+                  "type": "string",
+                  "example": "是否需要創立者審核"
+                },
+                "is_one_time": {
+                  "type": "string",
+                  "example": "是否為一次性活動"
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "審核問題"
+                },
+                "check_by_organizer": {
+                  "type": "string",
+                  "example": "是否需要創立者審查出席情況"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to delete this activity"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該活動",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Activity not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -325,7 +651,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "刪除該單一活動",
         "parameters": [
           {
             "name": "activity_id",
@@ -336,21 +662,61 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "已成功刪除活動",
+            "schema": {
+              "type": "string",
+              "example": "sucessfully delete",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to delete this activity"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該活動",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Activity not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -374,6 +740,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -385,23 +753,23 @@
               "properties": {
                 "application_id": {
                   "type": "string",
-                  "example": "待審核者id"
+                  "example": "審核id"
                 },
                 "application_response": {
                   "type": "string",
                   "example": "審核回覆"
                 },
                 "is_approved": {
-                  "type": "boolean",
-                  "example": true
+                  "type": "string",
+                  "example": "boolean"
                 },
                 "applicant_id": {
-                  "type": "number",
-                  "example": 16
+                  "type": "string",
+                  "example": "待審核者id"
                 },
                 "activity_id": {
-                  "type": "number",
-                  "example": 3
+                  "type": "string",
+                  "example": "活動id"
                 }
               },
               "xml": {
@@ -410,13 +778,34 @@
             }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "not activity creator",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該用戶",
+            "schema": {
+              "type": "string",
+              "example": "Participants not found.",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -429,7 +818,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "活動創建者移除活動中的用戶",
+        "description": "活動創建者移除活動中的用戶，一次移除一位",
         "parameters": [
           {
             "name": "activity_id",
@@ -440,6 +829,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -458,20 +849,45 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+          "204": {
+            "description": "已將該用戶移出活動",
+            "schema": {
+              "type": "string",
+              "example": "user removed",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "authorization failed",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該活動",
+            "schema": {
+              "type": "string",
+              "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -495,6 +911,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -513,14 +931,55 @@
           }
         ],
         "responses": {
-          "400": {
-            "description": "Bad Request"
+          "200": {
+            "description": "用戶成功加入，活動不需審核",
+            "schema": {
+              "type": "string",
+              "example": "joined！",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "201": {
+            "description": "用戶成功發出活動申請，待審核",
+            "schema": {
+              "type": "string",
+              "example": "Successfully send the application",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但為活動創立者，不應該申請",
+            "schema": {
+              "type": "string",
+              "example": "Activity creator should not applied.",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該活動不存在",
+            "schema": {
+              "type": "string",
+              "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -533,7 +992,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "回傳活動所有參與者，目前只有ID，無法回傳參與者名稱",
+        "description": "回傳活動所有參與者",
         "parameters": [
           {
             "name": "activity_id",
@@ -544,18 +1003,65 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "回傳該活動參與紀錄",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "participant_name": {
+                    "type": "string",
+                    "example": "參加者姓名"
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "datetime"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "example": "datetime"
+                  },
+                  "joined_activities": {
+                    "type": "string",
+                    "example": "參與活動id"
+                  },
+                  "participants": {
+                    "type": "string",
+                    "example": "參與者id"
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該活動不存在",
+            "schema": {
+              "type": "string",
+              "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -568,7 +1074,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "取得該活動的留言",
         "parameters": [
           {
             "name": "activity_id",
@@ -579,28 +1085,96 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
             "name": "limit",
             "in": "query",
-            "type": "string"
+            "description": "回傳資料數量限制，ex: limit=10, 限制前10筆",
+            "type": "integer",
+            "schema": {
+              "type": "string",
+              "example": "10"
+            }
           },
           {
             "name": "offset",
             "in": "query",
-            "type": "string"
+            "description": "跳過資料數量限制，ex: offset=10，跳過前10筆",
+            "type": "int",
+            "schema": {
+              "type": "string",
+              "example": "0"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "回傳該活動留言，包括該留言資料，以及該留言會員資料以及活動資料",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "discussion_id": {
+                  "type": "string",
+                  "example": "留言id"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "留言內容"
+                },
+                "sender_id": {
+                  "type": "string",
+                  "example": "留言用戶id"
+                },
+                "activity_id": {
+                  "type": "string",
+                  "example": "留言的活動id"
+                },
+                "Sender": {
+                  "type": "object",
+                  "properties": {
+                    "用戶細節": {
+                      "type": "string",
+                      "example": "..."
+                    }
+                  }
+                },
+                "Activity": {
+                  "type": "object",
+                  "properties": {
+                    "活動細節": {
+                      "type": "string",
+                      "example": "..."
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "活動不存在",
+            "schema": {
+              "type": "string",
+              "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -611,7 +1185,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "建立該活動的留言",
         "parameters": [
           {
             "name": "activity_id",
@@ -622,16 +1196,20 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
-            "name": "body",
+            "name": "content",
             "in": "body",
+            "description": "留言內容",
             "schema": {
               "type": "object",
               "properties": {
                 "content": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "string"
                 }
               }
             }
@@ -639,16 +1217,44 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "留言建立成功",
+            "schema": {
+              "type": "string",
+              "example": "discussion made",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但用戶未參加該活動",
+            "schema": {
+              "type": "string",
+              "example": "User hasn't joined the activity",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "活動不存在",
+            "schema": {
+              "type": "string",
+              "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -661,7 +1267,7 @@
         "tags": [
           "Activity"
         ],
-        "description": "",
+        "description": "該功能尚未完成QQ",
         "parameters": [
           {
             "name": "activity_id",
@@ -672,12 +1278,21 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -692,6 +1307,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -715,7 +1332,14 @@
             }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
             "description": "用戶不存在",
@@ -746,6 +1370,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -846,11 +1472,13 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "會員刪除成功",
             "schema": {
               "type": "object",
@@ -921,6 +1549,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -944,7 +1574,14 @@
             }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
             "description": "用戶不存在",
@@ -1415,6 +2052,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1426,7 +2065,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -1439,6 +2085,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -1480,7 +2128,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -1501,6 +2156,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1512,7 +2169,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -1531,6 +2195,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -1566,7 +2232,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1588,6 +2261,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1596,7 +2271,14 @@
             "description": "No Content"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1623,6 +2305,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1634,7 +2318,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1658,6 +2349,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1669,7 +2362,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1693,6 +2393,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1701,7 +2403,14 @@
             "description": "OK"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1728,6 +2437,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -1751,7 +2462,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"
@@ -1775,6 +2493,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
@@ -1786,7 +2506,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -1804,12 +2531,21 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           }
         ],
         "responses": {
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }
@@ -1859,6 +2595,8 @@
           {
             "name": "authorization",
             "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
             "type": "string"
           },
           {
@@ -1882,7 +2620,14 @@
             "description": "Bad Request"
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "403": {
             "description": "Forbidden"

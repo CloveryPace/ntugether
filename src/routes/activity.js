@@ -25,6 +25,14 @@ activityController.sync();
 router.get(
     "/", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '取得活動列表'
+
+    /* #swagger.responses[400] = { 
+      description: "mode 未填或不符合格式",
+      schema: "invalid mode"
+    } */
+    
+
     authMiddleware.authentication, activityController.getActivitiesList);
 
 /**
@@ -36,6 +44,36 @@ router.get(
 router.post(
     "/", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '創立活動' 
+    /* #swagger.parameters['body'] = {
+        in: 'body',
+        description: '創立活動',
+        schema: 
+        {
+            "name": "活動名稱",
+            "introduction": "活動介紹",
+            "date": "日期",
+            "country": "縣市",
+            "location": "地點",
+            "max_participants": "最大參與人數",
+            "need_reviewed": "是否需要創立者審核",
+            "is_one_time": "是否為一次性活動",
+            "application_problem": "審核問題",
+            "check_by_organizer": "是否需要創立者審查出席情況",
+        }
+    } */
+
+    /* #swagger.responses[201] = { 
+        description: "創立活動成功，回傳活動id",
+        schema:
+            {
+                "message": "Successfully create an Activity",
+                "activity_id": "活動id"
+            }
+        
+    } */
+
+    
     authMiddleware.authentication, activityController.createActivity);
 
 /**
@@ -46,6 +84,41 @@ router.post(
 router.get(
     "/:activity_id",
     // #swagger.tags = ['Activity']
+    // #swagger.description = '取得該單一活動的資料'
+    /* #swagger.responses[200] = { 
+        description: "回傳該活動相關資料",
+        schema: 
+            {
+                "activity_id": "活動id",
+                "name": "活動名稱",
+                "introduction": "活動介紹",
+                "date": "日期",
+                "country": "縣市",
+                "location": "地點",
+                "max_participants": "最大參與人數",
+                "need_reviewed": false,
+                "is_one_time": true,
+                "application_problem": "審核問題",
+                "check_by_organizer": true,
+                "created_user_id": "創立者id",
+                "Creator": {
+                    "用戶欄位": "創立用戶資訊"
+                },
+                "Participants": [
+                    {
+                        "用戶欄位": "參與用戶資訊"
+                    }
+                ]
+            }
+        
+    } */
+
+    /* #swagger.responses[404] = { 
+        description: "未找到該活動",
+        schema:  {
+            error: 'Activity not found' 
+        }
+    } */
     authMiddleware.authentication, activityController.getActivityDetail);
 
 /**
@@ -56,6 +129,38 @@ router.get(
 router.patch(
     "/:activity_id", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '修改該單一活動'
+    /* #swagger.responses[200] = { 
+        description: "回傳update後資料",
+        schema: {
+            "name": "活動名稱",
+            "introduction": "活動介紹",
+            "date": "日期",
+            "country": "縣市",
+            "location": "地點",
+            "max_participants": "最大參與人數",
+            "need_reviewed": "是否需要創立者審核",
+            "is_one_time": "是否為一次性活動",
+            "application_problem": "審核問題",
+            "check_by_organizer": "是否需要創立者審查出席情況"
+        }
+        
+    } */
+
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但不是活動創立者，無權限",
+      schema: { 
+            error:  "You are not authorized to delete this activity"
+        }
+    } */
+
+    /* #swagger.responses[404] = { 
+        description: "未找到該活動",
+        schema:  {
+            error: 'Activity not found' 
+        }
+    } */
+
     authMiddleware.authentication, activityController.updateActivity);
 
 /**
@@ -66,6 +171,27 @@ router.patch(
 router.delete(
     "/:activity_id", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '刪除該單一活動'
+    /* #swagger.responses[204] = { 
+      description: "已成功刪除活動",
+      schema: "sucessfully delete"
+    } */
+
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但不是活動創立者，無權限",
+      schema: { 
+            error:  "You are not authorized to delete this activity"
+        }
+    } */
+
+    /* #swagger.responses[404] = { 
+        description: "未找到該活動",
+        schema:  {
+            error: 'Activity not found' 
+        }
+    } */
+    
+
     authMiddleware.authentication, activityController.deleteActivity);
 
 
@@ -82,13 +208,23 @@ router.get(
       description: "回傳待審核名單",
       schema: 
         {
-            "application_id": "待審核者id",
+            "application_id": "審核id",
             "application_response": "審核回覆",
-            "is_approved": true,
-            "applicant_id": 16,
-            "activity_id": 3
+            "is_approved": "boolean",
+            "applicant_id": "待審核者id",
+            "activity_id": "活動id"
         }
       } */ 
+    /* #swagger.responses[403] = { 
+    description: "用戶通過驗證，但不是活動創立者，無權限",
+    schema: "not activity creator"
+    } */
+
+    /* #swagger.responses[404] = { 
+    description: "未找到該用戶",
+    schema: "Participants not found."
+    } */
+
     authMiddleware.authentication, activityController.getAllApplications);
 
 
@@ -100,7 +236,7 @@ router.get(
 router.patch(
     "/:activity_id/remove-user", 
     // #swagger.tags = ['Activity']
-    // #swagger.description = '活動創建者移除活動中的用戶'
+    // #swagger.description = '活動創建者移除活動中的用戶，一次移除一位'
     /* #swagger.parameters['body'] = {
       in: 'body',
       description: '要移除的用戶id',
@@ -108,7 +244,28 @@ router.patch(
       {
         "remove_user_id": "用戶id"
       }
-  } */
+    } */
+
+    /* #swagger.responses[204] = { 
+    description: "已將該用戶移出活動",
+    schema: "user removed"
+    } */
+
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但不是活動創立者，無權限",
+      schema: "authorization failed"
+    } */
+
+    /* #swagger.responses[404] = { 
+    description: "未找到該用戶",
+    schema: "Participants not found."
+    } */
+
+    /* #swagger.responses[404] = { 
+    description: "未找到該活動",
+    schema: "Activity not found"
+    } */
+
     authMiddleware.authentication, activityController.removeUser);
 
 /**
@@ -127,7 +284,39 @@ router.post(
       {
         "application_response": "審核回覆",
       }
-  } */
+    } */
+    /* #swagger.responses[200] = { 
+    description: "回傳該活動參與紀錄",
+    schema:
+        [{
+            "participant_name": "參加者姓名",
+            "createdAt": "datetime",
+            "updatedAt": "datetime",
+            "joined_activities": "參與活動id",
+            "participants": "參與者id"
+        }]
+    } */
+    
+    /* #swagger.responses[200] = { 
+      description: "用戶成功加入，活動不需審核",
+      schema: "joined！"
+    } */
+    
+    /* #swagger.responses[201] = { 
+      description: "用戶成功發出活動申請，待審核",
+      schema: "Successfully send the application"
+    } */
+
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但為活動創立者，不應該申請",
+      schema: "Activity creator should not applied."
+    } */
+
+
+    /* #swagger.responses[404] = { 
+      description: "該活動不存在",
+      schema: "Activity not found"
+    } */
     
     
     authMiddleware.authentication, activityController.applyActivity);
@@ -135,7 +324,25 @@ router.post(
 router.get(
     "/:activity_id/participants", 
     // #swagger.tags = ['Activity']
-    // #swagger.description = '回傳活動所有參與者，目前只有ID，無法回傳參與者名稱'
+    // #swagger.description = '回傳活動所有參與者'
+
+    /* #swagger.responses[200] = { 
+    description: "回傳該活動參與紀錄",
+    schema:
+        [{
+            "participant_name": "參加者姓名",
+            "createdAt": "datetime",
+            "updatedAt": "datetime",
+            "joined_activities": "參與活動id",
+            "participants": "參與者id"
+        }]
+    } */
+
+    /* #swagger.responses[404] = { 
+      description: "該活動不存在",
+      schema: "Activity not found"
+    } */
+
      
 
     authMiddleware.authentication, activityController.getAllParticipants);
@@ -148,6 +355,44 @@ router.get(
 router.get(
     "/:activity_id/discussion", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '取得該活動的留言'
+    /* #swagger.parameters['limit'] = {
+      in: 'query',
+      description: '回傳資料數量限制，ex: limit=10, 限制前10筆',
+      type: "integer",
+      schema: "10"
+    } */
+
+    /* #swagger.parameters['offset'] = {
+      in: 'query',
+      description: '跳過資料數量限制，ex: offset=10，跳過前10筆',
+      type: "int",
+      schema: "0"
+    } */
+
+    /* #swagger.responses[200] = { 
+    description: "回傳該活動留言，包括該留言資料，以及該留言會員資料以及活動資料",
+    schema:{
+        "discussion_id": "留言id",
+        "content": "留言內容",
+        "sender_id": "留言用戶id",
+        "activity_id": "留言的活動id",
+        "Sender": {
+            "用戶細節": "..."
+        },
+        "Activity": {
+            "活動細節": "..."
+        }
+    }
+    } */
+
+    /* #swagger.responses[404] = { 
+      description: "活動不存在",
+      schema: "Activity not found"
+    } */
+
+    
+
     authMiddleware.authentication, activityController.getDiscussion);
 
 /**
@@ -158,6 +403,32 @@ router.get(
 router.post(
     "/:activity_id/discussion", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '建立該活動的留言'
+    /* #swagger.parameters['content'] = {
+      in: 'body',
+      description: '留言內容',
+      schema: 
+      {
+        "content": "string",
+      }
+    } */
+
+    /* #swagger.responses[201] = { 
+      description: "留言建立成功",
+      schema: "discussion made"
+    } */
+    
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但用戶未參加該活動",
+      schema: "User hasn't joined the activity"
+    } */
+
+    /* #swagger.responses[404] = { 
+      description: "活動不存在",
+      schema: "Activity not found"
+    } */
+    
+
     authMiddleware.authentication, activityController.makeDiscussion);
 
 /**
@@ -167,6 +438,7 @@ router.post(
 router.post(
     "/:activity_id/leave", 
     // #swagger.tags = ['Activity']
+    // #swagger.description = '該功能尚未完成QQ'
     authMiddleware.authentication, activityController.leaveActivity);
 
 

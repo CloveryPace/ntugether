@@ -334,7 +334,7 @@ async function deleteMember(req, res) {
   try {
     const affectedRows = await User.destroy({ where: { user_id } });
     if (affectedRows > 0) {
-      return res.status(200).send('Member deleted successfully');
+      return res.status(204).send('Member deleted successfully');
     } else {
       return res.status(404).send('Member not found');
     }

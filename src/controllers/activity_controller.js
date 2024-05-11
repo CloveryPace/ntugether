@@ -63,14 +63,17 @@ async function noReviewApply(req, res, activity_id, user_id) { // add participan
     });
 
     if (participantsExist) return res.status(400).send("applier has already joined");
-
+    const user = await User.findOne({
+        where: {user_id : user_id}
+    
+    });
 
     // update participants
     await activityModel.ActivityParticipantStatus.create(
         {
             joined_activities: activity_id,
-            participants: user_id
-            // participant_name: participant_name
+            participants: user_id,
+            participant_name: user.name
         }
     );
     return res.status(200).send("joined!");
@@ -193,14 +196,18 @@ exports.createActivity = async (req, res) => {
         // body.is_one_time = req.body.is_one_time;
         // body.check_by_organizer = req.body.check_by_organizer;
         body.created_user_id = user_id;
+        console.log(body);
 
-        newActivity = await activityModel.Activities.create(body);
+        const newActivity = await activityModel.Activities.create(body);
+        const user = await User.findOne({where: {user_id : user_id}});
+        // console.log(newActivity);
 
         // update participants
         await activityModel.ActivityParticipantStatus.create(
             {
                 joined_activities: newActivity.activity_id,
-                participants: user_id
+                participants: user_id,
+                participant_name: user.name
             }
         );
         res.status(201).json({ message: "Successfully create an Activity", activity_id: newActivity.activity_id });
@@ -208,7 +215,7 @@ exports.createActivity = async (req, res) => {
     catch (error) {
         if (newActivity) newActivity.destroy();
         console.error("Error creating activity", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: error });
     }
 
 };
@@ -254,12 +261,12 @@ exports.getActivityDetail = async (req, res) => {
 
         const activity_id = req.params.activity_id;
         var activity = await activityModel.Activities.findByPk(activity_id);
-        if (activity == null) return res.status(400).send("no activity");
+        if (activity == null) return res.status(404).send("Activity not found");
         activity = await returnActivity(activity_id);
-        res.status(200).json(activity);
+        return res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 
 };
@@ -356,24 +363,7 @@ exports.deleteActivity = async (req, res) => {
  * @param {*} res 
  */
 exports.getAllApplications = async (req, res) => {
-    /*
-    NOTE: response format
-    [
-        {
-            "id": 1,
-            "applicant": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-            },
-            "activity_id": 1,
-            "is_approved": false,
-            "application_response": "This is a response for the applicant"
-        }
-    ]
-    */
-
+    
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
@@ -407,14 +397,16 @@ exports.getAllParticipants = async (req, res) => {
 
         const activity_id = req.params.activity_id;
         var activity = await activityModel.Activities.findByPk(activity_id);
-        if (activity == null) return res.status(400).send("no activity");
+        if (activity == null) return res.status(404).send("Activity not found.");
 
         const participants = await activityModel.ActivityParticipantStatus.findAll({
             where : {
                 joined_activities: activity_id
-            }
+            },
+            
         });
-        res.status(200).json(participants);
+        return res.status(200).json(participants);
+
     } catch (error) {
         console.error("Error getting participants list.", error);
         res.status(500).json({ error: "Internal server error" });
@@ -439,7 +431,7 @@ exports.removeUser = async (req, res) => {
         const activity_id = req.params.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
 
-        if (!activity) return res.status(400).send("Activity not found");
+        if (!activity) return res.status(404).send("Activity not found");
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
         // const remove_user_ids = req.body.user_id; // array
@@ -456,7 +448,7 @@ exports.removeUser = async (req, res) => {
         );
         if (participant) {
             participant.destroy();
-            res.status(200).send("users removed");
+            res.status(204).send("user removed");
         } else {
             res.status(404).send("Participants not found.")
         }
@@ -487,9 +479,8 @@ exports.applyActivity = async (req, res) => {
         const activity_id = req.params.activity_id;
         
         const activity = await activityModel.Activities.findByPk(activity_id);
-        // const participant_name = await User.findByPk(user_id);
 
-        if (!activity) return res.status(400).send("Activity not found");
+        if (!activity) return res.status(404).send("Activity not found");
         if (activity.created_user_id === user_id) return res.status(403).send("Activity creator should not applied.")
 
         const activityNeedReview = await activityModel.Activities.findOne({
@@ -528,8 +519,8 @@ exports.getDiscussion = async (req, res) => {
         const offset = parseInt(req.query.offset);
 
         // validation
-        const activity = activityModel.Activities.findByPk(activity_id);
-        if (!activity) return res.status(400).send("Activity not found");
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        if (!activity) return res.status(404).send("Activity not found");
 
         const discussions = await activityModel.Discussion.findAll({
             include: [
@@ -549,10 +540,10 @@ exports.getDiscussion = async (req, res) => {
             offset: offset,
         });
 
-        res.status(200).json(discussions);
+        return res.status(200).json(discussions);
     } catch (error) {
         console.error('Error getting discussion:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -561,7 +552,7 @@ exports.getDiscussion = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.makeDiscussion = (req, res) => {
+exports.makeDiscussion = async (req, res) => {
     /* NOTE: request body
     {
         "content": "string"
@@ -574,16 +565,22 @@ exports.makeDiscussion = (req, res) => {
         const content = req.body.content;
 
         // validation
-        const activity = activityModel.Activities.findByPk(activity_id);
-        if (!activity) return res.status(400).send("Activity not found");
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        if (!activity){
+            return res.status(404).send("Activity not found");
+        }
+            
 
-        var isParicipant = activityModel.ActivityParticipantStatus.findOne({
+        var isParicipant = await activityModel.ActivityParticipantStatus.findOne({
             where: {
                 joined_activities: activity_id,
                 participants: user_id
             }
         });
-        if (activity.created_user_id != user_id && !isParicipant) return res.status(403).send("authorization failed");
+
+        if (!isParicipant){   // 只要是參加者都可以留言
+            return res.status(403).send("User hasn't joined the activity");
+        }
 
         const discussion = activityModel.Discussion.create(
             {
@@ -593,7 +590,7 @@ exports.makeDiscussion = (req, res) => {
             }
         );
 
-        res.status(201).send("discussion made");
+        return res.status(201).send("discussion made");
 
     } catch (error) {
         console.error('Error making discussion:', error);
