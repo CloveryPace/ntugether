@@ -421,7 +421,5 @@ function CheckPasswordStrength({password}){
           </Typography>)
         }
   </Box>
-  
-
       );
     }
