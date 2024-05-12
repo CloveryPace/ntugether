@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Typography, Stack, Divider, useTheme, Paper } from '@mui/material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
 import Button from '@mui/material/Button';
+import { useTranslation } from 'react-i18next';
 
 export default function FilterBar({setFilterData, setFilterIsOpen, filterData}) {
   const theme = useTheme();
+  const { t, i18n } = useTranslation();
 
   const [type, setType] = React.useState(filterData['type']);
   const [time, setTime] = React.useState(filterData['time']);
@@ -31,48 +33,48 @@ export default function FilterBar({setFilterData, setFilterIsOpen, filterData}) 
   }
 
   return (
-    <Paper elevation={3} sx={{ padding: '20px', width: '320px', position: 'absolute',
+    <Paper elevation={3} sx={{ padding: '20px', width:'40%',minWidth: '320px', position: 'absolute',
     left: '50%', transform: 'translateX(-50%)', top: '51px', zIndex: 5}}>
-      <Typography variant='h6'>篩選</Typography>
+      <Typography variant='h6'>{t('篩選')}</Typography>
       <Stack
         direction="column"
         divider={<Divider orientation="horizontal" flexItem />}
         spacing={2} sx={{ marginTop: '30px'}}
       >
-        <Stack direction="row" spacing={2} sx={{ marginBottom: '15px' }} alignItems='center'>
-          <Typography>類型</Typography>
+        <Stack direction="column" spacing={2} sx={{ marginBottom: '15px' }} alignItems='left'>
+          <Typography>{t('類型')}</Typography>
           <ToggleButtonGroup value={type} onChange={handleType} color="toggle">
-            <ToggleButton value="活動">活動</ToggleButton>
-            <ToggleButton value="進度計畫">進度計畫</ToggleButton>
+            <ToggleButton value="活動">{t('活動')}</ToggleButton>
+            <ToggleButton value="進度計畫">{t('進度計畫')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+        <Stack direction="column" spacing={2} sx={{ marginBottom: '15px' }} alignItems='left'>
+          <Typography>{t('時間')}</Typography>
 
-        <Stack direction="row" spacing={2} sx={{ marginBottom: '15px' }} alignItems='center'>
-          <Typography>時間</Typography>
           <ToggleButtonGroup value={time} onChange={handleTime} color="toggle">
-            <ToggleButton value="今天">今天</ToggleButton>
-            <ToggleButton value="明天">明天</ToggleButton>
-            <ToggleButton value="本週">本週</ToggleButton>
-            <ToggleButton value="本週末">本週末</ToggleButton>
+            <ToggleButton size="small" value="今天">{t('今天')}</ToggleButton>
+            <ToggleButton size="small"  value="明天">{t('明天')}</ToggleButton>
+            <ToggleButton size="small"  value="本週">{t('本週')}</ToggleButton>
+            <ToggleButton size="small"  value="本週末">{t('本週末')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
 
-        <Stack direction="row" spacing={2} sx={{ marginBottom: '15px' }} alignItems='center'>
-          <Typography>主題</Typography>
+        <Stack direction="column" spacing={2} sx={{ marginBottom: '15px' }} alignItems='left'>
+          <Typography>{t('主題')}</Typography>
           <ToggleButtonGroup value={category} onChange={handleCategory} color="toggle">
-            <ToggleButton value="運動">運動</ToggleButton>
-            <ToggleButton value="讀書">讀書</ToggleButton>
-            <ToggleButton value="其他">其他</ToggleButton>
+            <ToggleButton value="運動">{t('運動')}</ToggleButton>
+            <ToggleButton value="學習">{t('學習')}</ToggleButton>
+            <ToggleButton value="其他">{t('其他')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
 
-        <Stack direction="row" spacing={2} sx={{ marginBottom: '15px' }} alignItems='center'>
-          <Typography>地點</Typography>
+        <Stack direction="column" spacing={2} sx={{ marginBottom: '15px' }} alignItems='left'>
+          <Typography>{t('地點')}</Typography>
           <ToggleButtonGroup value={location} onChange={handleLocation} color="toggle">
-            <ToggleButton value="北部">北部</ToggleButton>
-            <ToggleButton value="中部">中部</ToggleButton>
-            <ToggleButton value="南部">南部</ToggleButton>
-            <ToggleButton value="東部">東部</ToggleButton>
+            <ToggleButton value="北部">{t('北部')}</ToggleButton>
+            <ToggleButton value="中部">{t('中部')}</ToggleButton>
+            <ToggleButton value="南部">{t('南部')}</ToggleButton>
+            <ToggleButton value="東部">{t('東部')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
         <Button variant="contained" onClick={() => getFilterData()}>套用</Button>
