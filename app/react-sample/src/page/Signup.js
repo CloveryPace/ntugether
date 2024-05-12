@@ -25,54 +25,7 @@ import theme from '../components/Theme';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import {setAuthToken} from '../utils';
-
-const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
-const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
-const atLeastOneLowercaseLetter = (password) => new RegExp(/(?=.*?[a-z])/).test(password);
-const atLeastOneNumber = (password) => new RegExp(/(?=.*?[0-9])/).test(password);
-const atLeastOneSpecialChar = (password) => new RegExp(/(?=.*?[#?!@$ %^&*-])/).test(password);
-
-const PasswordStrength = {  
-  WEAK: '弱',
-  MEDIUM: '中',
-  STRONG: '強'
-};
-
-function testingpasswordStrength(password){
-    if (!password) return PasswordStrength.WEAK;
-    let points = 0;
-    if (atLeastMinimumLength(password)) points += 1;
-    if (atLeastOneUppercaseLetter(password)) points += 1;
-    if (atLeastOneLowercaseLetter(password)) points += 1;
-    if (atLeastOneNumber(password)) points += 1;
-    if (atLeastOneSpecialChar(password)) points += 1;
-    if (points >= 5) return PasswordStrength.STRONG;
-    if (points >= 3) return PasswordStrength.MEDIUM;
-    return PasswordStrength.WEAK;
-}
-
-function generateColors(strength) {
-    let result = [];
-    const COLORS = {
-      NEUTRAL: 'hsla(0, 0%, 88%, 1)',
-      WEAK : 'hsla(353, 100%, 38%, 1)',
-      MEDIUM: 'hsla(40, 71%, 51%, 1)',
-      STRONG : 'hsla(134, 73%, 30%, 1)'
-    };
-    switch (strength) {
-      case PasswordStrength.WEAK:
-      result = [COLORS.WEAK, COLORS.NEUTRAL, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.MEDIUM:
-      result = [COLORS .MEDIUM, COLORS.MEDIUM, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.STRONG:
-      result = [ COLORS .STRONG, COLORS.STRONG, COLORS.STRONG, COLORS.STRONG];
-      break;
-    }
-    return result;
-}
-// TODO remove, this demo shouldn't need to reset the theme.
+import PasswordAndCheck from '../components/PasswordAndCheck';
 
 const { useState } = React;
 
@@ -89,14 +42,14 @@ export default function Signup() {
   const [birthday, setBirthday] = useState(dayjs('2022-04-17'));
   const [username, setUserName] = useState('');
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState(false);
 
   let data = new FormData();
 
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
 
-    if(password !== confirmPassword || testingpasswordStrength(password) !== PasswordStrength.STRONG){
+    if(password !== confirmPassword || password === '' || confirmPassword === ''){
       setError(true);
       console.log('error');
     }else{
@@ -105,8 +58,7 @@ export default function Signup() {
 
     data = new FormData(event.currentTarget);
 
-    //todo: validate form
-    if (error) {
+    if (Boolean(error)) {
       alert(error);
     }else{
     
@@ -184,13 +136,13 @@ export default function Signup() {
     setGender(event.target.value);
   };
 
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
+  // const handlePasswordChange = (event) => {
+  //   setPassword(event.target.value);
+  // };
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
+  // const handleConfirmPasswordChange = (event) => {
+  //   setConfirmPassword(event.target.value);
+  // };
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -289,37 +241,8 @@ export default function Signup() {
                   </FormControl>
 
               </Grid>
-
               <Grid item xs={12}>
-                  
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label={t('密碼')}
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-                <CheckPasswordStrength password={password}/>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="comfirmPassword"
-                  label={t('再次輸入密碼')}
-                  type="password"
-                  id="confirm-password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  color={password === confirmPassword ? 'primary' : 'warning'}
-                />
-                {password === confirmPassword ? null : <Box><Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="6px 0 24px 0px">{t('請輸入相同的密碼')}</Typography></Box>}
+              <PasswordAndCheck setPassword={setPassword} setConfirmPassword={setConfirmPassword}/>
               </Grid>
               <Grid item xs={12}>
               <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
@@ -389,32 +312,3 @@ export default function Signup() {
     </ThemeProvider>
   );
 }
-
-
-function CheckPasswordStrength({password}){
-  const { t, i18n } = useTranslation();
-
-  const passwordStrength = testingpasswordStrength(password);
-  const colors = generateColors(passwordStrength);
-
-  return(
-  <Box>
-      <Box display="flex" alignItems="center" justifyContent="center" gap="5px" margin="10px 0">
-      {colors.map((color, index) => (
-        <Box key={index} flex={1} height="5px" borderRadius="5px" bgcolor={color}></Box>
-      ))}
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-start" gap="5px" margin="0 0 15px">
-        <Typography color={colors[0]}>{t(passwordStrength)}</Typography>
-        </Box>
-        {passwordStrength !== PasswordStrength.STRONG && (
-          <Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="0 0 24px 0px">
-            {t('密碼需包含至少 8 個字元，包含至少一個大寫字母、小寫字母、數字、特殊字元')}
-          </Typography>)
-        }
-  </Box>
-  
-
-      );
-    }
