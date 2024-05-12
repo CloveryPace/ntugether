@@ -141,14 +141,6 @@ export default function Signup() {
     setGender(event.target.value);
   };
 
-  // const handlePasswordChange = (event) => {
-  //   setPassword(event.target.value);
-  // };
-
-  // const handleConfirmPasswordChange = (event) => {
-  //   setConfirmPassword(event.target.value);
-  // };
-
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };

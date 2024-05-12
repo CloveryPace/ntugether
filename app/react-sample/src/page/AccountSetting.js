@@ -15,43 +15,11 @@ import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import Divider from '@mui/material/Divider';
 import { useTranslation } from 'react-i18next';
-
+import PasswordAndCheck from '../components/PasswordAndCheck';
 
 const { useState } = React;
 
-const tagTheme = createTheme({
-  palette: {
-    primary: {
-      main: yellow[400],
-    },
-    secondary:{
-      main: cyan[100],
-    },
-    warning:{
-      main: orange[400]
-    }
-  },
-});
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
-
 function AccountSetting() {
-  const style2 = { 
-    padding: "1rem 0 0 0" 
-  };
-  const instyle = { 
-    padding: "3rem 0 0 0" 
-  };
   const dividerStyle = {
     p: 0,
     width: '100%',
@@ -70,12 +38,9 @@ function AccountSetting() {
   };
 
   const { t, i18n } = useTranslation();
-
-
-  const [name, setName] = useState('MyName');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-
+  const [email, setEmail] = useState('MyName');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
 
   return (
@@ -102,38 +67,19 @@ function AccountSetting() {
                 </Typography> 
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1}} >
 
-                        <TextField
+                        {/* <TextField
                                 fullWidth
                                 margin="normal"
                                 id="outlined-controlled"
-                                label={t('姓名')}
-                                value={name}
-                                onChange={(event) => {
-                                setName(event.target.value);
-                                }}
-                            />
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label={t('新密碼')}
-                                type="password"
+                                label={t('電子郵件')}
                                 value={email}
                                 onChange={(event) => {
                                 setEmail(event.target.value);
                                 }}
-                            />
-                        <TextField
-                                fullWidth
-                                margin="normal"
-                                id="outlined-controlled"
-                                label={t('再次輸入新密碼')}
-                                type="password"
-                                value={phone}
-                                onChange={(event) => {
-                                setPhone(event.target.value);
-                                }}
-                            />
+                            /> */}
+                        <Box sx={{ mt: 1 }} >
+                        <PasswordAndCheck setPassword={setPassword} setConfirmPassword={setConfirmPassword}/>
+                        </Box>
                         <Button
                             type="submit"
                             fullWidth
