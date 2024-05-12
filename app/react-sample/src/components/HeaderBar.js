@@ -24,6 +24,8 @@ import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { useTranslation } from 'react-i18next';
 import HomeIcon from '@mui/icons-material/Home';
 import './Style.css';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterBar from './FilterBar';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -49,6 +51,17 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+}));
+
+const FilterIconWrapper = styled('div')(({ theme }) => ({
+  padding: theme.spacing(0, 2),
+  height: '100%',
+  position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  right: 0,
+  top: 0
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -113,9 +126,12 @@ export default function HeaderBar() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [accountAnchor, setAccountAnchor] = React.useState(null);
   const [languageAnchor, setlanguageAnchor] = React.useState(null);
+  const [isFilterPopoverOpen, setFilterIsOpen] = React.useState(false);
+
   const [language, setlanguage] = React.useState('zh-tw');
   const [selectedLocation, setSelectedLocation] = React.useState('北部');
   const [showNotifiaction, setShowNotifiaction] = React.useState(false);
+  const [filterData, setFilterData] = React.useState({});
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
@@ -150,11 +166,35 @@ export default function HeaderBar() {
     setAccountAnchor(null);
   };
 
+  const handelFilterBar = () => {
+    setFilterIsOpen(!isFilterPopoverOpen);
+  };
+
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userInfo");
 
     navigate('/login');
+  }
+
+  const isEmptyFilterData= (obj) => {
+    // 檢查 obj 是否為物件
+    if (!obj || typeof obj !== 'object') {
+      return false;
+    }
+    // 遍歷物件的每個鍵值對
+    for (const key in obj) {
+      // 檢查鍵值對的值是否為陣列
+      if (!Array.isArray(obj[key])) {
+        return false;
+      }
+      // 檢查陣列是否為空
+      if (obj[key].length > 0) {
+        return false;
+      }
+    }
+    // 所有鍵值對的陣列都為空
+    return true;
   }
 
 
@@ -163,11 +203,11 @@ export default function HeaderBar() {
   const openLanguageToggl = Boolean(languageAnchor);
 
 
-  const handleSearchClick = (event) => {
-    setFilterAnchorEl(event.currentTarget);
-  };
-  const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
-  const isFilterPopoverOpen = Boolean(filterAnchorEl);
+  // const handleSearchClick = (event) => {
+  //   setFilterAnchorEl(event.currentTarget);
+  // };
+  // const [filterAnchorEl, setFilterAnchorEl] = React.useState(null);
+  // const isFilterPopoverOpen = Boolean(filterAnchorEl);
 
 
   return (
@@ -198,8 +238,21 @@ export default function HeaderBar() {
             placeholder="搜尋"
             inputProps={{ 'aria-label': 'search' }}
           />
+           <FilterIconWrapper>
+            <Badge color="secondary" variant="dot" invisible={isEmptyFilterData(filterData)? true : false}>
+              <FilterAltIcon sx={{cursor: 'pointer'}} onClick={handelFilterBar}/>
+            </Badge>
+          </FilterIconWrapper>
         </Search>
-
+        {
+          isFilterPopoverOpen ? (
+            <ClickAwayListener onClickAway={() => setFilterIsOpen(false)}>
+              <Paper>
+                <FilterBar setFilterData={setFilterData} setFilterIsOpen={setFilterIsOpen} filterData={filterData}/>
+              </Paper>
+            </ClickAwayListener>            
+          ) : null
+        }
         {/* Spacer */}
         <div style={{ flexGrow: 1 }} />
 

@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { Typography, Stack, Divider, useTheme, Paper } from '@mui/material';
 import { ToggleButtonGroup, ToggleButton } from '@mui/material';
+import Button from '@mui/material/Button';
 
-export default function FilterBar() {
+export default function FilterBar({setFilterData, setFilterIsOpen, filterData}) {
   const theme = useTheme();
 
-  const [type, setType] = React.useState([]);
-  const [time, setTime] = React.useState([]);
-  const [themeSelection, setThemeSelection] = React.useState([]);
-  const [location, setLocation] = React.useState([]);
+  const [type, setType] = React.useState(filterData['type']);
+  const [time, setTime] = React.useState(filterData['time']);
+  const [category, setCategory] = React.useState(filterData['category']);
+  const [location, setLocation] = React.useState(filterData['location']);
 
   const handleType = (event, newType) => {
     setType(newType);
@@ -16,15 +17,22 @@ export default function FilterBar() {
   const handleTime = (event, newTime) => {
     setTime(newTime);
   };
-  const handleThemeSelection = (event, newTheme) => {
-    setThemeSelection(newTheme);
+  const handleCategory = (event, category) => {
+    setCategory(category);
   };
   const handleLocation = (event, newLocation) => {
     setLocation(newLocation);
   };
 
+  const getFilterData = () => {
+    // console.log(type, time, category, location);
+    setFilterData({type: type, time: time, category: category, location: location});
+    setFilterIsOpen(false);
+  }
+
   return (
-    <Paper elevation={3} sx={{ padding: '20px', margin: '20px', width: '320px'}}>
+    <Paper elevation={3} sx={{ padding: '20px', width: '320px', position: 'absolute',
+    left: '50%', transform: 'translateX(-50%)', top: '51px', zIndex: 5}}>
       <Typography variant='h6'>篩選</Typography>
       <Stack
         direction="column"
@@ -51,7 +59,7 @@ export default function FilterBar() {
 
         <Stack direction="row" spacing={2} sx={{ marginBottom: '15px' }} alignItems='center'>
           <Typography>主題</Typography>
-          <ToggleButtonGroup value={themeSelection} onChange={handleThemeSelection} color="toggle">
+          <ToggleButtonGroup value={category} onChange={handleCategory} color="toggle">
             <ToggleButton value="運動">運動</ToggleButton>
             <ToggleButton value="讀書">讀書</ToggleButton>
             <ToggleButton value="其他">其他</ToggleButton>
@@ -67,6 +75,8 @@ export default function FilterBar() {
             <ToggleButton value="東部">東部</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
+        <Button variant="contained" onClick={() => getFilterData()}>套用</Button>
+
       </Stack>
     </Paper>
   );
