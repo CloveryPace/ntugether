@@ -32,7 +32,7 @@ const theme = createTheme({
       hashtag: {
         oneTime: '#FFB867',
         review: '#FFC966',
-        type:  '#FFE666',
+        type:  '#FFD45C',
         contrastText: '#2C3E4F',
       },
 

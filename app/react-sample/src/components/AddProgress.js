@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Typography, IconButton, Checkbox, FormControlLabel, TextField, Box, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import the delete icon
 import Stack from '@mui/material/Stack';
+import { useEffect} from "react";
 
-const AddProgress = () => {
+
+const AddProgress = ({ onProgressChange }) => {
   // Adjusted to match the data model
   const [items, setItems] = useState([{ name: '', time_to_finished: '', need_activity: false }]);
 
@@ -32,6 +34,10 @@ const AddProgress = () => {
     newItems[index].need_activity = !newItems[index].need_activity;
     setItems(newItems);
   };
+
+  useEffect(() => {
+    onProgressChange(items);
+  }, [items, onProgressChange]);
 
   return (
     <div>
