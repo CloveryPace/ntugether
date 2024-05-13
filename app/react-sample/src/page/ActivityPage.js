@@ -68,6 +68,7 @@ function ActivityPage() {
             alert("error");
           });
 
+        /*
         //取得參加者
         axios.get(API_GET_ACTIVITY_DETAIL + id + '/participants', config)
           .then(function (res) {
@@ -80,6 +81,7 @@ function ActivityPage() {
             console.log(err);
             alert("error");
           });
+          */
 
       }, [id]);
 
