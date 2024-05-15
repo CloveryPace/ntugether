@@ -26,6 +26,8 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Health check
 app.get('/', (req, res) => {
+    // #swagger.tags = ['Hello World!']
+    // #swagger.summary = "Health check"
     res.send('Hello World!');
 });
 

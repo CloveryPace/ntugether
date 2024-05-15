@@ -25,6 +25,7 @@ activityController.sync();
 router.get(
   "/",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '取得活動列表'
   // #swagger.description = '取得活動列表'
 
   /* #swagger.responses[400] = { 
@@ -44,7 +45,8 @@ router.get(
 router.post(
   "/",
   // #swagger.tags = ['Activity']
-  // #swagger.description = '創立活動' 
+  // #swagger.summary = '創立活動' 
+  // #swagger.description = '創立一項活動' 
   /* #swagger.parameters['body'] = {
       in: 'body',
       description: '創立活動',
@@ -85,6 +87,7 @@ router.post(
 router.get(
   "/:activity_id",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '取得活動資料'
   // #swagger.description = '取得該單一活動的資料'
   /* #swagger.responses[200] = { 
       description: "回傳該活動相關資料",
@@ -131,7 +134,8 @@ router.get(
 router.patch(
   "/:activity_id",
   // #swagger.tags = ['Activity']
-  // #swagger.description = '修改該單一活動'
+  // #swagger.summary = '更新活動'
+  // #swagger.description = '更新該單一活動'
   /* #swagger.responses[200] = { 
       description: "回傳update後資料",
       schema: {
@@ -173,6 +177,7 @@ router.patch(
 router.delete(
   "/:activity_id",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '刪除活動'
   // #swagger.description = '刪除該單一活動'
   /* #swagger.responses[204] = { 
     description: "已成功刪除活動",
@@ -205,6 +210,7 @@ router.delete(
 router.get(
   "/:activity_id/application",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '檢視審核列表'
   // #swagger.description = '活動創建者可以檢視特定活動的所有待審核列表'
   /* #swagger.responses[200] = { 
     description: "回傳待審核名單",
@@ -238,6 +244,7 @@ router.get(
 router.patch(
   "/:activity_id/remove-user",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '移除活動參與者'
   // #swagger.description = '活動創建者移除活動中的用戶，一次移除一位'
   /* #swagger.parameters['body'] = {
     in: 'body',
@@ -278,6 +285,7 @@ router.patch(
 router.post(
   "/:activity_id/apply",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = "加入/申請活動"
   // #swagger.description = '不論是否需要審核的活動都是使用這個API，不須審核的將直接加入。所有用戶都可以call這個API，但是活動建立者會被擋掉'
   /* #swagger.parameters['body'] = {
     in: 'body',
@@ -311,7 +319,7 @@ router.post(
 
   /* #swagger.responses[403] = { 
     description: "用戶通過驗證，但為活動創立者，不應該申請",
-    schema: "Activity creator should not applied."
+    schema: "Activity creator should not apply."
   } */
 
 
@@ -326,6 +334,7 @@ router.post(
 router.get(
   "/:activity_id/participants",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = 取得活動參與者
   // #swagger.description = '回傳活動所有參與者'
 
   /* #swagger.responses[200] = { 
@@ -357,6 +366,7 @@ router.get(
 router.get(
   "/:activity_id/discussion",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '取得活動留言'
   // #swagger.description = '取得該活動的留言'
   /* #swagger.parameters['limit'] = {
     in: 'query',
@@ -373,7 +383,7 @@ router.get(
   } */
 
   /* #swagger.responses[200] = { 
-  description: "回傳該活動留言，包括該留言資料，以及該留言會員資料以及活動資料",
+  description: "回傳該活動留言。包括該留言資料，該留言會員資料以及活動資料",
   schema:{
       "discussion_id": "留言id",
       "content": "留言內容",
@@ -405,6 +415,7 @@ router.get(
 router.post(
   "/:activity_id/discussion",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '建立活動留言'
   // #swagger.description = '建立該活動的留言'
   /* #swagger.parameters['content'] = {
     in: 'body',
@@ -440,6 +451,7 @@ router.post(
 router.post(
   "/:activity_id/leave",
   // #swagger.tags = ['Activity']
+  // #swagger.summary = '離開活動'
   // #swagger.description = '該功能尚未完成QQ'
   authMiddleware.authentication, activityController.leaveActivity);
 

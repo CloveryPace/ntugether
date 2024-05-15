@@ -13,6 +13,10 @@
   "paths": {
     "/": {
       "get": {
+        "tags": [
+          "Hello World!"
+        ],
+        "summary": "Health check",
         "description": "",
         "responses": {
           "200": {
@@ -202,6 +206,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "取得活動列表",
         "description": "取得活動列表",
         "parameters": [
           {
@@ -290,7 +295,8 @@
         "tags": [
           "Activity"
         ],
-        "description": "創立活動",
+        "summary": "創立活動",
+        "description": "創立一項活動",
         "parameters": [
           {
             "name": "authorization",
@@ -403,6 +409,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "取得活動資料",
         "description": "取得該單一活動的資料",
         "parameters": [
           {
@@ -543,7 +550,8 @@
         "tags": [
           "Activity"
         ],
-        "description": "修改該單一活動",
+        "summary": "更新活動",
+        "description": "更新該單一活動",
         "parameters": [
           {
             "name": "activity_id",
@@ -573,7 +581,7 @@
         ],
         "responses": {
           "200": {
-            "description": "回傳update後資料",
+            "description": "回傳更新後資料",
             "schema": {
               "type": "object",
               "properties": {
@@ -672,6 +680,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "刪除活動",
         "description": "刪除該單一活動",
         "parameters": [
           {
@@ -750,6 +759,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "檢視審核列表",
         "description": "活動創建者可以檢視特定活動的所有待審核列表",
         "parameters": [
           {
@@ -839,6 +849,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "移除活動參與者",
         "description": "活動創建者移除活動中的用戶，一次移除一位",
         "parameters": [
           {
@@ -921,6 +932,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "加入/申請活動",
         "description": "不論是否需要審核的活動都是使用這個API，不須審核的將直接加入。所有用戶都可以call這個API，但是活動建立者會被擋掉",
         "parameters": [
           {
@@ -986,7 +998,7 @@
             "description": "用戶通過驗證，但為活動創立者，不應該申請",
             "schema": {
               "type": "string",
-              "example": "Activity creator should not applied.",
+              "example": "Activity creator should not apply.",
               "xml": {
                 "name": "main"
               }
@@ -1013,6 +1025,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "取得活動參與者",
         "description": "回傳活動所有參與者",
         "parameters": [
           {
@@ -1095,6 +1108,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "取得活動留言",
         "description": "取得該活動的留言",
         "parameters": [
           {
@@ -1133,7 +1147,7 @@
         ],
         "responses": {
           "200": {
-            "description": "回傳該活動留言，包括該留言資料，以及該留言會員資料以及活動資料",
+            "description": "回傳該活動留言。包括該留言資料，該留言會員資料以及活動資料",
             "schema": {
               "type": "object",
               "properties": {
@@ -1206,6 +1220,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "建立活動留言",
         "description": "建立該活動的留言",
         "parameters": [
           {
@@ -1288,6 +1303,7 @@
         "tags": [
           "Activity"
         ],
+        "summary": "離開活動",
         "description": "該功能尚未完成QQ",
         "parameters": [
           {
@@ -2068,6 +2084,9 @@
     },
     "/plan/": {
       "post": {
+        "tags": [
+          "Plan"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2101,6 +2120,9 @@
         }
       },
       "get": {
+        "tags": [
+          "Plan"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2166,6 +2188,9 @@
     },
     "/plan/{plan_id}": {
       "get": {
+        "tags": [
+          "Plan"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2205,7 +2230,11 @@
         }
       },
       "patch": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "summary": "更新活動",
+        "description": "更新該單一活動",
         "parameters": [
           {
             "name": "plan_id",
@@ -2247,7 +2276,14 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "回傳更新後資料",
+            "schema": {
+              "type": "string",
+              "example": "plan updated",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -2263,7 +2299,34 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to delete this plan"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到該活動",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Plan not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2271,7 +2334,11 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "summary": "刪除計畫",
+        "description": "刪除該單一計畫",
         "parameters": [
           {
             "name": "plan_id",
@@ -2289,7 +2356,14 @@
         ],
         "responses": {
           "204": {
-            "description": "No Content"
+            "description": "已成功刪除計畫",
+            "schema": {
+              "type": "string",
+              "example": "sucessfully delete",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2302,10 +2376,34 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是計畫創立者，無權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to delete this plan"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該計畫",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Plan not found"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2315,6 +2413,9 @@
     },
     "/plan/application/{application_id}": {
       "get": {
+        "tags": [
+          "Plan"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2359,6 +2460,9 @@
     },
     "/plan/application/{application_id}/approve": {
       "patch": {
+        "tags": [
+          "Plan"
+        ],
         "description": "",
         "parameters": [
           {
@@ -2403,7 +2507,11 @@
     },
     "/plan/{plan_id}/applications": {
       "get": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "summary": "檢視審核列表",
+        "description": "計畫創建者可以檢視特定計畫的所有待審核列表",
         "parameters": [
           {
             "name": "plan_id",
@@ -2421,7 +2529,35 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "回傳待審核名單",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_id": {
+                  "type": "string",
+                  "example": "審核id"
+                },
+                "application_response": {
+                  "type": "string",
+                  "example": "審核回覆"
+                },
+                "is_approved": {
+                  "type": "string",
+                  "example": "boolean"
+                },
+                "applicant_id": {
+                  "type": "string",
+                  "example": "待審核者id"
+                },
+                "plan_id": {
+                  "type": "string",
+                  "example": "計畫id"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2434,10 +2570,24 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是計畫創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "not plan creator",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "未找到該用戶",
+            "schema": {
+              "type": "string",
+              "example": "Participants not found.",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2447,7 +2597,11 @@
     },
     "/plan/{plan_id}/apply": {
       "post": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "summary": "加入/申請計畫",
+        "description": "不論是否需要審核的計畫都是使用這個API，不須審核的將直接加入。所有用戶都可以call這個API，但是計畫建立者會被擋掉",
         "parameters": [
           {
             "name": "plan_id",
@@ -2465,22 +2619,38 @@
           {
             "name": "body",
             "in": "body",
+            "description": "需要審核計畫的審核問題",
             "schema": {
               "type": "object",
               "properties": {
                 "application_response": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "審核回覆"
                 }
               }
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
+          "200": {
+            "description": "用戶成功加入，計畫不需審核",
+            "schema": {
+              "type": "string",
+              "example": "joined！",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
-          "400": {
-            "description": "Bad Request"
+          "201": {
+            "description": "用戶成功發出計畫申請，待審核",
+            "schema": {
+              "type": "string",
+              "example": "Successfully send the application",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2493,7 +2663,24 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但為計畫創立者，不應該申請",
+            "schema": {
+              "type": "string",
+              "example": "Plan creator should not applied.",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該計畫不存在",
+            "schema": {
+              "type": "string",
+              "example": "Plan not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2503,7 +2690,11 @@
     },
     "/plan/{plan_id}/invitation": {
       "post": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "summary": "接受/拒絕計畫邀請",
+        "description": "接受或拒絕該計畫的邀請",
         "parameters": [
           {
             "name": "plan_id",
@@ -2541,7 +2732,10 @@
     },
     "/plan/{plan_id}/leave": {
       "patch": {
-        "description": "",
+        "tags": [
+          "Plan"
+        ],
+        "description": "該功能尚未完成QQ",
         "parameters": [
           {
             "name": "plan_id",
@@ -2573,39 +2767,11 @@
     },
     "/plan/{plan_id}/discussion": {
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "plan_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "offset",
-            "in": "query",
-            "type": "string"
-          }
+        "tags": [
+          "Plan"
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "post": {
-        "description": "",
+        "summary": "取得計畫留言",
+        "description": "取得該計畫的留言",
         "parameters": [
           {
             "name": "plan_id",
@@ -2621,13 +2787,127 @@
             "type": "string"
           },
           {
-            "name": "body",
+            "name": "limit",
+            "in": "query",
+            "description": "回傳資料數量限制，ex: limit=10, 限制前10筆",
+            "type": "integer",
+            "schema": {
+              "type": "string",
+              "example": "10"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "跳過資料數量限制，ex: offset=10，跳過前10筆",
+            "type": "int",
+            "schema": {
+              "type": "string",
+              "example": "0"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "回傳該計畫留言。包括該留言的資料，該留言會員資料以及計畫資料",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "discussion_id": {
+                  "type": "string",
+                  "example": "留言id"
+                },
+                "content": {
+                  "type": "string",
+                  "example": "留言內容"
+                },
+                "sender_id": {
+                  "type": "string",
+                  "example": "留言用戶id"
+                },
+                "plan_id": {
+                  "type": "string",
+                  "example": "留言的計畫id"
+                },
+                "Sender": {
+                  "type": "object",
+                  "properties": {
+                    "用戶細節": {
+                      "type": "string",
+                      "example": "..."
+                    }
+                  }
+                },
+                "plan": {
+                  "type": "object",
+                  "properties": {
+                    "計畫細節": {
+                      "type": "string",
+                      "example": "..."
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "計畫不存在",
+            "schema": {
+              "type": "string",
+              "example": "Plan not found",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Plan"
+        ],
+        "summary": "建立計畫留言",
+        "description": "建立該計畫的留言",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "content",
             "in": "body",
+            "description": "留言內容",
             "schema": {
               "type": "object",
               "properties": {
                 "content": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "string"
                 }
               }
             }
@@ -2635,10 +2915,14 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "留言建立成功",
+            "schema": {
+              "type": "string",
+              "example": "discussion made",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2651,7 +2935,24 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但用戶未參加該計畫",
+            "schema": {
+              "type": "string",
+              "example": "User hasn't joined the plan",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "計畫不存在",
+            "schema": {
+              "type": "string",
+              "example": "Plan not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"

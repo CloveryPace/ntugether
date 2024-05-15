@@ -335,33 +335,6 @@ exports.createActivity = async (req, res) => {
  */
 exports.getActivityDetail = async (req, res) => {
 
-    /* NOTE: response format
-    {
-        "id": 10,
-        "name": "example Activity",
-        "introduction": "Introduction of Activity",
-        "date": "2024-04-27T05:48:47.139Z",
-        "created_user": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-        },
-        "need_review": true,
-        "county": "string",
-        "location": "string",
-        "max_participants": 0,
-        "application_problem": "string",
-        "joined_users": [
-            {
-                "id": 10,
-                "username": "theUser",
-                "email": "john@email.com",
-                "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-            }
-        ]
-    };
-    */
 
     try {
         const user_id = req.user_id;
@@ -385,20 +358,7 @@ exports.getActivityDetail = async (req, res) => {
  * @param {*} res 
  */
 exports.updateActivity = async (req, res) => {
-    /* NOTE: request format
-    {
-        "id": 10,
-        "name": "example Activity",
-        "introduction": "Introduction of Activity",
-        "date": "2024-04-27T06:26:48.578Z",
-        "need_review": true,
-        "county": "string",
-        "max_participants": 0,
-        "location": "string",
-        "application_problem": "string"
-    }
-    */
-
+   
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
@@ -586,7 +546,6 @@ exports.applyActivity = async (req, res) => {
         const activity_id = req.params.activity_id;
 
         const activity = await activityModel.Activities.findByPk(activity_id);
-
         if (!activity) return res.status(404).send("Activity not found");
         if (activity.created_user_id === user_id) return res.status(403).send("Activity creator should not applied.");
 
@@ -607,9 +566,9 @@ exports.applyActivity = async (req, res) => {
     }
 };
 
-exports.joinActivity = async (req, res) => {
+// exports.joinActivity = async (req, res) => {
 
-};
+// };
 
 exports.leaveActivity = async (req, res) => { }; // NOTE: not specified yet
 
@@ -622,8 +581,8 @@ exports.getDiscussion = async (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        const limit = parseInt(req.query.limit);
-        const offset = parseInt(req.query.offset);
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
 
         // validation
         const activity = await activityModel.Activities.findByPk(activity_id);
@@ -689,9 +648,15 @@ exports.makeDiscussion = async (req, res) => {
             return res.status(403).send("User hasn't joined the activity");
         }
 
+        const user = await User.findOne({
+            where: {user_id : user_id}
+        
+        });
+
         const discussion = activityModel.Discussion.create(
             {
                 sender_id: user_id,
+                sender_name: user.name,
                 activity_id: activity_id,
                 content: content,
             }

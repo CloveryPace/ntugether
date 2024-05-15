@@ -204,7 +204,7 @@ exports.updatePlan = async (req, res) => {
         const plan = await planModel.Plan.findByPk(plan_id);
 
         if (!plan) {
-            return res.status(400).json({ error: "Plan not found" });
+            return res.status(404).json({ error: "Plan not found" });
         }
 
         // authorization
@@ -235,7 +235,7 @@ exports.updatePlan = async (req, res) => {
             }
         });
 
-        // creaet tags for the plan
+        // create tags for the plan
         await addTag(tags, plan_id);
 
         try {
@@ -331,6 +331,7 @@ exports.getPlanDetail = async (req, res) => {
                 }
             })
         ) accessRight = 1;
+        
         if (plan.created_user_id == user_id) accessRight = 2;
 
         if (accessRight == 0) {
@@ -513,7 +514,7 @@ exports.getAllApplications = async (req, res) => {
             }
         });
 
-        res.json(applications);
+        return res.json(applications);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error getting all applications:', error);
@@ -579,19 +580,16 @@ exports.approve = async (req, res) => {
  * @param {*} res 
  */
 exports.applyPlan = async (req, res) => {
-    /* NOTE: request body
-    {
-        "application_response": "string"
-    }
-    */
-
+    
+    const { application_response } = req.body
     try {
         const user_id = req.user_id;
         const plan_id = req.params.plan_id;
-        const plan = await planModel.Plan.findByPk(plan_id);
 
-        if (!plan) return res.status(400).send("Plan not found");
-        if (plan.created_user_id == user_id) return res.status(403).json({ message: "creator cannot apply for a plan" });
+        const plan = await planModel.Plan.findByPk(plan_id);
+        if (!plan) return res.status(404).send("Plan not found");
+
+        if (plan.created_user_id == user_id) return res.status(403).json({ message: "Plan creator should not apply" });
 
         if (
             !planModel.PlanParticipantsStatus.findOne({
@@ -602,7 +600,7 @@ exports.applyPlan = async (req, res) => {
             })
         ) return res.status(403).send("participant existed");
 
-        const application_response = req.body.application_response; // TODO: need to check if the paramter exists
+        // const application_response = req.body.application_response; // TODO: need to check if the paramter exists
 
         await planModel.Applications.create(
             {
@@ -612,10 +610,10 @@ exports.applyPlan = async (req, res) => {
             }
         );
 
-        res.status(201).send("Successfully send the application");
+        return res.status(201).send("Successfully send the application");
     } catch (error) {
         console.error('Error applying for plan:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -692,13 +690,14 @@ exports.respondToInvitation = async (req, res) => {
 /* ================================ Discussion ================================ */
 exports.getDiscussion = async (req, res) => {
     try {
+        const user_id = req.user_id;
         const plan_id = req.params.plan_id;
-        const limit = parseInt(req.query.limit);
-        const offset = parseInt(req.query.offset);
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
 
         // validation
-        const plan = planModel.Plan.findByPk(plan_id);
-        if (!plan) return res.status(400).send("Plan not found");
+        const plan = await planModel.Plan.findByPk(plan_id);
+        if (!plan) return res.status(404).send("Plan not found");
 
         const discussions = await planModel.Discussion.findAll({
             include: [
@@ -718,10 +717,10 @@ exports.getDiscussion = async (req, res) => {
             offset: offset,
         });
 
-        res.status(200).json(discussions);
+        return res.status(200).json(discussions);
     } catch (error) {
         console.error('Error getting discussion:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -730,7 +729,7 @@ exports.getDiscussion = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.makeDiscussion = (req, res) => {
+exports.makeDiscussion = async (req, res) => {
     /* NOTE: request body
     {
         "content": "string"
@@ -743,20 +742,27 @@ exports.makeDiscussion = (req, res) => {
         const content = req.body.content;
 
         // validation
-        const plan = planModel.Plan.findByPk(plan_id);
-        if (!plan) return res.status(400).send("Plan not found");
+        const plan = await planModel.Plan.findByPk(plan_id);
+        if (!plan) return res.status(404).send("Plan not found");
 
-        var isParicipant = planModel.PlanParticipantsStatus.findOne({
+        var isParicipant = await planModel.PlanParticipantsStatus.findOne({
             where: {
                 joined_plan_id: plan_id,
                 participant_id: user_id
             }
         });
-        if (plan.created_user_id != user_id && !isParicipant) return res.status(403).send("authorization failed");
+        // plan.created_user_id != user_id 
+        if (!isParicipant) return res.status(403).send("User hasn't joined the plan");
 
+        const user = await User.findOne({
+            where: {user_id : user_id}
+        
+        });
+        
         const discussion = planModel.Discussion.create(
             {
                 sender_id: user_id,
+                sender_name: user.name,
                 plan_id: plan_id,
                 content: content,
             }
