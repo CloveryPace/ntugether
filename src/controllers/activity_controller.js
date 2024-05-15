@@ -13,22 +13,61 @@ const allowTags = ["exercise", "study"];
  * 
  * TODO: maybe directly add include the user data to an instance passed of, instead of doing query again
  */
-async function returnActivity(activity_id) {
-    var activity = await activityModel.Activities.findByPk(activity_id, {
-        include: [
-            {
-                model: User,
-                as: 'Creator',
-            },
-            {
-                model: User,
-                as: 'Participants',
+async function returnActivity(activity_id, is_one_time) {
+    var includeModels = [
+        {
+            model: User,
+            as: 'Creator',
+        },
+        {
+            model: User,
+            as: 'Participants',
+        },
+    ];
+
+    var activity = await activityModel.Activities.findByPk(activity_id, { include: includeModels });
+
+    var activityJson = activity.toJSON();
+
+    console.log("activity id", activity.activity_id);
+    var activityTags = await activityModel.ActivityTag.findAll(
+        {
+            where: {
+                activities: activity.activity_id,
             }
-        ],
+        }
+    );
+
+    console.log("tag instances length", activityTags.length);
+
+    activityJson.tags = [];
+    activityTags.forEach(async activityTag => {
+        tag = await activityModel.Tag.findByPk(activityTag.tag);
+
+        console.log("tag name is", tag.name);
+        activityJson.tags.push(tag.name);
     });
 
+    console.log(`tags ${activityJson.tags}`);
 
-    return activity;
+    if (!is_one_time) {
+        activityJson.date = [];
+        longTermInstances = await activityModel.LongTermActivities.findAll(
+            {
+                where: {
+                    activity_id: activity.activity_id
+                }
+            }
+        );
+
+        longTermInstances.forEach(e => {
+            console.log("date", e.date);
+            activityJson.date.push(e.date);
+        });
+
+    }
+
+    return activityJson;
 };
 
 /**
@@ -102,10 +141,11 @@ async function noReviewApply(req, res, activity_id, user_id) { // add participan
  * sync all the model used in the controller 
  */
 exports.sync = async () => {
-    await activityModel.Activities.sync({ alter: false });
-    await activityModel.ActivityParticipantStatus.sync({ alter: false });
+    await activityModel.Activities.sync({ alter: true });
+    await activityModel.ActivityParticipantStatus.sync({ alter: true });
     await activityModel.LongTermActivities.sync({ alter: true });
-    await activityModel.ActivityTag.sync({ alter: false });
+    await activityModel.Tag.sync({ alter: true });
+    await activityModel.ActivityTag.sync({ alter: true });
     await activityModel.Applications.sync({ alter: false });
     await activityModel.Invitation.sync({ alter: false });
     await activityModel.Discussion.sync({ alter: false });
@@ -158,7 +198,7 @@ exports.getActivitiesList = async (req, res) => {
         }
 
         // set include condition
-        var includeConditions = new Array();
+        var includeConditions = new Array;
         if (mode == "owned") includeConditions.push({
             model: User,
             as: 'Creator'
@@ -210,15 +250,15 @@ exports.createActivity = async (req, res) => {
     var newActivity = null;
     try {
         const user_id = req.user_id;
-
-        var { id, ...body } = req.body;
+        const { id, ...body } = req.body;
+        var dates = null;
 
         // get date list and make date field a single element
         body.created_user_id = user_id;
 
         // process long term date
         if (!body.is_one_time) {
-            const dates = body.date;
+            dates = body.date;
             body.date = dates[0];
         }
 
@@ -249,7 +289,7 @@ exports.createActivity = async (req, res) => {
 
         // update type
         if (body.tags == null) {
-            newActivity.destroy();
+            await newActivity.destroy();
             return res.status(400).json({ error: "tags are not provided" });
         }
 
@@ -257,14 +297,22 @@ exports.createActivity = async (req, res) => {
             var tag = body.tags[index];
 
             if (!allowTags.includes(tag)) {
-                newActivity.destroy();
+                await newActivity.destroy();
                 return res.status(400).json({ error: `tag ${tag} is not an allowed tag` });
             }
+
+            var tagInstances = await activityModel.Tag.findOrCreate(
+                {
+                    where: {
+                        name: tag,
+                    }
+                }
+            );
 
             await activityModel.ActivityTag.create(
                 {
                     activities: newActivity.activity_id,
-                    tag: tag,
+                    tag: tagInstances[0].id,
                 }
             );
         }
@@ -321,7 +369,7 @@ exports.getActivityDetail = async (req, res) => {
         const activity_id = req.params.activity_id;
         var activity = await activityModel.Activities.findByPk(activity_id);
         if (activity == null) return res.status(404).send("Activity not found");
-        activity = await returnActivity(activity_id);
+        activity = await returnActivity(activity_id, activity.is_one_time);
         return res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
@@ -371,7 +419,7 @@ exports.updateActivity = async (req, res) => {
 
         const { ...updateParams } = req.body; // NOTE: might use ...updateParams to separate update data and others
         await activity.update(updateParams);
-        var updatedActivity = await returnActivity(activity_id);
+        var updatedActivity = await returnActivity(activity_id, this.updateActivity.is_one_time);
         res.status(200).json(updatedActivity);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response

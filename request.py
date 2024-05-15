@@ -3,7 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-activity_id = 20
+activity_id = 36
 
 
 def signup():
@@ -60,14 +60,16 @@ token = signin()
 def create_activity():
     payload = json.dumps(
         {
-            "name": "example Activity",
+            "name": "Example Activity",
             "introduction": "Introduction of Activity",
-            "date": "2024-04-27T11:56:53.727Z",
+            "date": ["2024-04-27T11:56:53.727Z", "2024-04-30"],
             "need_reviewed": True,
             "country": "Taiwan",
             "max_participants": 10,
             "location": "Taipei",
-            "application_problem": "Are you happy?"
+            "application_problem": "Are you happy?",
+            "is_one_time": False,
+            "tags": ["study", "exercise"],
         }
     )
 
@@ -98,7 +100,7 @@ def get_acitvity_list():
 
 def get_acitvity_detail():
     res = requests.get(
-        url=f"{host}/activity/9",
+        url=f"{host}/activity/{activity_id}",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -462,7 +464,7 @@ if __name__ == '__main__':
     # signup()
     # create_activity()
     # get_acitvity_list()
-    # get_acitvity_detail()
+    get_acitvity_detail()
     # update_activity()
     # delete_activity()
     # apply()

@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:4000",
+  "host": "http://localhost:4000:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -316,7 +316,7 @@
                 },
                 "date": {
                   "type": "string",
-                  "example": "日期"
+                  "example": "日期 or [日期]"
                 },
                 "country": {
                   "type": "string",
@@ -325,6 +325,15 @@
                 "location": {
                   "type": "string",
                   "example": "地點"
+                },
+                "tags": {
+                  "type": "array",
+                  "example": [
+                    "類別"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "max_participants": {
                   "type": "string",
@@ -369,6 +378,9 @@
                 "name": "main"
               }
             }
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -427,7 +439,16 @@
                 },
                 "date": {
                   "type": "string",
-                  "example": "日期"
+                  "example": "日期 or [日期]"
+                },
+                "tags": {
+                  "type": "array",
+                  "example": [
+                    "類別"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
                 },
                 "country": {
                   "type": "string",

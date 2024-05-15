@@ -12,7 +12,11 @@ const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus', 
     }
 });
 
-const ActivityTag = sequelize.define('ActivityTag');
+const ActivityTag = sequelize.define('ActivityTag', {}, {
+    // Sequelize options
+    tableName: 'ActivityTags', // Explicitly specifying the table name here
+    timestamps: false, // assuming your table does not have fields like createdAt or updatedAt
+},);
 /* =========================== Activities Table =================================== */
 
 /**
@@ -80,7 +84,7 @@ User.belongsToMany(Activities, { as: "JoinedActivities", through: "ActivityParti
  */
 const LongTermActivities = sequelize.define("LongTermActivities", {
     long_term_activity_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
@@ -89,7 +93,8 @@ const LongTermActivities = sequelize.define("LongTermActivities", {
         references: {
             model: "Activities",
             key: "activity_id",
-        }
+        },
+        onDelete: 'cascade',
     },
     date: {
         type: Sequelize.DATE,
@@ -109,6 +114,9 @@ const LongTermActivities = sequelize.define("LongTermActivities", {
         timestamps: false // assuming your table does not have fields like createdAt or updatedAt
     },
 );
+
+LongTermActivities.belongsTo(Activities, { foreignKey: "activity_id" });
+Activities.hasMany(LongTermActivities, { as: "LongTermActivities", foreignKey: "activity_id" });
 
 const Applications = sequelize.define("Applications", {
     application_id: {
@@ -197,8 +205,8 @@ const Tag = sequelize.define("Tag", {
     },
 );
 
-Tag.belongsToMany(Activities, { as: "Activities", through: "ActvityTag", foreignKey: "tag" });
-Activities.belongsToMany(Tag, { as: "Tags", through: "ActvityTag", foreignKey: "activities" });
+Tag.belongsToMany(Activities, { as: "Activities", through: ActivityTag, foreignKey: "tag" });
+Activities.belongsToMany(Tag, { as: "Tags", through: ActivityTag, foreignKey: "activities" });
 
 const Discussion = sequelize.define("Discussion", {
     discussion_id: {
