@@ -5,7 +5,7 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY } from '../global/constants';
+import { API_CREATE_ACTIVITY, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 
 export default function ActivityComponent({data, key}) {
     const [userToken, setUserToken] = useState(getAuthToken());
+    const [atendee, setAtendee] = useState([]);
     const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -38,6 +39,19 @@ export default function ActivityComponent({data, key}) {
             console.log(res.data);
           })
           .catch(function (err) {
+            console.log(err);
+            alert("error");
+          });
+
+        //取得參加者
+        axios.get(API_GET_ACTIVITY_DETAIL + data.activity_id + '/participants', config)
+          .then(function (res) {
+            console.log("取得參加者成功");
+            setAtendee(res.data);
+            console.log(res.data);
+          })
+          .catch(function (err) {
+            console.log("取得參加者出現錯誤");
             console.log(err);
             alert("error");
           });
@@ -67,7 +81,19 @@ export default function ActivityComponent({data, key}) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  <Avatar alt="Remy Sharp"/>
+                  {atendee.length > 0 ?
+                    (atendee.map((person) => {
+                      return (
+                        <div style={{alignSelf: 'center'}}>
+                          <Chip avatar={<Avatar>{person.participants? person.participants: "未知"}</Avatar>} label={person.participants? person.participants: "未知"} />
+                        </div>
+                      );
+                    }))
+                    :
+                    <div style={{alignSelf: 'center'}}>
+                        尚無參加者
+                    </div>
+                  }
                 </div>
               </Stack>
             </div>
