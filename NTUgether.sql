@@ -10,6 +10,7 @@ CREATE TABLE Users (
     password VARCHAR(255) NOT NULL,
     birthday DATE,
     gender VARCHAR(50),
+    phoneNum VARCHAR(50),
     photo BLOB,
     self_introduction TEXT,
     oauthProvider VARCHAR(255),
@@ -31,6 +32,7 @@ CREATE TABLE Activities (
     introduction TEXT NOT NULL,
     date DATE NOT NULL,
     -- type JSON, -- JSON array to store list of types
+    country VARCHAR(255),
     location VARCHAR(255),
     max_participants INT,
     need_reviewed BOOLEAN,
@@ -65,6 +67,13 @@ CREATE TABLE ActivityParticipantStatus (
 
 -- Application Table
 CREATE TABLE Applications (
+    application_id INT AUTO_INCREMENT PRIMARY KEY,
+    activity_id INT,
+    application_response TEXT,
+    applicant_id INT,
+    is_approved BOOLEAN,
+    FOREIGN KEY (activity_id) REFERENCES Activities(activity_id),
+    FOREIGN KEY (applicant_id) REFERENCES Users(user_id)
      
 ) ENGINE=InnoDB;
 
@@ -82,9 +91,8 @@ CREATE TABLE Invitations (
 -- Plans Table
 CREATE TABLE Plans (
     plan_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255),
+    name VARCHAR(20),
     goal VARCHAR(255),
-    -- type varchar(20),
     introduction TEXT,
     created_user_id INT,
     progression TEXT, -- Consider using a structured format or linking to a separate table for complex types
@@ -97,11 +105,11 @@ CREATE TABLE Plans (
 -- PlanTypes Table to store unique plan types
 CREATE TABLE PlanTypes (
     plan_type_id INT AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(255) UNIQUE NOT NULL
+    type_name VARCHAR(20) NOT NULL
 ) ENGINE=InnoDB;
 
 -- PlanTypeAssociations Table to link Plans and PlanTypes
-CREATE TABLE PlanTypeAssociations (
+CREATE TABLE PlanTypeAssociation (
     plan_id INT,
     plan_type_id INT,
     PRIMARY KEY (plan_id, plan_type_id),
@@ -110,7 +118,7 @@ CREATE TABLE PlanTypeAssociations (
 ) ENGINE=InnoDB;
 
 -- Discussions Table
-CREATE TABLE Discussions (
+CREATE TABLE Plan_discussions (
     discussion_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     plan_id INT,
@@ -162,10 +170,10 @@ INSERT INTO Users (name, email, password, birthday, gender) VALUES
 -- DELETE FROM Users WHERE user_id = 4;
 
 -- Activities Table
-INSERT INTO Activities (name, introduction, date, location, max_participants, need_reviewed, is_one_time, created_user_id, application_problem, check_by_organizer) VALUES
-('Hiking Trip', 'Join us for a day of hiking in the nearby mountains.', '2024-05-01', 'Mountain Trail', 20, 0, 1, 1, 'None', 1),
-('Photography Workshop', 'Learn photography basics and improve your skills.', '2024-04-15', 'Community Center', 15, 1, 0, 2, 'None', 0),
-('Cooking Class', 'A hands-on cooking class to learn new recipes.', '2024-04-20', 'Culinary School', 10, 1, 0, 3, 'None', 0);
+INSERT INTO Activities (name, introduction, date, country, location, max_participants, need_reviewed, is_one_time, created_user_id, application_problem, check_by_organizer) VALUES
+('Hiking Trip', 'Join us for a day of hiking in the nearby mountains.', '2024-05-01', 'Taiwan', 'Mountain Trail', 20, 0, 1, 1, 'None', 1),
+('Photography Workshop', 'Learn photography basics and improve your skills.', '2024-04-15', 'Taiwan', 'Community Center', 15, 1, 0, 2, 'None', 0),
+-- ('Cooking Class', 'A hands-on cooking class to learn new recipes.', '2024-04-20', 'Taiwan', 'Culinary School', 10, 1, 0, 3, 'None', 0);
 
 -- Long-term Activity Table
 INSERT INTO LongTermActivities (activity_id, date, last_activity_id) VALUES
@@ -181,9 +189,9 @@ INSERT INTO ActivityParticipantStatus (activity_id, long_term_activity_id, parti
 
 -- Applications Table
 INSERT INTO Applications (activity_id, application_response, applicant_id, is_approved) VALUES
-(2, 'I`m excited to learn more about photography!', 1, 1),
-(3, 'Looking forward to cooking some delicious dishes!', 3, 1),
-(1, 'Can`t wait to explore the mountains!', 2, 0);
+(9, 'I`m excited to learn more about photography!', 2, 0),
+(9, 'Looking forward to cooking some delicious dishes!', 2, 0),
+(10, 'Can`t wait to explore the mountains!', 1, 0);
 
 -- Invitations Table
 INSERT INTO Invitations (inviter_id, invitee_id, activity_id) VALUES
@@ -203,13 +211,13 @@ INSERT INTO PlanTypes (type_name) VALUES
 ('Hobby');
 
 -- PlanTypeAssociations Table
-INSERT INTO PlanTypeAssociations (plan_id, plan_type_id) VALUES
+INSERT INTO PlanTypeAssociation (plan_id, plan_type_id) VALUES
 (1, 1),
 (2, 2),
 (3, 3);
 
 -- Discussions Table
-INSERT INTO Discussions (user_id, plan_id, content) VALUES
+INSERT INTO Plan_discussions (user_id, plan_id, content) VALUES
 (1, 1, 'Let`s share our workout routines and progress!'),
 (2, 2, 'What book should we read next?'),
 (3, 3, 'Recommendations for must-visit travel destinations?');

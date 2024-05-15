@@ -45,9 +45,9 @@ exports.getApplicationDetail = async (req, res) => {
         const activity_id = application.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
-        if (!application) return res.status(400).send("application not found");
+        if (!application) return res.status(404).send("Application not found");
 
-        res.status(200).json(application);
+        return res.status(200).json(application);
     } catch (error) {
         console.error('Error fetching application:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -66,22 +66,29 @@ exports.approve = async (req, res) => {
         const application = await activityModel.Applications.findByPk(application_id);
 
         // validation
-        if (!application) return res.status(400).send("application not found");
+        if (!application) return res.status(404).send("Application not found");
         if (application.is_approved == true) return res.status(400).send("application has been approved");
+
+        // get activity
         const activity_id = application.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
 
-        if (!activity) return res.status(400).send("activity not found");
+        // if (!activity) return res.status(404).send("Activity not found");
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
-        participantsExist = activityModel.ActivityParticipantStatus.findOne({
+        // get applicant
+        const applicant_id = application.applicant_id;
+
+        participantsExist = await activityModel.ActivityParticipantStatus.findOne({
             where: {
                 joined_activities: activity_id,
-                participants: user_id
+                participants: applicant_id,
             }
         });
+        console.log("participantsExist", participantsExist);
 
-        if (participantsExist) return res.status(400).send("participant has already joined");
+        //  已不會發生該情況
+        // if (participantsExist) return res.status(400).send("participant has already joined"); 
 
         // update is_approves
         application.update(
@@ -91,12 +98,13 @@ exports.approve = async (req, res) => {
         );
 
         // update participants
-        activityModel.ActivityParticipantStatus.create(
+        const join = await activityModel.ActivityParticipantStatus.create(
             {
                 joined_activities: activity_id,
-                participants: user_id
+                participants: applicant_id
             }
         );
+        console.log("join", join);
         res.status(200).send("approved!");
 
     } catch (error) {

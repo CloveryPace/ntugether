@@ -2,15 +2,16 @@ const { Op } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 const { parse } = require('yamljs');
+User.sync();
 
-
+const allowTags = ["exercise", "study"];
 
 /**
  * The function would format an activity instance with more detail, including the creator and participants related data
  * @param {*} activity_id 
  * @returns activity instance including creator and particpants data 
  * 
- * TODO: maybe directly add include the user data to an instance passed in, instead of doing query again
+ * TODO: maybe directly add include the user data to an instance passed of, instead of doing query again
  */
 async function returnActivity(activity_id) {
     var activity = await activityModel.Activities.findByPk(activity_id, {
@@ -26,19 +27,88 @@ async function returnActivity(activity_id) {
         ],
     });
 
+
     return activity;
 };
+
+/**
+ * Add user to the application list of an activity
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} activity_id 
+ * @param {*} user_id 
+ * @param {*} application_response 
+ * @returns 
+ */
+async function needReviewApply(req, res, activity_id, user_id, application_response) {
+
+    const applicantExist = await activityModel.Applications.findOne({
+        where: {
+            applicant_id: user_id,
+            activity_id: activity_id
+        }
+    });
+
+    if (applicantExist) return res.status(409).send("Applicant already exist.");
+
+    // const application_response = req.body.application_response; // TODO: need to check if the paramter exists
+    if (application_response !== undefined) {
+        activityModel.Applications.create(
+            {
+                application_response: application_response,
+                applicant_id: user_id,
+                activity_id: activity_id,
+            }
+        );
+    }
+    return res.status(201).send("Successfully send the application");
+}
+
+/**
+ * Directly include the user to the participants of the activity
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} activity_id 
+ * @param {*} user_id 
+ * @returns 
+ */
+async function noReviewApply(req, res, activity_id, user_id) { // add participant_name
+    participantsExist = await activityModel.ActivityParticipantStatus.findOne({
+        where: {
+            joined_activities: activity_id,
+            participants: user_id,
+        }
+    });
+
+    if (participantsExist) return res.status(400).send("applier has already joined");
+    const user = await User.findOne({
+        where: { user_id: user_id }
+
+    });
+
+    // update participants
+    await activityModel.ActivityParticipantStatus.create(
+        {
+            joined_activities: activity_id,
+            participants: user_id,
+            participant_name: user.name
+        }
+    );
+    return res.status(200).send("joined!");
+
+}
 
 /**
  * sync all the model used in the controller 
  */
 exports.sync = async () => {
-    await activityModel.Activities.sync();
-    await activityModel.ActivityParticipantStatus.sync();
-    await activityModel.ActivityTag.sync();
-    await activityModel.Applications.sync();
-    await activityModel.Invitation.sync();
-    await activityModel.Discussion.sync();
+    await activityModel.Activities.sync({ alter: false });
+    await activityModel.ActivityParticipantStatus.sync({ alter: false });
+    await activityModel.LongTermActivities.sync({ alter: true });
+    await activityModel.ActivityTag.sync({ alter: false });
+    await activityModel.Applications.sync({ alter: false });
+    await activityModel.Invitation.sync({ alter: false });
+    await activityModel.Discussion.sync({ alter: false });
 };
 
 /**
@@ -67,9 +137,6 @@ exports.getActivitiesList = async (req, res) => {
 
         // set search condition
         var condition = {
-            name: {
-                [Op.like]: '%' + search + '%'
-            },
             is_one_time: !is_long_term,
         };
 
@@ -135,25 +202,79 @@ exports.createActivity = async (req, res) => {
         "country": "string",
         "max_participants": 0,
         "location": "string",
+        "tags": ["study"]
         "application_problem": "string",
     };
     */
 
+    var newActivity = null;
     try {
-        const user_id = await req.user_id;
+        const user_id = req.user_id;
 
         var { id, ...body } = req.body;
-        body.need_review = req.body.need_review;
-        body.is_one_time = req.body.is_one_time;
-        body.check_by_organizer = req.body.check_by_organizer;
+
+        // get date list and make date field a single element
         body.created_user_id = user_id;
 
+        // process long term date
+        if (!body.is_one_time) {
+            const dates = body.date;
+            body.date = dates[0];
+        }
+
         const newActivity = await activityModel.Activities.create(body);
-        res.status(201).send("Successfully create an Activity");
+        const user = await User.findOne({ where: { user_id: user_id } });
+        // console.log(newActivity);
+
+        // create long term activity
+        if (!body.is_one_time) {
+            for (const date in dates) {
+                await activityModel.LongTermActivities.create(
+                    {
+                        activity_id: newActivity.activity_id,
+                        date: date,
+                    }
+                );
+            }
+        }
+
+        // update participants
+        await activityModel.ActivityParticipantStatus.create(
+            {
+                joined_activities: newActivity.activity_id,
+                participants: user_id,
+                participant_name: user.name
+            }
+        );
+
+        // update type
+        if (body.tags == null) {
+            newActivity.destroy();
+            return res.status(400).json({ error: "tags are not provided" });
+        }
+
+        for (let index = 0; index < body.tags.length; index++) {
+            var tag = body.tags[index];
+
+            if (!allowTags.includes(tag)) {
+                newActivity.destroy();
+                return res.status(400).json({ error: `tag ${tag} is not an allowed tag` });
+            }
+
+            await activityModel.ActivityTag.create(
+                {
+                    activities: newActivity.activity_id,
+                    tag: tag,
+                }
+            );
+        }
+
+        res.status(201).json({ message: "Successfully create an Activity", activity_id: newActivity.activity_id });
     }
     catch (error) {
+        if (newActivity) newActivity.destroy();
         console.error("Error creating activity", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: error });
     }
 
 };
@@ -197,25 +318,14 @@ exports.getActivityDetail = async (req, res) => {
     try {
         const user_id = req.user_id;
 
-        var activity_id = req.params.activity_id;
-        var activity = await activityModel.Activities.findByPk(activity_id, {
-            include: [
-                {
-                    model: User,
-                    as: 'Creator',
-                },
-                {
-                    model: User,
-                    as: 'Participants',
-                }
-            ],
-        });
-        if (activity == null) return res.status(400).send("no activity");
-        // activity = returnActivity(activity_id);
-        res.status(200).json(activity);
+        const activity_id = req.params.activity_id;
+        var activity = await activityModel.Activities.findByPk(activity_id);
+        if (activity == null) return res.status(404).send("Activity not found");
+        activity = await returnActivity(activity_id);
+        return res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 
 };
@@ -281,9 +391,10 @@ exports.deleteActivity = async (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
+        console.log(activity_id);
 
         // Find the activity by ID
-        var activity = await activity_id.Activity.findByPk(activity_id);
+        var activity = await activityModel.Activities.findByPk(activity_id);
 
         // If activity not found, return 404 error
         if (!activity) {
@@ -310,38 +421,21 @@ exports.deleteActivity = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.getAllApplications = (req, res) => {
-    /*
-    NOTE: response format
-    [
-        {
-            "id": 1,
-            "applicant": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-            },
-            "activity_id": 1,
-            "is_approved": false,
-            "application_response": "This is a response for the applicant"
-        }
-    ]
-    */
+exports.getAllApplications = async (req, res) => {
 
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        const activity = activityModel.Activities.findByPk(activity_id);
+        const activity = await activityModel.Activities.findByPk(activity_id);
 
         if (!activity) {
             return res.status(404).json({ error: 'Activity not found' });
         }
         if (activity.created_user_id != user_id) {
-            return res.status(403).json({ error: 'authorization failed' });
+            return res.status(403).json({ error: 'not activity creator' });
         }
 
-        const applications = activityModel.Applications.findAll({
+        const applications = await activityModel.Applications.findAll({
             where: {
                 activity_id: activity_id
             }
@@ -353,6 +447,30 @@ exports.getAllApplications = (req, res) => {
         console.error('Error getting all applications:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+};
+
+exports.getAllParticipants = async (req, res) => {
+
+    try {
+        // const user_id = req.user_id;
+
+        const activity_id = req.params.activity_id;
+        var activity = await activityModel.Activities.findByPk(activity_id);
+        if (activity == null) return res.status(404).send("Activity not found.");
+
+        const participants = await activityModel.ActivityParticipantStatus.findAll({
+            where: {
+                joined_activities: activity_id
+            },
+
+        });
+        return res.status(200).json(participants);
+
+    } catch (error) {
+        console.error("Error getting participants list.", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
 };
 
 /**
@@ -372,25 +490,30 @@ exports.removeUser = async (req, res) => {
         const activity_id = req.params.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
 
-        if (!activity) return res.status(400).send("Activity not found");
+        if (!activity) return res.status(404).send("Activity not found");
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
 
-        const remove_user_ids = req.body.user_id; // array
-        for (const remove_id in remove_user_ids) {
-            var user = User.findByPk(remove_id);
+        // const remove_user_ids = req.body.user_id; // array
+        const remove_id = req.body.remove_user_id;
+        // for (const remove_id of remove_user_ids) {
 
-            participant = await activityModel.ActivityParticipantStatus.findOne(
-                {
-                    where: {
-                        joined_activities: activity_id,
-                        participants: user_id
-                    }
+        participant = await activityModel.ActivityParticipantStatus.findOne(
+            {
+                where: {
+                    joined_activities: activity_id,
+                    participants: remove_id
                 }
-            );
-            if (participant) participant.destroy();
+            }
+        );
+        if (participant) {
+            participant.destroy();
+            res.status(204).send("user removed");
+        } else {
+            res.status(404).send("Participants not found.");
         }
+        // }
 
-        res.status(200).send("users removed");
+        // res.status(200).send("users removed");
 
     } catch (error) {
         console.error('Error removing participants:', error);
@@ -409,39 +532,35 @@ exports.applyActivity = async (req, res) => {
         "application_response": "string"
     }
     */
-
+    const { application_response } = req.body;
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        const activity = activityModel.Activities.findByPk(activity_id);
 
+        const activity = await activityModel.Activities.findByPk(activity_id);
 
-        if (!activity) return res.status(400).send("Activity not found");
+        if (!activity) return res.status(404).send("Activity not found");
+        if (activity.created_user_id === user_id) return res.status(403).send("Activity creator should not applied.");
 
-        if (
-            !activityModel.ActivityParticipantStatus.findOne({
-                where: {
-                    joined_activities: activity_id,
-                    participants: user_id
-                }
-            })
-        ) return res.status(403).send("participant existed");
-
-        const application_response = req.body.application_response; // TODO: need to check if the paramter exists
-
-        activityModel.Applications.create(
-            {
-                application_response: application_response,
-                applicant_id: user_id,
-                activity_id: activity_id,
+        const activityNeedReview = await activityModel.Activities.findOne({
+            where: {
+                need_reviewed: true,
+                activity_id: activity_id
             }
-        );
+        });
 
-        res.status(201).send("Successfully send the application");
+        console.log("need review", activityNeedReview);
+        if (activityNeedReview) return needReviewApply(req, res, activity_id, user_id, application_response);
+
+        return noReviewApply(req, res, activity_id, user_id); //add , participant_name
     } catch (error) {
         console.error('Error applying for activity:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+};
+
+exports.joinActivity = async (req, res) => {
+
 };
 
 exports.leaveActivity = async (req, res) => { }; // NOTE: not specified yet
@@ -459,8 +578,8 @@ exports.getDiscussion = async (req, res) => {
         const offset = parseInt(req.query.offset);
 
         // validation
-        const activity = activityModel.Activities.findByPk(activity_id);
-        if (!activity) return res.status(400).send("Activity not found");
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        if (!activity) return res.status(404).send("Activity not found");
 
         const discussions = await activityModel.Discussion.findAll({
             include: [
@@ -480,10 +599,10 @@ exports.getDiscussion = async (req, res) => {
             offset: offset,
         });
 
-        res.status(200).json(discussions);
+        return res.status(200).json(discussions);
     } catch (error) {
         console.error('Error getting discussion:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 };
 
@@ -492,7 +611,7 @@ exports.getDiscussion = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.makeDiscussion = (req, res) => {
+exports.makeDiscussion = async (req, res) => {
     /* NOTE: request body
     {
         "content": "string"
@@ -505,16 +624,22 @@ exports.makeDiscussion = (req, res) => {
         const content = req.body.content;
 
         // validation
-        const activity = activityModel.Activities.findByPk(activity_id);
-        if (!activity) return res.status(400).send("Activity not found");
+        const activity = await activityModel.Activities.findByPk(activity_id);
+        if (!activity) {
+            return res.status(404).send("Activity not found");
+        }
 
-        var isParicipant = activityModel.ActivityParticipantStatus.findOne({
+
+        var isParicipant = await activityModel.ActivityParticipantStatus.findOne({
             where: {
                 joined_activities: activity_id,
                 participants: user_id
             }
         });
-        if (activity.created_user_id != user_id && !isParicipant) return res.status(403).send("authorization failed");
+
+        if (!isParicipant) {   // 只要是參加者都可以留言
+            return res.status(403).send("User hasn't joined the activity");
+        }
 
         const discussion = activityModel.Discussion.create(
             {
@@ -524,7 +649,7 @@ exports.makeDiscussion = (req, res) => {
             }
         );
 
-        res.status(201).send("discussion made");
+        return res.status(201).send("discussion made");
 
     } catch (error) {
         console.error('Error making discussion:', error);

@@ -1,71 +1,382 @@
 const express = require('express');
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('../../swagger-output.json');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const mysql = require('mysql');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 var router = express.Router();
 router.use(bodyParser.json());
 
-const connection = require('../../database');
 const User = require('../model/userModel');
+const userController = require('../controllers/user_controller');
+// User.sync();
+const authMiddleware = require('../middlewares/authentication');
+
+
 
 // GET routes
-router.get("/", getMember);
-router.get("/", getMember);
-router.get("/signin", signIn);
-router.get("/forgetPassword", forgetPassword);
+router.get(
+  "/", authMiddleware.authentication, 
+  // swagger.description = "取得特定會員資料"
+  // #swagger.tags = ['User']
+  /* 
+  
+  /* #swagger.responses[200] = { 
+      description: '用戶詳細資料',
+      schema: 
+      [{
+        "members": "{ ... }"
+      }]
+    } */ 
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+  userController.getMember);
+
+router.get(
+  "/allMembers", authMiddleware.authentication, 
+  // swagger.description = "取得所有會員資料"
+  // #swagger.tags = ['User']
+  /* 
+  
+  /* #swagger.responses[200] = { 
+      description: '用戶詳細資料',
+      schema: 
+      [{
+        "members": "{ ... }"
+      }]
+    } */ 
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+  userController.getAllMembers);
+
+router.get(
+  "/forgetPassword", 
+  // #swagger.tags = ['User']
+  // #swagger.description = '忘記密碼，輸入信箱後發送驗證碼'
+  /* 
+  
+  /* #swagger.responses[200] = { 
+      description: "忘記密碼驗證信發送成功",
+      schema: {
+            "message": "You have requested to reset your password. Please verify within 10 minute."
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.forgetPassword);
+
+router.get(
+  "/emailSend", 
+  // #swagger.description = "信箱註冊驗證碼發送"
+  // #swagger.tags = ['User']
+  /* 
+  
+  /* #swagger.responses[200] = { 
+      description: "註冊驗證信發送成功",
+      schema: {
+            "message": "You have requested to reset your password. Please verify within 10 minute."
+          }
+      } */
+  /* #swagger.responses[409] = { 
+      description: "用戶已存在，請使用其他信箱",
+      schema: {
+            "error": "User already exists.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.emailSend)
 
 // POST routes
-router.post("/signup", signUp);
-router.post("/resetPassword", resetPassword);
+router.post(
+  "/signup",
+  // swagger.description = "註冊，請先至/user/emailSend取得驗證碼"
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Sign up 內容',
+      required: true,
+      schema: 
+      {
+        "name": "用戶名稱",
+        "email": "用戶信箱",
+        "birthday": "2000-01-01",
+        "gender": "male",
+        "password": "any",
+        "code": "驗證碼"
+      }
+    } */
+  /* #swagger.responses[201] = { 
+      description: "建立成功",
+      schema: {
+            "message": "Member created successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "Invalid or expired verification code."
+      } */
+  /* #swagger.responses[409] = {
+      description: "Email Conflict",
+      schema: {
+            "error": "Email already exists"
+        }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.signUp);
+
+router.post(
+  "/signin",
+  // swagger.description = "登入，請先確定已註冊成功" 
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Sign in 內容',
+      required: true,
+      schema: 
+      {
+        "email": "用戶信箱",
+        "password": "用戶密碼",
+      }
+  } */
+  /* #swagger.responses[201] = { 
+      description: "登入成功",
+      schema: {
+            "message": "Sign in successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "密碼錯誤",
+      schema: {
+            "error": "Invalid credentials",
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "用戶不存在",
+      schema: {
+            "error": "User not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.signIn);
+
+
+router.post(
+  "/resetPassword",
+  // swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"
+  // #swagger.tags = ['User']
+  /* #swagger.parameters['body'] = {
+    in: 'body',
+    description: '收到驗證信後，重設密碼',
+    required: true,
+    schema: 
+    {
+      "email": "用戶信箱",
+      "code": "驗證碼",
+      "newPassword": "用戶新密碼"
+    }
+} */
+/* #swagger.responses[200] = { 
+    description: "密碼更改成功",
+    schema: {
+          "message": "Password reset successfully"
+        }
+    } */
+/* #swagger.responses[401] = { 
+    description: "驗證碼錯誤",
+    schema: {
+          "error": "Invalid or expired verification code",
+        }
+    } */
+/* #swagger.responses[404] = { 
+    description: "用戶不存在",
+    schema: {
+          "error": "User not found.",
+        }
+    } */
+/* #swagger.responses[500] = { 
+    description: "網路或其他不明原因錯誤"
+    } */
+  
+
+  userController.resetPassword);
 
 // PUT routes
-router.put("/", updateMember);
-router.put("/emailVerify", emailVerify);
+router.put(
+  "/", authMiddleware.authentication, 
+  // swagger.description = "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.tags = ['User']
+  /* #swagger.security = [{
+            "bearerAuth": [
+              {
+                type: 'http',
+                scheme: 'bearer'
+              }
+            ]
+    }] */
+  /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '更新會員資料',
+      required: true,
+      schema: 
+      {
+        "name": "用戶名稱",
+        "phoneNum": "電話號碼",
+        "gender": "性別",
+        "aboutMe": "個人簡介"
+      }
+  } */
+  /* #swagger.responses[200] = { 
+      description: "會員資料更新成功",
+      schema: {
+            "message": "Member updated successfully",
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "使用者身分驗證錯誤",
+      schema: {
+            "message": "authorization fail"
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "請至少更新一行",
+      schema: {
+            "message": "Please update at least one row.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+userController.updateMember);
 
 // DELETE routes
-router.delete("/", deleteMember);
+router.delete(
+  "/", authMiddleware.authentication, 
+  // swagger.description = "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.tags = ['User']
+  /* #swagger.security = [{
+            "bearerAuth": [
+              {
+                type: 'http',
+                scheme: 'bearer'
+              }
+            ]
+    }] */
+
+  /* #swagger.responses[204] = { 
+      description: "會員刪除成功",
+      schema: {
+            "message": "Member deleted successfully",
+          }
+      } */
+  /* #swagger.responses[401] = { 
+      description: "使用者身分驗證錯誤",
+      schema: {
+            "message": "authorization fail",
+          }
+      } */
+  /* #swagger.responses[404] = { 
+      description: "會員不存在",
+      schema: {
+             "message": "Member not found.",
+          }
+      } */
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  userController.deleteMember);
 
 
 // Configure the Google strategy for use 
-passport.use(new GoogleStrategy({
+passport.use('signup-google', new GoogleStrategy({
   clientID: process.env.googleClientID,
   clientSecret: process.env.googleClientSecret,
-  callbackURL: "/user/oauth2callback"
+  callbackURL: "/user/oauth2callback/signup"
 },
-  (accessToken, refreshToken, profile, done) => {
+  async (accessToken, refreshToken, profile, done) => {
     try {
-      //  Check for existing user
-      connection.query('SELECT * FROM Users WHERE oauthId = ?', [profile.id], (err, existingUsers) => {
-        if (existingUsers.length > 0) {
-          return done(null, existingUsers[0]);
-        } else {
-          // if not, create new user in our db
-          connection.query('INSERT INTO Users (oauthId, email, name, oauthProvider) VALUES (?, ?, ?, "google")', [profile.id, profile.emails[0].value, profile.displayName], (err, result) => {
-            const newUser = {
-              // id: result.insertId,
-              oauthId: profile.id,
-              email: profile.emails[0].value,
-              name: profile.displayName
-            };
-            return done(null, newUser);
-          });
+      const user = await User.findOne({ where: { oauthId: profile.id } });
+      if (user) {
+        return done(null, user);
+      } else {
+        const existingEmailUser = await User.findOne({ where: { email: profile.emails[0].value } });
+        if (existingEmailUser) {
+          // Email already exists in the database, send a custom error message
+          return done(null, false, { message: 'Email already registered' });
         }
-      });
+        const newUser = await User.create({
+          oauthId: profile.id,
+          email: profile.emails[0].value,
+          name: profile.displayName,
+          oauthProvider: 'google'
+        });
+        return done(null, newUser);
+      }
+
+    } catch (error) {
+      return done(error);
+
+    }
+  }
+));
+
+passport.use('login-google', new GoogleStrategy({
+  clientID: process.env.googleClientID,
+  clientSecret: process.env.googleClientSecret,
+  callbackURL: "/user/oauth2callback/login"
+},
+  async (accessToken, refreshToken, profile, done) => {
+    try {
+      const user = await User.findOne({ where: { oauthId: profile.id } });
+      if (!user) {
+        return done(new Error('User not found.'));
+      }
+      return done(null, user); //'登入成功'
     } catch (error) {
       return done(error);
     }
   }
 ));
+
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -84,323 +395,84 @@ router.use(session({
 router.use(passport.initialize());
 router.use(passport.session());
 
-// Define routes.
-router.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Signup route
+router.get('/auth/google/signup',
+  // #swagger.description = 'Oauth註冊API，請注意不要跟/user/signup之信箱相同'
+  // #swagger.tags = ['User']
+  passport.authenticate('signup-google', { scope: ['profile', 'email'] })
+);
 
-router.get('/oauth2callback',
-  passport.authenticate('google', { failureRedirect: '/auth/failure' }),
+router.get(
+  '/oauth2callback/signup',
+  // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
+  // #swagger.tags = ['User']
+  
+  passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
   (req, res) => {
-    // Successful authentication, redirect home.
-    console.log("successful authentication");
-    res.redirect('/');
-  });
+    const user = req.user;
+    console.log(user.user_id);
+    const token = jwt.sign(
+      { userId: user.user_id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: process.env.JWT_EXPIRES_IN } 
+    );
+
+    // res.status(200).json ({
+    //   status: 'success',
+    //   message: 'User authenticated successfully',
+    //   token
+    // })
+    console.log(token);
+    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org'  });
+    res.redirect('http://ntugether.zapto.org:3000');
+  }
+);
+
+// Login route
+router.get('/auth/google/login',
+  // #swagger.description = 'Oauth登入API'
+  // #swagger.tags = ['User']
+  passport.authenticate('login-google', { scope: ['profile', 'email'] })
+);
+
+router.get(
+  '/oauth2callback/login',
+  // #swagger.description = 'OAuth callback for login. Redirects to home page on success.'
+  // #swagger.tags = ['User']
+  /* #swagger.responses[200] = { 
+      description: "Google Oauth登入成功",
+      schema: {
+            "status": "success",
+            "message": "User authenticated successfully",
+            "token": "jwt_token"
+          }
+      } */
+  passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
+  (req, res) => {
+    const user = req.user;
+    console.log(user.user_id);
+    const token = jwt.sign(
+      { userId: user.user_id }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: process.env.JWT_EXPIRES_IN } 
+    );
+    // res.status(200).json ({
+    //   status: 'success',
+    //   message: 'User authenticated successfully',
+    //   token
+    // })
+    console.log(token);
+    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org' });
+    res.redirect('http://ntugether.zapto.org:3000');
+  }
+);
+
+
 
 router.get('/auth/failure', (req, res) => {
-  res.send('Failed to authenticate.');
+  // #swagger.description = 'Oauth驗證失敗API'
+  // #swagger.tags = ['User']
+  return res.send('Failed to authenticate.');
 });
-
-const SECRET_KEY = 'sdm_is_so_fun';
-
-function generateVerificationCode(email) {
-  const timestamp = Math.floor(Math.floor(Date.now() / 1000) / 600); // Current time in seconds
-  const hash = crypto.createHmac('sha256', SECRET_KEY)
-    .update(email + timestamp)
-    .digest('hex');
-  const code = hash.substring(0, 6); // Take first 6 characters for simplicity
-  return { code, timestamp };
-}
-
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.Email,
-    pass: process.env.Password
-  }
-});
-
-async function signUp(req, res) {
-  try {
-    const { name, email, password } = req.query;
-    console.log("email", email);
-    console.log("name", name);
-    console.log("password", password);
-
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 12);
-
-    // Create user using Sequelize
-    const newUser = await User.create({
-      name: name,
-      email: email,
-      password: hashedPassword
-    });
-
-    console.log(newUser.id); // Assuming 'id' is the auto-generated field for user_id
-
-    // Create json web token
-    const token = jwt.sign(
-      { userId: newUser.id }, // Use the newly created user's id
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
-    );
-
-    const { code, timestamp } = generateVerificationCode(email);
-    // Example email sending code with nodemailer
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.Email,
-        pass: process.env.Password
-      }
-    });
-
-    const mailOptions = {
-      from: process.env.Email,
-      to: email,
-      subject: 'NTUgether Email Verification',
-      text: `Your verification code is: ${code}`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).send('Error sending email');
-      } else {
-        res.send('Verification code sent to your email. Please verify within 10 minutes.');
-        return res.status(201).json({
-          message: 'Member created successfully, verification email sent',
-          token: token, // JWT token
-        });
-      }
-    });
-
-
-  } catch (error) {
-    console.log(error);
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      return res.status(409).json({ error: "Email already exists" });
-    }
-    return res.status(500).json({ error: "Internal server error" });
-  }
-}
-
-async function emailVerify(req, res) {
-  const { email, code } = req.body;
-  const currentTimestamp = Math.floor(Date.now() / 1000);
-
-  // Re-generate the code based on the current timestamp and compare
-  const { code: validCode, timestamp } = generateVerificationCode(email);
-  console.log(validCode, timestamp);
-  console.log(code, currentTimestamp);
-
-  if (code === validCode) {
-    try {
-      // Use Sequelize to update the verified status for the user
-      const result = await User.update(
-        { verified: true },
-        { where: { email: email } }
-      );
-
-      if (result[0] > 0) { // result[0] contains the number of affected rows
-        res.send('Email verified successfully');
-      } else {
-        // No rows were updated, which means no user was found with that email
-        res.status(404).send('No user found with that email');
-      }
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send('Error updating user verification status');
-    }
-  } else {
-    res.status(401).send('Invalid or expired verification code');
-  }
-}
-
-async function signIn(req, res) {
-  try {
-    const { email, password } = req.query; // Extracting email and password from request query
-    console.log("email", email);
-    console.log("password", password);
-
-    // Use Sequelize to find the user by email
-    const user = await User.findOne({
-      where: {
-        email: email,
-
-      },
-      attributes: ['user_id', 'password'], // Select only the user_id and password fields
-    });
-
-    if (!user) {
-      // If no user found with that email
-      console.log("User does not exist");
-      return res.status(404).json({ error: "User does not exist" });
-    }
-    const { user_id: userId, password: hashedPassword } = user;
-
-    // Compare the provided password with the stored hashed password
-    const isMatch = await bcrypt.compare(password, hashedPassword);
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    // Passwords match, create JWT token
-    const token = jwt.sign(
-      { userId: userId },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // Use the same JWT expiry as in signUp
-    );
-    console.log('jwt token', token);
-
-    // Successfully authenticated
-    return res.status(200).json({
-      message: 'Authentication successful',
-      jwtToken: token,
-    });
-
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({ error: "Internal server error during authentication" });
-  }
-}
-
-async function forgetPassword(req, res) {
-  try {
-    const { email } = req.query;
-    console.log(email);
-
-    const user = await User.findOne({ where: { email: email } });
-
-    if (!user) {
-      return res.status(404).send("User not found.");
-    }
-
-    const { code, timestamp } = generateVerificationCode(email);
-
-    const mailOptions = {
-      from: process.env.Email,
-      to: email,
-      subject: 'Password Reset Request',
-      text: `You have requested to reset your password. Your verification code is: ${code}.
-      Please verify within 10 minute.`
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-        return res.status(500).send('Error sending email');
-      } else {
-        return res.status(200).json({
-          message: 'Password reset email sent,  Please verify within 10 minute.',
-        });
-      }
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal server error');
-  }
-
-}
-
-async function resetPassword(req, res) {
-  try {
-    const { email, code, newPassword } = req.body;
-
-    const user = await User.findOne({ where: { email: email } });
-    if (!user) {
-      return res.status(404).send('User not found');
-    }
-
-    const { code: validCode, timestamp } = generateVerificationCode(email);
-    // console.log(validCode, timestamp);
-    // console.log(code);
-    if (code === validCode) {
-      const hashedPassword = await bcrypt.hash(newPassword, 12);
-      const result = await User.update({ password: hashedPassword }, { where: { email: email } });
-
-      if (result[0] > 0) {
-        res.send('Password reset successfully');
-      } else {
-        res.status(404).send('No user found with that email');
-      }
-
-    } else {
-      res.status(401).send('Invalid or expired verification code');
-    }
-
-
-
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal server error');
-  }
-}
-
-
-async function getMember(req, res) {
-  const { name, email } = req.query;
-  console.log("name", name);
-
-  await User.findOne({
-    where: {
-      name: name,
-      email: email
-    }
-  })
-    .then(results => {
-
-      if (results) {
-        res.json({ members: results });
-
-      } else {
-        res.status(200).send("No member found.");
-      }
-    })
-    .catch(error => {
-      console.error("Error querying the database:", error);
-      res.status(500).send("Internal Server Error");
-    });
-}
-
-async function updateMember(req, res) {
-  const { user_id, name, email } = req.body;
-
-  try {
-    // Update the user
-    const [updatedRows] = await User.update({ name, email }, { where: { user_id } });
-
-    if (updatedRows > 0) {
-      res.status(200).send('Member updated successfully');
-    } else {
-      res.status(404).send('Member not found');
-    }
-  } catch (error) {
-    console.error('Error updating member:', error);
-    res.status(500).send('Internal Server Error');
-  }
-}
-
-async function deleteMember(req, res) {
-  const { user_id } = req.body; // Get the id of the member to delete
-
-  try {
-    const affectedRows = await User.destroy({ where: { user_id } });
-    if (affectedRows > 0) {
-      res.status(200).send('Member deleted successfully');
-    } else {
-      res.status(404).send('Member not found');
-    }
-  } catch (error) {
-    console.log('Error deleting member:', error);
-    res.status(500).send('Internal Server Error');
-  }
-}
 
 module.exports = router;

@@ -1,15 +1,16 @@
 import requests
 import json
 
+# host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjYsImlhdCI6MTcxNDI5MzkwNCwiZXhwIjoxNzE0Mjk3NTA0fQ.c0wsSQ6ZAQ6srdh54DDjEUpKH63fDkqNQv7qyftX4Kk"
+activity_id = 20
 
 
 def signup():
     payload = json.dumps(
         {
             "name": "daniel",
-            "email": "daniel.bb0321@gmail.com",
+            "email": "b09611028@ntu.edu.tw",
             "password": "pwd",
         }
     )
@@ -25,15 +26,35 @@ def signup():
 
 
 def signin():
-    res = requests.get(
-        url=f'{host}/user/signin/?email=daniel.bb0321@gmail.com&password=pwd',
+    payload = json.dumps({
+        "email": "daniel.bb0321@gmail.com",
+        # "email": "b09611028@ntu.edu.tw",
+        # "email": "r12725066@ntu.edu.tw",
+        "password": "pwd"
+        # "password": "a"
+    })
+    res = requests.post(
+        url=f'{host}/user/signin',
         headers={
             "content-type": "application/json",
-            "authorization": f"bearer {token}"
-        },)
+        },
+        data=payload,
+    )
 
     print(res.text)
     print(res.status_code)
+
+    try:
+        return json.loads(res.text)["jwtToken"]
+    except Exception as e:
+        print("cannot sign in")
+
+
+# signup()
+token = signin()
+
+
+""" API """
 
 
 def create_activity():
@@ -42,7 +63,7 @@ def create_activity():
             "name": "example Activity",
             "introduction": "Introduction of Activity",
             "date": "2024-04-27T11:56:53.727Z",
-            "need_review": True,
+            "need_reviewed": True,
             "country": "Taiwan",
             "max_participants": 10,
             "location": "Taipei",
@@ -77,7 +98,7 @@ def get_acitvity_list():
 
 def get_acitvity_detail():
     res = requests.get(
-        url=f"{host}/activity/2",
+        url=f"{host}/activity/9",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -99,7 +120,7 @@ def update_activity():
         }
     )
     res = requests.patch(
-        url=f"{host}/activity/2",
+        url=f"{host}/activity/9",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -112,7 +133,7 @@ def update_activity():
 
 def delete_activity():
     res = requests.patch(
-        url=f"{host}/activity/3",
+        url=f"{host}/activity/12",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -129,7 +150,7 @@ def apply():
         }
     )
     res = requests.post(
-        url=f"{host}/activity/3/apply",
+        url=f"{host}/activity/{activity_id}/apply",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -144,8 +165,9 @@ def apply():
 def approve():
 
     res = requests.patch(
-        url=f"{host}/application/1/approve",
-        headers={"content-type": "application/json", },
+        url=f"{host}/application/7/approve",
+        headers={"content-type": "application/json",
+                 "authorization": f"bearer {token}"},
         data=json.dumps({})
     )
 
@@ -160,11 +182,25 @@ def remove_user():
         }
     )
     res = requests.patch(
-        url=f"{host}/activity/2/remove-user",
+        url=f"{host}/activity/10/remove-user",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
-        },        data=payload,
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_activity_applications():
+    res = requests.get(
+        url=f"{host}/activity/{activity_id}/application",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
     )
 
     print(res.text)
@@ -214,19 +250,240 @@ def get_disccussion():
     print(res.status_code)
 
 
+def create_plan():
+    payload = json.dumps({
+        "name": "Learning Plan",
+        "goal": "Learn how to become a cow",
+        "introduction": "Let's do it!",
+        "progression": {
+            "english": 10,
+            "chinese": 5,
+        },
+        "start_date": "2024-03-21",
+        "end_date": "2024-09-07",
+        "application_problem": "hello?",
+        "tags": ["Learning"],
+        "invitees": [1, 2, 5],
+        "need_review": True,
+    })
+
+    res = requests.post(
+        url=f"{host}/plan",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def update_plan():
+    payload = json.dumps({
+        "name": "Not Cool Plan",
+        "goal": "fall in love with a cow",
+        "introduction": "I hate cow...",
+        "progression": {
+            "english": 10,
+            "chinese": 5,
+        },
+        "start_date": "2024-03-21",
+        "end_date": "2024-09-07",
+        "tags": ["Exam"],
+        "invitees": [3],
+        # "removed_participants": [],
+        "need_review": False,
+    })
+
+    res = requests.patch(
+        url=f"{host}/plan/1",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def delete_plan():
+    res = requests.delete(
+        url=f"{host}/plan/2",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_plan_detail():
+    res = requests.get(
+        url=f"{host}/plan/29",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_plan_list():
+    res = requests.get(
+        url=f"{host}/plan?limit=30&search=Cool&mode=owned",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def apply_plan():
+    payload = json.dumps(
+        {
+            "application_response": "I love cow, too"
+        }
+    )
+    res = requests.post(
+        url=f"{host}/plan/29/apply",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def approve_plan():
+
+    res = requests.patch(
+        url=f"{host}/plan/application/2/approve",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}",
+        },
+        data=json.dumps({})
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_plan_application():
+    res = requests.get(
+        url=f"{host}/plan/application/2",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_plan_applications():
+    res = requests.get(
+        url=f"{host}/plan/29/applications",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },)
+
+    print(res.text)
+    print(res.status_code)
+
+
+def make_plan_discussion():
+    payload = json.dumps(
+        {
+            "content": "I love cow soooo much!",
+        }
+    )
+    res = requests.post(
+        url=f"{host}/plan/29/discussion",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
+def get_plan_discussion():
+
+    res = requests.get(
+        url=f"{host}/plan/29/discussion?limit=5&offset=0",
+        headers={
+            "content-type": "application/json",
+        })
+
+    print(res.text)
+    print(res.status_code)
+
+
+def respond_to_invitation():
+
+    payload = json.dumps(
+        {
+            "accepted": True
+        }
+    )
+    res = requests.post(
+        url=f"{host}/plan/29/invitation",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
+        data=payload,
+    )
+
+    print(res.text)
+    print(res.status_code)
+
+
 if __name__ == '__main__':
 
-    user_id = 1
-
-    # signin()
+    # signup()
     # create_activity()
     # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
-    apply()
+    # apply()
+    # get_activity_applications()
     # approve()
     # make_discussion()
     # get_disccussion()
     # get_application_detail()
     # remove_user()
+
+    # create_plan()
+    # update_plan()
+    # delete_plan()
+    # get_plan_detail()
+    # get_plan_list()
+    # apply_plan()
+    # approve_plan()
+    # get_plan_application()
+    # get_plan_applications()
+    # make_plan_discussion()
+    # get_plan_discussion()
+    # respond_to_invitation()
+
+    pass
