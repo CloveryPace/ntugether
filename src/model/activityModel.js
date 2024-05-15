@@ -11,12 +11,6 @@ const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus', 
         allowNull: true // Adjust this as per your requirement
     }
 });
-
-const ActivityTag = sequelize.define('ActivityTag', {}, {
-    // Sequelize options
-    tableName: 'ActivityTags', // Explicitly specifying the table name here
-    timestamps: false, // assuming your table does not have fields like createdAt or updatedAt
-},);
 /* =========================== Activities Table =================================== */
 
 /**
@@ -62,6 +56,10 @@ const Activities = sequelize.define('Activity', {
         type: Sequelize.BOOLEAN,
         defaultValue: false,
     },
+    type: {
+        type: Sequelize.STRING,
+        allowNull: true,
+    }
 
     // FOREIGN KEY(created_user_id) REFERENCES Users(user_id);
 
@@ -193,21 +191,6 @@ User.hasMany(Invitation, { as: "Invited", foreignKey: "invitee_id" });
 Invitation.belongsTo(Activities, { as: "Activity", foreignKey: "activity_id", allowNull: false });
 Activities.hasMany(Invitation, { as: "Invitations", foreignKey: "activity_id" });
 
-const Tag = sequelize.define("Tag", {
-    name: {
-        type: Sequelize.STRING,
-    },
-},
-    {
-        // Sequelize options
-        tableName: 'Tag', // Explicitly specifying the table name here
-        timestamps: false // assuming your table does not have fields like createdAt or updatedAt
-    },
-);
-
-Tag.belongsToMany(Activities, { as: "Activities", through: ActivityTag, foreignKey: "tag" });
-Activities.belongsToMany(Tag, { as: "Tags", through: ActivityTag, foreignKey: "activities" });
-
 const Discussion = sequelize.define("Discussion", {
     discussion_id: {
         type: Sequelize.INTEGER,
@@ -233,4 +216,4 @@ Activities.hasMany(Discussion, { as: "Discussions", foreignKey: "activity_id" })
 
 
 
-module.exports = { Activities, LongTermActivities, Applications, Invitation, Tag, Discussion, ActivityParticipantStatus, ActivityTag, };
+module.exports = { Activities, LongTermActivities, Applications, Invitation, Discussion, ActivityParticipantStatus };

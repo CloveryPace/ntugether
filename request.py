@@ -3,7 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-activity_id = 36
+activity_id = 39
 
 
 def signup():
@@ -69,7 +69,7 @@ def create_activity():
             "location": "Taipei",
             "application_problem": "Are you happy?",
             "is_one_time": False,
-            "tags": ["study", "exercise"],
+            "type": "study",
         }
     )
 
@@ -464,7 +464,7 @@ if __name__ == '__main__':
     # signup()
     # create_activity()
     # get_acitvity_list()
-    get_acitvity_detail()
+    # get_acitvity_detail()
     # update_activity()
     # delete_activity()
     # apply()

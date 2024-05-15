@@ -29,27 +29,6 @@ async function returnActivity(activity_id, is_one_time) {
 
     var activityJson = activity.toJSON();
 
-    console.log("activity id", activity.activity_id);
-    var activityTags = await activityModel.ActivityTag.findAll(
-        {
-            where: {
-                activities: activity.activity_id,
-            }
-        }
-    );
-
-    console.log("tag instances length", activityTags.length);
-
-    activityJson.tags = [];
-    activityTags.forEach(async activityTag => {
-        tag = await activityModel.Tag.findByPk(activityTag.tag);
-
-        console.log("tag name is", tag.name);
-        activityJson.tags.push(tag.name);
-    });
-
-    console.log(`tags ${activityJson.tags}`);
-
     if (!is_one_time) {
         activityJson.date = [];
         longTermInstances = await activityModel.LongTermActivities.findAll(
@@ -144,8 +123,6 @@ exports.sync = async () => {
     await activityModel.Activities.sync({ alter: true });
     await activityModel.ActivityParticipantStatus.sync({ alter: true });
     await activityModel.LongTermActivities.sync({ alter: true });
-    await activityModel.Tag.sync({ alter: true });
-    await activityModel.ActivityTag.sync({ alter: true });
     await activityModel.Applications.sync({ alter: false });
     await activityModel.Invitation.sync({ alter: false });
     await activityModel.Discussion.sync({ alter: false });
@@ -201,7 +178,7 @@ exports.getActivitiesList = async (req, res) => {
         var includeConditions = new Array;
         if (mode == "owned") includeConditions.push({
             model: User,
-            as: 'Creator'
+            as: 'Creator',
         });
         else if (mode == "joined") includeConditions.push({
             model: User,
@@ -242,7 +219,7 @@ exports.createActivity = async (req, res) => {
         "country": "string",
         "max_participants": 0,
         "location": "string",
-        "tags": ["study"]
+        "tags": "study,"
         "application_problem": "string",
     };
     */
@@ -286,36 +263,6 @@ exports.createActivity = async (req, res) => {
                 participant_name: user.name
             }
         );
-
-        // update type
-        if (body.tags == null) {
-            await newActivity.destroy();
-            return res.status(400).json({ error: "tags are not provided" });
-        }
-
-        for (let index = 0; index < body.tags.length; index++) {
-            var tag = body.tags[index];
-
-            if (!allowTags.includes(tag)) {
-                await newActivity.destroy();
-                return res.status(400).json({ error: `tag ${tag} is not an allowed tag` });
-            }
-
-            var tagInstances = await activityModel.Tag.findOrCreate(
-                {
-                    where: {
-                        name: tag,
-                    }
-                }
-            );
-
-            await activityModel.ActivityTag.create(
-                {
-                    activities: newActivity.activity_id,
-                    tag: tagInstances[0].id,
-                }
-            );
-        }
 
         res.status(201).json({ message: "Successfully create an Activity", activity_id: newActivity.activity_id });
     }
