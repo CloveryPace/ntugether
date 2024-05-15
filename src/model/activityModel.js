@@ -9,8 +9,8 @@ const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus', 
     participant_name: {
         type: Sequelize.STRING, // Assuming the status is a string, adjust the data type as needed
         allowNull: true // Adjust this as per your requirement
-      }
-    });
+    }
+});
 
 const ActivityTag = sequelize.define('ActivityTag');
 /* =========================== Activities Table =================================== */
@@ -94,13 +94,13 @@ const LongTermActivities = sequelize.define("LongTermActivities", {
     date: {
         type: Sequelize.DATE,
     },
-    last_activity_id: {
-        type: Sequelize.INTEGER,
-        references: {
-            model: "Activities",
-            key: "activity_id",
-        },
-    },
+    // last_activity_id: {
+    //     type: Sequelize.INTEGER,
+    //     references: {
+    //         model: "Activities",
+    //         key: "activity_id",
+    //     },
+    // },
 
 },
     {
