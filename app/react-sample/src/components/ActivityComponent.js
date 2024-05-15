@@ -5,7 +5,7 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
+import { API_CREATE_ACTIVITY } from '../global/constants';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
@@ -13,6 +13,7 @@ import axios from 'axios';
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getAuthToken } from '../utils';
+import dayjs from 'dayjs';
 
 export default function ActivityComponent({data, key}) {
     const [userToken, setUserToken] = useState(getAuthToken());
@@ -22,18 +23,10 @@ export default function ActivityComponent({data, key}) {
       padding: '2rem'
     };
 
-    // TODO: navigate到特定活動頁面（參數：ID）
     useEffect(() => {
-    //登入
-    // axios.post(API_LOGIN, {
-    //   "email": "r12725066@ntu.edu.tw",
-    //   "password": "a"
-    // })
-    // .then(function (response) {
-    //     console.log(response.status, response.data);
-    //     //儲存token
+        //儲存token
         const token = userToken;
-    //     //設定authorization
+        //設定authorization
         const config = {
             headers: { 
               authorization: `Bearer ${token}`
@@ -49,10 +42,6 @@ export default function ActivityComponent({data, key}) {
             alert("error");
           });
 
-      // })
-      // .catch(function (error) {
-      //     console.log(error);
-      // });
     }, [key]);
 
     return (
@@ -70,7 +59,7 @@ export default function ActivityComponent({data, key}) {
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
-                  <Typography variant="body1">{data.date? data.date: "未指定日期"}</Typography>
+                  <Typography variant="body1">{data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "未指定日期"}</Typography>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>

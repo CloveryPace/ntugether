@@ -4,7 +4,7 @@ import './Common.css';
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import * as React from 'react';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Grid from '@mui/material/Grid';
@@ -74,7 +74,7 @@ function NewActivity() {
     };
     const handleChangeDateMul = (index, field, value) => {
         const newdateItems = [...dateitems];
-        newdateItems[index][field] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date();
+        newdateItems[index][field] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
         console.log(newdateItems);
         setDateitems(newdateItems);
         const event = { 
@@ -153,21 +153,6 @@ function NewActivity() {
         setType(event.target.value);
         handleChange(event);
     };
-
-    /*
-    const handleChangeDate = (dateData) => {
-        console.log(dateData);
-        setActDate(dateData);
-        let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
-        const event = { 
-            "target": {
-                "value": finaldate,
-                "name": "date"
-            }
-        };
-        handleChange(event);
-    };
-    */
 
   return (
     <ThemeProvider theme={theme}>
@@ -290,7 +275,7 @@ function NewActivity() {
                             }}
                         >
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DatePicker
+                                <DesktopDateTimePicker
                                 value={actDate}
                                 onChange={(e) => handleChangeDateMul(index, 'date_item', e)}
                                 name="date"

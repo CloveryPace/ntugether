@@ -21,6 +21,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 function ActivityPage() {
   const { t, i18n } = useTranslation();
@@ -67,6 +68,8 @@ function ActivityPage() {
             console.log(err);
             alert("error");
           });
+          console.log("時間")
+          console.log(dayjs(data.date).format('YYYY/MM/DD h:mm A'))
 
 
         //取得參加者
@@ -239,7 +242,7 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("活動時間")} </Typography></div>
-        <div><Typography variant="h6"> {data.date? data.date: "尚無活動時間資料"} </Typography></div>
+        <div><Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography></div>
       </div>
 
       <div style={container}>

@@ -17,18 +17,8 @@ export default function ActivityList() {
   const { t, i18n } = useTranslation();
 
 
-
   useEffect(() => {
     console.log('execute function in useEffect');
-    //登入
-    // axios.post(API_LOGIN, {
-    //   "email": "r12725066@ntu.edu.tw",
-    //   "password": "a"
-    // })
-    // .then(function (response) {
-    //     console.log(response.status, response.data);
-    //     //儲存token
-    //     const token = response.data.jwtToken;
         //設定authorization
         const config = {
             headers: { 
@@ -45,11 +35,6 @@ export default function ActivityList() {
             console.log(err);
             alert("error");
           });
-
-      // })
-      // .catch(function (error) {
-      //     console.log(error);
-      // });
     }, []);
   
 
