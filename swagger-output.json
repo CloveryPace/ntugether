@@ -1057,10 +1057,6 @@
               "items": {
                 "type": "object",
                 "properties": {
-                  "participant_name": {
-                    "type": "string",
-                    "example": "參加者姓名"
-                  },
                   "createdAt": {
                     "type": "string",
                     "example": "datetime"
@@ -1076,6 +1072,15 @@
                   "participants": {
                     "type": "string",
                     "example": "參與者id"
+                  },
+                  "User": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "參與者姓名"
+                      }
+                    }
                   }
                 }
               },
@@ -2211,7 +2216,7 @@
           "Plan"
         ],
         "summary": "獲得計畫列表",
-        "description": "未完成",
+        "description": "API Document未完成",
         "parameters": [
           {
             "name": "authorization",
@@ -2280,7 +2285,7 @@
           "Plan"
         ],
         "summary": "獲得計畫細節",
-        "description": "未完成",
+        "description": "API Document未完成",
         "parameters": [
           {
             "name": "plan_id",
@@ -2577,8 +2582,8 @@
               "type": "object",
               "properties": {
                 "application_id": {
-                  "type": "number",
-                  "example": 2
+                  "type": "string",
+                  "example": "審核id"
                 },
                 "application_response": {
                   "type": "string",
@@ -2589,54 +2594,28 @@
                   "example": false
                 },
                 "applicant_id": {
-                  "type": "number",
-                  "example": 15
+                  "type": "string",
+                  "example": "審核者id"
                 },
                 "plan_id": {
-                  "type": "number",
-                  "example": 7
+                  "type": "string",
+                  "example": "計畫id"
                 },
                 "Applicant": {
                   "type": "object",
                   "properties": {
-                    "user_id": {
-                      "type": "number",
-                      "example": 15
-                    },
-                    "name": {
+                    "申請者資料欄位": {
                       "type": "string",
-                      "example": "andrew"
-                    },
-                    "email": {
-                      "type": "string",
-                      "example": "r12725066@ntu.edu.tw"
-                    },
-                    "password": {
-                      "type": "string",
-                      "example": "$2b$12$lXdVcqpmx4z9ThSluUD4leco8qm3xDA2b7KasfAJbwSPQQAv3ic6e"
-                    },
-                    "birthday": {
-                      "type": "string",
-                      "example": "2000-01-01"
-                    },
-                    "gender": {
-                      "type": "string",
-                      "example": "male"
-                    },
-                    "phoneNum": {},
-                    "photo": {},
-                    "self_introduction": {},
-                    "oauthProvider": {},
-                    "oauthId": {},
-                    "verified": {}
+                      "example": "申請者資料"
+                    }
                   }
                 },
                 "Plan": {
                   "type": "object",
                   "properties": {
                     "plan_id": {
-                      "type": "number",
-                      "example": 7
+                      "type": "string",
+                      "example": "計畫id"
                     }
                   }
                 }

@@ -341,11 +341,13 @@ router.get(
   description: "回傳該活動參與紀錄",
   schema:
       [{
-          "participant_name": "參加者姓名",
           "createdAt": "datetime",
           "updatedAt": "datetime",
           "joined_activities": "參與活動id",
-          "participants": "參與者id"
+          "participants": "參與者id",
+          "User": {
+            "name": "參與者姓名"
+          }
       }]
   } */
 

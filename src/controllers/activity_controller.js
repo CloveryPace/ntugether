@@ -116,8 +116,8 @@ async function noReviewApply(req, res, activity_id, user_id) {
     const participantStatus = await activityModel.ActivityParticipantStatus.create(
         {
             joined_activities: activity_id,
-            participants: user_id,
-            participant_name: user.name
+            participants: user_id
+            // participant_name: user.name
         }
     );
     return res.status(200).send("joined!");
@@ -268,7 +268,7 @@ exports.createActivity = async (req, res) => {
             {
                 joined_activities: newActivity.activity_id,
                 participants: user_id,
-                participant_name: user.name
+                // participant_name: user.name
             }
         );
 
@@ -426,6 +426,10 @@ exports.getAllParticipants = async (req, res) => {
             where: {
                 joined_activities: activity_id
             },
+            include: [{
+                model: User,
+                attributes: ['name']
+            }]
 
         });
         return res.status(200).json(participants);
