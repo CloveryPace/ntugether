@@ -63,18 +63,26 @@ function NewActivity() {
     const [userToken, setUserToken] = useState(getAuthToken());
 
     // 長期性活動多個時間
-    const [dateitems, setDateitems] = useState([{ date_item: ''}]);
+    const [dateitems, setDateitems] = useState([""]);
     const handleAddClick = () => {
-        setDateitems([...dateitems, { date_item: ''}]);
+        setDateitems([...dateitems, dayjs()]);
     };
     const handleDeleteClick = (index) => {
-        const newdateItems = [...dateitems];
-        newdateItems.splice(index, 1);
+        var newdateItems = [...dateitems];
+        console.log("After delete");
+        var edited = newdateItems.splice(index, 1); //被刪除的元素
         setDateitems(newdateItems);
+        const event = { 
+            "target": {
+                "value": newdateItems,
+                "name": "date"
+            }
+        };
+        handleChange(event);
     };
-    const handleChangeDateMul = (index, field, value) => {
+    const handleChangeDateMul = (index, value) => {
         const newdateItems = [...dateitems];
-        newdateItems[index][field] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
+        newdateItems[index] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
         console.log(newdateItems);
         setDateitems(newdateItems);
         const event = { 
@@ -106,8 +114,8 @@ function NewActivity() {
             ...prevState,
             [name]: value
         }));
-        console.log(activityData)
-        console.log(activityData.date)
+        console.log(activityData);
+        console.log(activityData.date);
     };  
 
     const handleSubmit = (event) => {
@@ -278,7 +286,7 @@ function NewActivity() {
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                                 <DesktopDateTimePicker
                                 value={actDate}
-                                onChange={(e) => handleChangeDateMul(index, 'date_item', e)}
+                                onChange={(e) => handleChangeDateMul(index, e)}
                                 name="date"
                                 required
                                 fullWidth

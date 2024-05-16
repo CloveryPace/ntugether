@@ -45,18 +45,6 @@ function ActivityPage() {
         };
         console.log(token);
 
-        //取得使用者id
-        axios.get(API_GET_USER, config)
-          .then(function (res) {
-            setUserId(res.data.members['user_id']);
-            console.log("userId");
-            console.log(res.data.members['user_id']);
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("error");
-          });
-
         //取得活動資訊
         axios.get(API_GET_ACTIVITY_DETAIL + id, config)
           .then(function (res) {
@@ -65,6 +53,21 @@ function ActivityPage() {
             console.log("creatorId")
             console.log(res.data.created_user_id);
             setCreatorId(res.data.created_user_id);
+            //取得使用者id
+            axios.get(API_GET_USER, config)
+            .then(function (res) {
+              setUserId(res.data.members['user_id']);
+              console.log("userId");
+              console.log(res.data.members['user_id']);
+              // 建立活動者不能參加活動（參加活動按鈕隱藏）
+              setCanAttend(userId === creatorId);
+              console.log("能否參加");
+              console.log(userId === creatorId);
+            })
+            .catch(function (err) {
+              console.log(err);
+              alert("error");
+            });
           })
           .catch(function (err) {
             console.log(err);
@@ -86,12 +89,6 @@ function ActivityPage() {
             console.log(err);
             alert("error");
           });
-
-        // 建立活動者不能參加活動（參加活動按鈕隱藏）
-        setCanAttend(userId !== creatorId);
-        console.log("能否參加");
-        console.log(userId !== creatorId);
-        console.log(canAttend);
 
       }, [id]);
 
