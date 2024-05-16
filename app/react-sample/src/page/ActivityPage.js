@@ -32,6 +32,7 @@ function ActivityPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
+  const [canAttend, setCanAttend] = useState(false);
 
   useEffect(() => {
         //儲存token
@@ -42,6 +43,7 @@ function ActivityPage() {
               authorization: `Bearer ${token}`
             }
         };
+        console.log(token);
 
         //取得使用者id
         axios.get(API_GET_USER, config)
@@ -84,6 +86,12 @@ function ActivityPage() {
             console.log(err);
             alert("error");
           });
+
+        // 建立活動者不能參加活動（參加活動按鈕隱藏）
+        setCanAttend(userId !== creatorId);
+        console.log("能否參加");
+        console.log(userId !== creatorId);
+        console.log(canAttend);
 
       }, [id]);
 
@@ -304,10 +312,11 @@ function ActivityPage() {
       
       <Grid container justifyContent="center">
         <Grid item>
-        {attend?
-          <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")} </Button>:
-          <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
-        }
+          {canAttend?
+            <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
+            :
+            <></>
+          }
       </Grid>
       </Grid>
 
@@ -317,3 +326,5 @@ function ActivityPage() {
 }
 
 export default ActivityPage;
+
+// <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")}</Button>

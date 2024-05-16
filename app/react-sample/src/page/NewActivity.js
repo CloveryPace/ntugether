@@ -107,6 +107,7 @@ function NewActivity() {
             [name]: value
         }));
         console.log(activityData)
+        console.log(activityData.date)
     };  
 
     const handleSubmit = (event) => {
