@@ -116,6 +116,7 @@ function NewActivity() {
         }));
         console.log(activityData);
         console.log(activityData.date);
+        console.log(userToken);
     };  
 
     const handleSubmit = (event) => {

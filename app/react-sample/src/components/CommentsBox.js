@@ -119,7 +119,7 @@ export default function CommentsBox({ id }) {
           config)
             .then(function (res) {
                 console.log(res);
-                alert('留言成功');
+                //alert('留言成功');
                 window.location.reload(false);
             })
             .catch(function (err) {
