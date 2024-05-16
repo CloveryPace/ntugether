@@ -91,6 +91,70 @@ async function removeParticipants(removed_participants, plan_id) {
     }
 }
 
+async function needReviewApply(req, res, plan_id, user_id, application_response) {
+    
+    participantsExist = await planModel.PlanParticipantsStatus.findOne({
+        where: {
+            joined_plan_id: plan_id,
+            participant_id: user_id,
+        }
+    });
+
+    if (participantsExist) return res.status(400).send("applier has already joined");
+    
+
+    const applicantExist = await planModel.Applications.findOne({
+        where: {
+            applicant_id: user_id,
+            plan_id: plan_id
+        }
+    });
+
+    if (applicantExist) return res.status(409).send("Applicant already exist.");
+
+    // const application_response = req.body.application_response; // TODO: need to check if the paramter exists
+    if (application_response !== undefined) {
+        planModel.Applications.create(
+            {
+                application_response: application_response,
+                applicant_id: user_id,
+                plan_id: plan_id
+            }
+        );
+    }
+    return res.status(201).send("Successfully send the application");
+}
+
+
+async function noReviewApply(req, res, plan_id, user_id) { 
+    participantsExist = await planModel.PlanParticipantsStatus.findOne({
+        where: {
+            joined_plan_id: plan_id,
+            participant_id: user_id,
+        }
+    });
+
+    if (participantsExist) return res.status(400).send("applier has already joined");
+    
+    const user = await User.findOne({
+        where: { user_id: user_id }
+
+    });
+
+    // update participants
+    await planModel.PlanParticipantsStatus.create(
+        {
+            joined_plan_id: plan_id,
+            participant_id: user_id,
+            participant_name: user.name
+        }
+    );
+    // return res.status(200).send("joined!");
+    return res.status(200).send("joined!");
+
+
+}
+
 
 /**
  * sync all the model used in the controller 
@@ -141,6 +205,7 @@ exports.createPlan = async (req, res) => {
         body.created_user_id = user_id;
 
         newPlan = await planModel.Plan.create(body);
+        console.log(newPlan);
 
         // creaet tags for the plan
         await addTag(tags, newPlan.plan_id);
@@ -156,7 +221,7 @@ exports.createPlan = async (req, res) => {
             }
         );
 
-        res.status(200).json({ "message": "plan created" });
+        return res.status(201).json({ "message": "plan created" });
 
     } catch (error) {
         if (newPlan) await newPlan.destroy();
@@ -164,7 +229,7 @@ exports.createPlan = async (req, res) => {
         if (error instanceof ValidationError) res.status(400).json({ message: error.message });
 
         console.error("Error creating new plan", error);
-        res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
 
@@ -244,7 +309,7 @@ exports.updatePlan = async (req, res) => {
             return res.status(400).json({ message: "invalid tag" });
         }
 
-        res.status(200).send("plan updated");
+        return res.status(200).send("plan updated");
 
     } catch (error) {
         console.error("Error updating plan", error);
@@ -427,21 +492,7 @@ exports.getPlanList = async (req, res) => {
  * @param {*} res 
  */
 exports.getApplicationDetail = async (req, res) => {
-    /* NOTE: repsonse format
-    {
-        "id": 1,
-        "applicant": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-        },
-        "plan_id": 1,
-        "is_approved": false,
-        "application_response": "This is a response for the applicant"
-    }
-    */
-
+    
     try {
         const user_id = req.user_id;
         const application_id = req.params.application_id;
@@ -450,6 +501,7 @@ exports.getApplicationDetail = async (req, res) => {
                 {
                     model: User,
                     as: "Applicant",
+                    // attributes
                 },
                 {
                     model: planModel.Plan,
@@ -462,8 +514,8 @@ exports.getApplicationDetail = async (req, res) => {
         // validation
         const plan_id = application.plan_id;
         const plan = await planModel.Plan.findByPk(plan_id);
-        if (plan.created_user_id != user_id) return res.status(403).send("authorization failed");
-        if (!application) return res.status(400).send("application not found");
+        if (plan.created_user_id != user_id) return res.status(403).send("not plan creator");
+        if (!application) return res.status(404).send("application not found");
 
         res.status(200).json(application);
     } catch (error) {
@@ -478,24 +530,7 @@ exports.getApplicationDetail = async (req, res) => {
  * @param {*} res 
  */
 exports.getAllApplications = async (req, res) => {
-    /*
-    NOTE: response format
-    [
-        {
-            "id": 1,
-            "applicant": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-            },
-            "plan_id": 1,
-            "is_approved": false,
-            "application_response": "This is a response for the applicant"
-        }
-    ]
-    */
-
+    
     try {
         const user_id = req.user_id;
         const plan_id = req.params.plan_id;
@@ -505,7 +540,7 @@ exports.getAllApplications = async (req, res) => {
             return res.status(404).json({ error: 'Plan not found' });
         }
         if (plan.created_user_id != user_id) {
-            return res.status(403).json({ error: 'authorization failed' });
+            return res.status(403).json({ error: 'not plan creator' });
         }
 
         const applications = await planModel.Applications.findAll({
@@ -534,30 +569,31 @@ exports.approve = async (req, res) => {
         const application = await planModel.Applications.findByPk(application_id);
 
         // validation
-        if (!application) return res.status(400).send("application not found");
+        if (!application) return res.status(404).send("application not found");
         if (application.is_approved == true) return res.status(400).send("application has been approved");
 
         // get plan
         const plan_id = application.plan_id;
         const plan = await planModel.Plan.findByPk(plan_id);
 
-        if (!plan) return res.status(400).send("plan not found");
-        if (plan.created_user_id != user_id) return res.status(403).send("authorization failed");
+        // if (!plan) return res.status(400).send("plan not found");
+        if (plan.created_user_id != user_id) return res.status(403).send("not plan creator");
 
         // get applicant
         const applicant_id = application.applicant_id;
 
-        participantsExist = await planModel.PlanParticipantsStatus.findOne({
-            where: {
-                joined_plan_id: plan_id,
-                participant_id: applicant_id,
-            }
-        });
+        // participantsExist = await planModel.PlanParticipantsStatus.findOne({
+        //     where: {
+        //         joined_plan_id: plan_id,
+        //         participant_id: applicant_id,
+        //     }
+        // });
 
-        if (participantsExist) return res.status(400).send("participant has already joined");
+        // if (participantsExist) return res.status(409).send("participant has already joined");
 
         // deleteApplication
-        await application.destroy();
+        // 不應該刪除，否則無法得知已申請通過==；要不上面的邏輯就要改
+        // await application.destroy();
 
         // update participants
         await planModel.PlanParticipantsStatus.create(
@@ -566,7 +602,7 @@ exports.approve = async (req, res) => {
                 participant_id: applicant_id,
             }
         );
-        res.status(200).send("approved!");
+        return res.status(200).send("approved!");
 
     } catch (error) {
         console.error('Error approving application:', error);
@@ -591,26 +627,24 @@ exports.applyPlan = async (req, res) => {
 
         if (plan.created_user_id == user_id) return res.status(403).json({ message: "Plan creator should not apply" });
 
-        if (
-            !planModel.PlanParticipantsStatus.findOne({
-                where: {
-                    joined_plan_id: plan_id,
-                    participant_id: user_id
-                }
-            })
-        ) return res.status(403).send("participant existed");
-
-        // const application_response = req.body.application_response; // TODO: need to check if the paramter exists
-
-        await planModel.Applications.create(
-            {
-                application_response: application_response,
-                applicant_id: user_id,
-                plan_id: plan_id,
+        // if (
+        //     !planModel.PlanParticipantsStatus.findOne({
+        //         where: {
+        //             joined_plan_id: plan_id,
+        //             participant_id: user_id
+        //         }
+        //     })
+        // ) 
+        const planNeedReview = await planModel.Plan.findOne({
+            where: {
+                need_reviewed: true,
+                plan_id: plan_id
             }
-        );
+        });
+        if (planNeedReview) return needReviewApply(req, res, plan_id, user_id, application_response);
+        // return res.status(400).send("participant existed");
 
-        return res.status(201).send("Successfully send the application");
+        return noReviewApply(req, res, plan_id, user_id); //add , participant_name
     } catch (error) {
         console.error('Error applying for plan:', error);
         return res.status(500).json({ error: 'Internal server error' });

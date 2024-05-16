@@ -150,13 +150,12 @@ router.patch(
           "application_problem": "審核問題",
           "check_by_organizer": "是否需要創立者審查出席情況"
       }
-      
   } */
 
   /* #swagger.responses[403] = { 
     description: "用戶通過驗證，但不是活動創立者，無權限",
     schema: { 
-          error:  "You are not authorized to delete this activity"
+          error:  "You are not authorized to update this activity"
       }
   } */
 
@@ -295,17 +294,7 @@ router.post(
       "application_response": "審核回覆",
     }
   } */
-  /* #swagger.responses[200] = { 
-  description: "回傳該活動參與紀錄",
-  schema:
-      [{
-          "participant_name": "參加者姓名",
-          "createdAt": "datetime",
-          "updatedAt": "datetime",
-          "joined_activities": "參與活動id",
-          "participants": "參與者id"
-      }]
-  } */
+  
 
   /* #swagger.responses[200] = { 
     description: "用戶成功加入，活動不需審核",
@@ -317,6 +306,11 @@ router.post(
     schema: "Successfully send the application"
   } */
 
+  /* #swagger.responses[400] = { 
+      description: "申請者已加入活動",
+      schema: "applier has already joined"
+  } */
+  
   /* #swagger.responses[403] = { 
     description: "用戶通過驗證，但為活動創立者，不應該申請",
     schema: "Activity creator should not apply."
@@ -327,6 +321,12 @@ router.post(
     description: "該活動不存在",
     schema: "Activity not found"
   } */
+
+  /* #swagger.responses[409] = { 
+      description: "申請者已存在",
+      schema: "Applicant already exist."
+  } */
+    
 
 
   authMiddleware.authentication, activityController.applyActivity);

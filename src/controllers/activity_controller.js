@@ -59,6 +59,14 @@ async function returnActivity(activity_id, is_one_time) {
  * @returns 
  */
 async function needReviewApply(req, res, activity_id, user_id, application_response) {
+    participantsExist = await activityModel.ActivityParticipantStatus.findOne({
+        where: {
+            joined_activities: activity_id,
+            participants: user_id,
+        }
+    });
+
+    if (participantsExist) return res.status(400).send("applier has already joined");
 
     const applicantExist = await activityModel.Applications.findOne({
         where: {
@@ -90,7 +98,7 @@ async function needReviewApply(req, res, activity_id, user_id, application_respo
  * @param {*} user_id 
  * @returns 
  */
-async function noReviewApply(req, res, activity_id, user_id) { // add participant_name
+async function noReviewApply(req, res, activity_id, user_id) {
     participantsExist = await activityModel.ActivityParticipantStatus.findOne({
         where: {
             joined_activities: activity_id,
@@ -105,7 +113,7 @@ async function noReviewApply(req, res, activity_id, user_id) { // add participan
     });
 
     // update participants
-    await activityModel.ActivityParticipantStatus.create(
+    const participantStatus = await activityModel.ActivityParticipantStatus.create(
         {
             joined_activities: activity_id,
             participants: user_id,
@@ -327,7 +335,8 @@ exports.updateActivity = async (req, res) => {
         const { ...updateParams } = req.body; // NOTE: might use ...updateParams to separate update data and others
         await activity.update(updateParams);
         var updatedActivity = await returnActivity(activity_id, this.updateActivity.is_one_time);
-        res.status(200).json(updatedActivity);
+        
+        return res.status(200).json(updatedActivity);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error updating activity:', error);
@@ -482,11 +491,8 @@ exports.removeUser = async (req, res) => {
  * @param {*} res 
  */
 exports.applyActivity = async (req, res) => {
-    /* NOTE: request body
-    {
-        "application_response": "string"
-    }
-    */
+
+    
     const { application_response } = req.body;
     try {
         const user_id = req.user_id;
@@ -503,7 +509,6 @@ exports.applyActivity = async (req, res) => {
             }
         });
 
-        console.log("need review", activityNeedReview);
         if (activityNeedReview) return needReviewApply(req, res, activity_id, user_id, application_response);
 
         return noReviewApply(req, res, activity_id, user_id); //add , participant_name

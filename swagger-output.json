@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "http://localhost:4000:4000",
+  "host": "localhost:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -332,14 +332,9 @@
                   "type": "string",
                   "example": "地點"
                 },
-                "tags": {
-                  "type": "array",
-                  "example": [
-                    "類別"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                "type": {
+                  "type": "string",
+                  "example": "類別"
                 },
                 "max_participants": {
                   "type": "string",
@@ -384,9 +379,6 @@
                 "name": "main"
               }
             }
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -448,14 +440,9 @@
                   "type": "string",
                   "example": "日期 or [日期]"
                 },
-                "tags": {
-                  "type": "array",
-                  "example": [
-                    "類別"
-                  ],
-                  "items": {
-                    "type": "string"
-                  }
+                "type": {
+                  "type": "string",
+                  "example": "類別"
                 },
                 "country": {
                   "type": "string",
@@ -581,7 +568,7 @@
         ],
         "responses": {
           "200": {
-            "description": "回傳更新後資料",
+            "description": "回傳update後資料",
             "schema": {
               "type": "object",
               "properties": {
@@ -648,7 +635,7 @@
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "You are not authorized to delete this activity"
+                  "example": "You are not authorized to update this activity"
                 }
               },
               "xml": {
@@ -984,6 +971,16 @@
               }
             }
           },
+          "400": {
+            "description": "申請者已加入活動",
+            "schema": {
+              "type": "string",
+              "example": "applier has already joined",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
             "schema": {
@@ -1009,6 +1006,16 @@
             "schema": {
               "type": "string",
               "example": "Activity not found",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "申請者已存在",
+            "schema": {
+              "type": "string",
+              "example": "Applicant already exist.",
               "xml": {
                 "name": "main"
               }
@@ -2087,7 +2094,8 @@
         "tags": [
           "Plan"
         ],
-        "description": "",
+        "summary": "創立計畫",
+        "description": "創立一項計畫",
         "parameters": [
           {
             "name": "authorization",
@@ -2095,11 +2103,90 @@
             "description": "輸入bearer空格 + jwt_token",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "創立計畫",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "計畫名稱"
+                },
+                "goal": {
+                  "type": "string",
+                  "example": "計畫目標"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "計畫介紹"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "2024-03-21"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "2024-09-07"
+                },
+                "tags": {
+                  "type": "array",
+                  "example": [
+                    "Exam",
+                    "Exercise",
+                    "Learning"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "invitees": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
+                },
+                "progression": {
+                  "type": "object",
+                  "properties": {
+                    "english": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "chinese": {
+                      "type": "number",
+                      "example": 5
+                    }
+                  }
+                },
+                "need_reviewed": {
+                  "type": "string",
+                  "example": "0"
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "審查問題"
+                }
+              }
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "創立計畫成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "plan created"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -2123,7 +2210,8 @@
         "tags": [
           "Plan"
         ],
-        "description": "",
+        "summary": "獲得計畫列表",
+        "description": "未完成",
         "parameters": [
           {
             "name": "authorization",
@@ -2191,7 +2279,8 @@
         "tags": [
           "Plan"
         ],
-        "description": "",
+        "summary": "獲得計畫細節",
+        "description": "未完成",
         "parameters": [
           {
             "name": "plan_id",
@@ -2233,8 +2322,8 @@
         "tags": [
           "Plan"
         ],
-        "summary": "更新活動",
-        "description": "更新該單一活動",
+        "summary": "更新計畫",
+        "description": "更新該單一計畫",
         "parameters": [
           {
             "name": "plan_id",
@@ -2252,23 +2341,66 @@
           {
             "name": "body",
             "in": "body",
+            "description": "更新計畫",
             "schema": {
               "type": "object",
               "properties": {
-                "removed_participants": {
-                  "example": "any"
+                "name": {
+                  "type": "string",
+                  "example": "計畫名稱"
                 },
-                "invitees": {
-                  "example": "any"
+                "goal": {
+                  "type": "string",
+                  "example": "計畫目標"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "計畫介紹"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "2024-03-21"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "2024-09-07"
                 },
                 "tags": {
-                  "example": "any"
+                  "type": "array",
+                  "example": [
+                    "Exam",
+                    "Exercise",
+                    "Learning"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "invitees": {
+                  "type": "array",
+                  "example": [],
+                  "items": {}
                 },
                 "progression": {
-                  "example": "any"
+                  "type": "object",
+                  "properties": {
+                    "english": {
+                      "type": "number",
+                      "example": 10
+                    },
+                    "chinese": {
+                      "type": "number",
+                      "example": 5
+                    }
+                  }
                 },
-                "updateParams": {
-                  "example": "any"
+                "need_reviewed": {
+                  "type": "string",
+                  "example": "0"
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "審查問題"
                 }
               }
             }
@@ -2276,17 +2408,22 @@
         ],
         "responses": {
           "200": {
-            "description": "回傳更新後資料",
+            "description": "OK"
+          },
+          "400": {
+            "description": "tag不符合格式",
             "schema": {
-              "type": "string",
-              "example": "plan updated",
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "invalid tag"
+                }
+              },
               "xml": {
                 "name": "main"
               }
             }
-          },
-          "400": {
-            "description": "Bad Request"
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2299,13 +2436,13 @@
             }
           },
           "403": {
-            "description": "用戶通過驗證，但不是活動創立者，無權限",
+            "description": "用戶通過驗證，但不是計畫創立者，無權限",
             "schema": {
               "type": "object",
               "properties": {
                 "error": {
                   "type": "string",
-                  "example": "You are not authorized to delete this plan"
+                  "example": "You are not authorized to update this plan"
                 }
               },
               "xml": {
@@ -2314,7 +2451,7 @@
             }
           },
           "404": {
-            "description": "未找到該活動",
+            "description": "未找到該計畫",
             "schema": {
               "type": "object",
               "properties": {
@@ -2416,7 +2553,8 @@
         "tags": [
           "Plan"
         ],
-        "description": "",
+        "summary": "取得申請細節",
+        "description": "取得單一申請細節",
         "parameters": [
           {
             "name": "application_id",
@@ -2434,10 +2572,79 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "回傳申請細節",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_id": {
+                  "type": "number",
+                  "example": 2
+                },
+                "application_response": {
+                  "type": "string",
+                  "example": "審核回覆"
+                },
+                "is_approved": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "applicant_id": {
+                  "type": "number",
+                  "example": 15
+                },
+                "plan_id": {
+                  "type": "number",
+                  "example": 7
+                },
+                "Applicant": {
+                  "type": "object",
+                  "properties": {
+                    "user_id": {
+                      "type": "number",
+                      "example": 15
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "andrew"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "r12725066@ntu.edu.tw"
+                    },
+                    "password": {
+                      "type": "string",
+                      "example": "$2b$12$lXdVcqpmx4z9ThSluUD4leco8qm3xDA2b7KasfAJbwSPQQAv3ic6e"
+                    },
+                    "birthday": {
+                      "type": "string",
+                      "example": "2000-01-01"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "example": "male"
+                    },
+                    "phoneNum": {},
+                    "photo": {},
+                    "self_introduction": {},
+                    "oauthProvider": {},
+                    "oauthId": {},
+                    "verified": {}
+                  }
+                },
+                "Plan": {
+                  "type": "object",
+                  "properties": {
+                    "plan_id": {
+                      "type": "number",
+                      "example": 7
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2450,7 +2657,24 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是計畫創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "not plan creator",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到申請",
+            "schema": {
+              "type": "string",
+              "example": "application not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2463,7 +2687,8 @@
         "tags": [
           "Plan"
         ],
-        "description": "",
+        "summary": "通過計畫審核申請",
+        "description": "計畫創建者可以通過審核申請",
         "parameters": [
           {
             "name": "application_id",
@@ -2481,10 +2706,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "通過審核",
+            "schema": {
+              "type": "string",
+              "example": "approved",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "申請已被通過",
+            "schema": {
+              "type": "string",
+              "example": "application has been approved",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2497,7 +2736,24 @@
             }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "用戶通過驗證，但不是計畫創立者，無權限",
+            "schema": {
+              "type": "string",
+              "example": "not plan creator",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "未找到申請",
+            "schema": {
+              "type": "string",
+              "example": "application not found",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "500": {
             "description": "Internal Server Error"
@@ -2543,7 +2799,7 @@
                 },
                 "is_approved": {
                   "type": "string",
-                  "example": "boolean"
+                  "example": "是否已審核"
                 },
                 "applicant_id": {
                   "type": "string",
@@ -2572,8 +2828,13 @@
           "403": {
             "description": "用戶通過驗證，但不是計畫創立者，無權限",
             "schema": {
-              "type": "string",
-              "example": "not plan creator",
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "not plan creator"
+                }
+              },
               "xml": {
                 "name": "main"
               }
@@ -2633,10 +2894,10 @@
         ],
         "responses": {
           "200": {
-            "description": "用戶成功加入，計畫不需審核",
+            "description": "回傳該計畫參與紀錄",
             "schema": {
               "type": "string",
-              "example": "joined！",
+              "example": "joined!",
               "xml": {
                 "name": "main"
               }
@@ -2647,6 +2908,16 @@
             "schema": {
               "type": "string",
               "example": "Successfully send the application",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "用戶已加入",
+            "schema": {
+              "type": "string",
+              "example": "participant existed",
               "xml": {
                 "name": "main"
               }
@@ -2682,6 +2953,16 @@
               }
             }
           },
+          "409": {
+            "description": "申請者已存在",
+            "schema": {
+              "type": "string",
+              "example": "Applicant already exist.",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
           "500": {
             "description": "Internal Server Error"
           }
@@ -2694,7 +2975,7 @@
           "Plan"
         ],
         "summary": "接受/拒絕計畫邀請",
-        "description": "接受或拒絕該計畫的邀請",
+        "description": "接受或拒絕該計畫的邀請，目前還有bug",
         "parameters": [
           {
             "name": "plan_id",

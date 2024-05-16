@@ -14,16 +14,51 @@ planController.sync();
 router.post(
     "/", 
     // #swagger.tags = ['Plan']
+    // #swagger.summary = '創立計畫'
+    // #swagger.description = '創立一項計畫' 
+    /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '創立計畫',
+      schema: 
+      {
+          "name": "計畫名稱",
+          "goal": "計畫目標",
+          "introduction": "計畫介紹",
+          "start_date": "2024-03-21",
+          "end_date": "2024-09-07",
+          "tags": ["Exam", "Exercise", "Learning"],
+          "invitees": [],
+          "progression": {
+            "english": 10,
+            "chinese": 5,
+          },
+          "need_reviewed": "0",
+          "application_problem": "審查問題",
+
+      }
+  } */
+
+     /* #swagger.responses[201] = { 
+      description: "創立計畫成功",
+      schema:
+          {
+              "message": "plan created"
+          }
+      
+  } */
     
-    authMiddleware.authentication, planController.createPlan); // TODO: implement
+    authMiddleware.authentication, planController.createPlan); 
 
 /**
  * FUNCTION: get plan list
  */
-//待修改
 router.get(
     "/", 
     // #swagger.tags = ['Plan']
+    // #swagger.summary = '獲得計畫列表'
+    // #swagger.description = 'API Document未完成'
+
+    
     
     authMiddleware.authentication, planController.getPlanList); // TODO: implement
 
@@ -34,6 +69,8 @@ router.get(
 router.get(
     "/:plan_id",
     // #swagger.tags = ['Plan']
+    // #swagger.summary = '獲得計畫細節'
+    // #swagger.description = 'API Document未完成'
     
     
     authMiddleware.authentication, planController.getPlanDetail); // TODO: implement
@@ -41,27 +78,48 @@ router.get(
 /**
  * FUNCTION: Update an existing plan by Id. Only the creator of the plan could call this endpoint.
  */
-//待修改
 router.patch(
     "/:plan_id", 
     // #swagger.tags = ['Plan']
-    // #swagger.summary = '更新活動'
-    // #swagger.description = '更新該單一活動'
-    /* #swagger.responses[200] = { 
-        description: "回傳更新後資料",
-        schema: "plan updated"
-        
-    } */
+    // #swagger.summary = '更新計畫'
+    // #swagger.description = '更新該單一計畫'
+    /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '更新計畫',
+      schema: 
+      {
+          "name": "計畫名稱",
+          "goal": "計畫目標",
+          "introduction": "計畫介紹",
+          "start_date": "2024-03-21",
+          "end_date": "2024-09-07",
+          "tags": ["Exam", "Exercise", "Learning"],
+          "invitees": [],
+          "progression": {
+            "english": 10,
+            "chinese": 5,
+          },
+          "need_reviewed": "0",
+          "application_problem": "審查問題",
+
+      }
+  } */
 
     /* #swagger.responses[403] = { 
-      description: "用戶通過驗證，但不是活動創立者，無權限",
+      description: "用戶通過驗證，但不是計畫創立者，無權限",
       schema: { 
-            error:  "You are not authorized to delete this plan"
+            error:  "You are not authorized to update this plan"
         }
     } */
-
+    /* #swagger.responses[400] = { 
+        description: "tag不符合格式",
+        schema:  {
+            "message": 'invalid tag' 
+        }
+    } */
+    
     /* #swagger.responses[404] = { 
-        description: "未找到該活動",
+        description: "未找到該計畫",
         schema:  {
             error: 'Plan not found' 
         }
@@ -101,10 +159,47 @@ router.delete(
 /**
  * FUNCTION: get application detail
  */
-//待修改
+
 router.get(
     "/application/:application_id", 
     // #swagger.tags = ['Plan']
+    // #swagger.summary = '取得申請細節'
+    // #swagger.description = '取得單一申請細節'
+
+
+    /* #swagger.responses[200] = { 
+    description: "回傳申請細節",
+    schema: 
+    {
+      "application_id": "審核id",
+      "application_response": "審核回覆",
+      "is_approved": false,
+      "applicant_id": "審核者id",
+      "plan_id": "計畫id",
+      "Applicant": {
+        "申請者資料欄位": "申請者資料"
+    },
+      "Plan": {
+        "plan_id": "計畫id"
+      }
+    }
+    } 
+    
+    
+    */
+
+
+
+    /* #swagger.responses[403] = { 
+    description: "用戶通過驗證，但不是計畫創立者，無權限",
+    schema: "not plan creator"
+    } */
+
+    /* #swagger.responses[404] = { 
+    description: "未找到申請",
+    schema: "application not found"
+    } */
+
     
     authMiddleware.authentication, planController.getApplicationDetail);
 
@@ -112,17 +207,39 @@ router.get(
 /**
  * FUNCTION: verify for applications
  */
-//待修改
 router.patch(
     "/application/:application_id/approve", 
     // #swagger.tags = ['Plan']
+    // #swagger.summary = '通過計畫審核申請'
+    // #swagger.description = '計畫創建者可以通過審核申請'
+    /* #swagger.responses[200] = { 
+      description: "通過審核",
+      schema: "approved"
+      } */ 
+    /* #swagger.responses[400] = { 
+    description: "申請已被通過",
+    schema: "application has been approved"
+    } */
+
+    /* #swagger.responses[403] = { 
+    description: "用戶通過驗證，但不是計畫創立者，無權限",
+    schema: "not plan creator"
+    } */
+
+    /* #swagger.responses[404] = { 
+    description: "未找到申請",
+    schema: 
+      "application not found"
+    } */
+
+    
     
     authMiddleware.authentication, planController.approve);
 
 /**
  * FUNCTION: get all applications for a plan
  */
-//待修改
+
 router.get(
     "/:plan_id/applications", 
     // #swagger.tags = ['Plan']
@@ -134,14 +251,16 @@ router.get(
         {
             "application_id": "審核id",
             "application_response": "審核回覆",
-            "is_approved": "boolean",
+            "is_approved": "是否已審核",
             "applicant_id": "待審核者id",
             "plan_id": "計畫id"
         }
       } */ 
     /* #swagger.responses[403] = { 
     description: "用戶通過驗證，但不是計畫創立者，無權限",
-    schema: "not plan creator"
+    schema: {
+      "error": "not plan creator"
+      }
     } */
 
     /* #swagger.responses[404] = { 
@@ -154,7 +273,7 @@ router.get(
 /**
  * FUNCTION: apply for a plan
  */
-//待修改
+
 router.post(
     "/:plan_id/apply", 
     // #swagger.tags = ['Plan']
@@ -168,26 +287,20 @@ router.post(
         "application_response": "審核回覆",
       }
     } */
+
     /* #swagger.responses[200] = { 
-    description: "回傳該計畫參與紀錄",
-    schema:
-        [{
-            "participant_name": "參加者姓名",
-            "createdAt": "datetime",
-            "updatedAt": "datetime",
-            "joined_activities": "參與計畫id",
-            "participants": "參與者id"
-        }]
-    } */
-    
-    /* #swagger.responses[200] = { 
-      description: "用戶成功加入，計畫不需審核",
-      schema: "joined！"
-    } */
+      description: "回傳該計畫參與紀錄",
+      schema: "joined!"
+    } */   
     
     /* #swagger.responses[201] = { 
       description: "用戶成功發出計畫申請，待審核",
       schema: "Successfully send the application"
+    } */
+
+    /* #swagger.responses[400] = { 
+      description: "用戶已加入",
+      schema: "participant existed"
     } */
 
     /* #swagger.responses[403] = { 
@@ -195,10 +308,14 @@ router.post(
       schema: "Plan creator should not applied."
     } */
 
-
     /* #swagger.responses[404] = { 
       description: "該計畫不存在",
       schema: "Plan not found"
+    } */
+
+    /* #swagger.responses[409] = { 
+      description: "申請者已存在",
+      schema: "Applicant already exist."
     } */
     
     authMiddleware.authentication, planController.applyPlan);
@@ -211,7 +328,7 @@ router.post(
     "/:plan_id/invitation", 
     // #swagger.tags = ['Plan']
     // #swagger.summary = '接受/拒絕計畫邀請'
-    // #swagger.description = '接受或拒絕該計畫的邀請'
+    // #swagger.description = '接受或拒絕該計畫的邀請，目前還有bug'
 
     
     authMiddleware.authentication, planController.respondToInvitation);
