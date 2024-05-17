@@ -19,6 +19,8 @@ export default function ActivityList() {
 
   useEffect(() => {
     console.log('execute function in useEffect');
+        const token = getAuthToken();
+
         //設定authorization
         const config = {
             headers: { 

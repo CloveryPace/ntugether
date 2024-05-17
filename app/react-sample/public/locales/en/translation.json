@@ -113,5 +113,17 @@
     "退出活動": "Exit Activity",
     "送出加入請求": "Send Join Request",
     "立即加入": "Join",
-    "審核題目": "Review Question"
+    "審核題目": "Review Question",
+    "時間": "Time",
+    "類型": "Type",
+    "主題": "Category",
+    "今天": "Today",
+    "明天": "Tomorrow",
+    "本週": "This week",
+    "本週末": "This weekend",
+    "活動": "Activity",
+    "進度計畫": "Plan",
+    "地點": "Location"
+    "註冊失敗，請再試一次": "Sign up failed, please try again"
+
  }
