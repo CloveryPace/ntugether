@@ -4,7 +4,7 @@ import './Common.css';
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
 import * as React from 'react';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Grid from '@mui/material/Grid';
@@ -19,12 +19,13 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import axios from 'axios';
-import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
+import { API_CREATE_ACTIVITY } from '../global/constants';
 import dayjs from 'dayjs';
 import { ThemeProvider } from '@mui/material/styles';
-import { Typography} from '@mui/material';
+import { Typography, IconButton } from '@mui/material';
 import theme from '../components/Theme'; 
 import { getAuthToken } from '../utils';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -47,7 +48,6 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-// TODO: 按新增按鈕，到活動頁面（透過活動ID）
 
 function NewActivity() {
     const navigate = useNavigate();
@@ -55,23 +55,49 @@ function NewActivity() {
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
     // current 後面接?，避免未輸入值時出現error
-    const ActivityName = useRef(); // 活動名稱
-    const ActivityIntro = useRef(); // 活動簡介
-    const ApplyQues = useRef(); // 審核題目
-    const ActivityTime = useRef(); // 活動時間
-    const ActivityPos = useRef(); // 活動地點
-    const max_participants = useRef(); // 參加人數限制
     const SearchName = useRef(); // 輸入想邀請的人
     const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
     const [need_review, setReview] = useState(false); // 需審核: true, 不需審核：false
     const [type, setType] = useState('運動'); // 活動類型
-    const [actDate, setActDate] = useState(dayjs('2024-05-30')); 
+    const [actDate, setActDate] = useState(dayjs()); 
     const [userToken, setUserToken] = useState(getAuthToken());
+
+    // 長期性活動多個時間
+    const [dateitems, setDateitems] = useState([""]);
+    const handleAddClick = () => {
+        setDateitems([...dateitems, dayjs()]);
+    };
+    const handleDeleteClick = (index) => {
+        var newdateItems = [...dateitems];
+        console.log("After delete");
+        var edited = newdateItems.splice(index, 1); //被刪除的元素
+        setDateitems(newdateItems);
+        const event = { 
+            "target": {
+                "value": newdateItems,
+                "name": "date"
+            }
+        };
+        handleChange(event);
+    };
+    const handleChangeDateMul = (index, value) => {
+        const newdateItems = [...dateitems];
+        newdateItems[index] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
+        console.log(newdateItems);
+        setDateitems(newdateItems);
+        const event = { 
+            "target": {
+                "value": dateitems,
+                "name": "date"
+            }
+        };
+        handleChange(event);
+      };
 
     const [activityData, setActivityData] = useState({
         name: '',
         introduction: '',
-        date: '',
+        date: dayjs(),
         inviteName: '',
         is_one_time: '',
         type: '',
@@ -88,48 +114,38 @@ function NewActivity() {
             ...prevState,
             [name]: value
         }));
-        console.log(activityData)
+        console.log(activityData);
+        console.log(activityData.date);
+        console.log(userToken);
     };  
 
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(activityData);
-        
-        //登入
-        // axios.post(API_LOGIN, {
-        //     "email": "r12725066@ntu.edu.tw",
-        //     "password": "a"
-        // })
-        // .then(function (response) {
-        //     console.log(response.status, response.data);
-        //     //儲存token
-            const token = userToken;
+    
+        //儲存token
+        const token = userToken;
 
-            //設定authorization
-            const bodyParameters = {
-                key: "value",
-                activityData
-            };
-            const config = {bodyParameters,
-                headers: { "authorization": `Bearer ${token}`}
-            };
+        //設定authorization
+        const bodyParameters = {
+            key: "value",
+            activityData
+        };
+        const config = {bodyParameters,
+            headers: { "authorization": `Bearer ${token}`}
+        };
 
-            //建立活動
-            axios.post(API_CREATE_ACTIVITY, bodyParameters.activityData, config)
-                .then(function (res) {
-                    console.log(res);
-                    alert('成功(*´∀`)~♥');
-                    navigate('/activitylist');
-                })
-                .catch(function (err) {
-                    alert("新增失敗");
-                    console.log(err);
-            });
-        // })
-        // .catch(function (error) {
-        //     console.log(error);
-        // }); 
-
+        //建立活動
+        axios.post(API_CREATE_ACTIVITY, bodyParameters.activityData, config)
+            .then(function (res) {
+                console.log(res);
+                alert('成功(*´∀`)~♥');
+                navigate('/activitylist');
+            })
+            .catch(function (err) {
+                alert("新增失敗");
+                console.log(err);
+        });
     };
 
 
@@ -145,19 +161,6 @@ function NewActivity() {
 
     const handleChangeType = (event) => {
         setType(event.target.value);
-        handleChange(event);
-    };
-
-    const handleChangeDate = (dateData) => {
-        console.log(dateData);
-        setActDate(dateData);
-        let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
-        const event = { 
-            "target": {
-                "value": finaldate,
-                "name": "date"
-            }
-        };
         handleChange(event);
     };
 
@@ -250,18 +253,51 @@ function NewActivity() {
                 </Grid>
 
                 <Grid item xs={12} md={6}>
-                    <Typography variant="h6"> 活動時間 </Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                        <DatePicker
-                        value={actDate}
-                        onChange={handleChangeDate}
-                        name="date"
-                        required
-                        fullWidth
-                        label="輸入活動時間"
-                        id="date"
-                        />
-                    </LocalizationProvider>
+                    <Stack direction="row" spacing={2}>
+                        <Typography variant="h6"> 活動時間 </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                            <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
+                        </Box>
+                    </Stack>
+                    {dateitems.map((item, index) => (
+                        <Box
+                        key={index}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mb: 2
+                        }}
+                        >
+                        <Stack direction="row" spacing={2} justifyContent="space-between">
+                            <Typography variant="h6" sx={{ minWidth: '30px' }}>{index + 1}.</Typography>
+                            {dateitems.length > 1 && (
+                                <IconButton onClick={() => handleDeleteClick(index)}>
+                                <DeleteIcon />
+                                </IconButton>
+                            )}
+                        </Stack>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+                                <DesktopDateTimePicker
+                                value={actDate}
+                                onChange={(e) => handleChangeDateMul(index, e)}
+                                name="date"
+                                required
+                                fullWidth
+                                label="輸入活動時間"
+                                id="date"
+                                />
+                            </LocalizationProvider>
+                        </Box>
+                        </Box>
+                    ))}
                     <Typography variant="h6"> 活動地點 </Typography>
                     <TextField
                         fullWidth
@@ -292,6 +328,7 @@ function NewActivity() {
                     />
                 </Grid>
             </Grid>
+            <Typography variant="h6"> </Typography>
             <Grid container justifyContent="center">
               <Grid item>
                 <Stack direction="row" spacing={2}>

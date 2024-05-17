@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useState } from "react";
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
@@ -107,15 +107,8 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     const newReviewQuestion = inputRefreviewquestion.current.value;
 
     if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review || newReviewQuestion !== application_problem) {
-      try {
-        //登入
-        // axios.post(API_LOGIN, {
-        //   "email": "r12725066@ntu.edu.tw",
-        //   "password": "a"
-        // })
-        // .then(function (response) {
-        //     console.log(response.status, response.data);
-        //     //儲存token
+      try { 
+            //儲存token
             const token = userToken;
 
             //設定authorization
@@ -156,71 +149,11 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 alert("更新失敗");
               }
           });
-        
-        // .catch(function (error) {
-        //   // 登入中間出錯
-        //   console.log(error);
-        // }); 
-
       } catch (error) {
         //更新出錯
         alert("Error: Failed to update activity name");
       }
     }
-
-
-    // 確認哪個欄位有更改過
-    /*
-    if (newIntro !== introduction) {
-      try {
-        alert("Update Activity introduction!");
-      } catch (error) {
-        alert("Error: Failed to update activity introduction");
-      }
-    }
-    if (!newTime.isSame(dayjs(date)) ) {
-      try {
-        alert("Update Activity time!");
-      } catch (error) {
-        alert("Error: Failed to update activity time");
-      }
-    }
-    if (newLocation !== location) {
-      try {
-        alert("Update Activity location!");
-      } catch (error) {
-        alert("Error: Failed to update activity location");
-      }
-    }
-    if (newLimitPerson !== max_participants) {
-      try {
-        alert("Update Activity limit person!");
-      } catch (error) {
-        alert("Error: Failed to update activity limit person");
-      }
-    }
-    if (OneTime !== oneTime) {
-      try {
-        alert("更新是否為一次性活動!");
-      } catch (error) {
-        alert("錯誤");
-      }
-    }
-    if (Type !== type) {
-      try {
-        alert("更新活動類別!");
-      } catch (error) {
-        alert("錯誤");
-      }
-    }
-    if (review !== need_review) {
-      try {
-        alert("更新是否需審核!");
-      } catch (error) {
-        alert("錯誤");
-      }
-    }
-    */
   };
 
   const handleOneTimeChange = (event) => {
@@ -316,7 +249,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                   />
                 <Typography variant="h6"> 活動時間 </Typography>
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                        <DatePicker
+                        <DesktopDateTimePicker
                         required
                         fullWidth
                         onChange={handleChangeDate}

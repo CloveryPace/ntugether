@@ -25,54 +25,8 @@ import theme from '../components/Theme';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import {setAuthToken} from '../utils';
-
-const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
-const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
-const atLeastOneLowercaseLetter = (password) => new RegExp(/(?=.*?[a-z])/).test(password);
-const atLeastOneNumber = (password) => new RegExp(/(?=.*?[0-9])/).test(password);
-const atLeastOneSpecialChar = (password) => new RegExp(/(?=.*?[#?!@$ %^&*-])/).test(password);
-
-const PasswordStrength = {  
-  WEAK: '弱',
-  MEDIUM: '中',
-  STRONG: '強'
-};
-
-function testingpasswordStrength(password){
-    if (!password) return PasswordStrength.WEAK;
-    let points = 0;
-    if (atLeastMinimumLength(password)) points += 1;
-    if (atLeastOneUppercaseLetter(password)) points += 1;
-    if (atLeastOneLowercaseLetter(password)) points += 1;
-    if (atLeastOneNumber(password)) points += 1;
-    if (atLeastOneSpecialChar(password)) points += 1;
-    if (points >= 5) return PasswordStrength.STRONG;
-    if (points >= 3) return PasswordStrength.MEDIUM;
-    return PasswordStrength.WEAK;
-}
-
-function generateColors(strength) {
-    let result = [];
-    const COLORS = {
-      NEUTRAL: 'hsla(0, 0%, 88%, 1)',
-      WEAK : 'hsla(353, 100%, 38%, 1)',
-      MEDIUM: 'hsla(40, 71%, 51%, 1)',
-      STRONG : 'hsla(134, 73%, 30%, 1)'
-    };
-    switch (strength) {
-      case PasswordStrength.WEAK:
-      result = [COLORS.WEAK, COLORS.NEUTRAL, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.MEDIUM:
-      result = [COLORS .MEDIUM, COLORS.MEDIUM, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.STRONG:
-      result = [ COLORS .STRONG, COLORS.STRONG, COLORS.STRONG, COLORS.STRONG];
-      break;
-    }
-    return result;
-}
-// TODO remove, this demo shouldn't need to reset the theme.
+import Loading from '../components/Loading';
+import PasswordAndCheck from '../components/PasswordAndCheck';
 
 const { useState } = React;
 
@@ -89,14 +43,15 @@ export default function Signup() {
   const [birthday, setBirthday] = useState(dayjs('2022-04-17'));
   const [username, setUserName] = useState('');
 
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   let data = new FormData();
 
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    if(password !== confirmPassword || testingpasswordStrength(password) !== PasswordStrength.STRONG){
+    if(password !== confirmPassword || password === '' || confirmPassword === ''){
       setError(true);
       console.log('error');
     }else{
@@ -105,8 +60,7 @@ export default function Signup() {
 
     data = new FormData(event.currentTarget);
 
-    //todo: validate form
-    if (error) {
+    if (Boolean(error)) {
       alert(error);
     }else{
     
@@ -124,11 +78,13 @@ export default function Signup() {
       .then(function (response) {
         console.log(response);
         setSignupStatus(2);
+        setLoading(false);
 
       })
       .catch(function (error) {
         console.log(error);
         setSignupSuccess(false);
+        setLoading(false);
       });
     }
   }
@@ -139,8 +95,8 @@ export default function Signup() {
     setOtp(newValue)
   }
   const handleComplete = (value) => {
-    console.log(value);
-    console.log(data);
+    setLoading(true);
+
     axios.post(API_SIGN_UP, { 
       name: username,
       password: password,
@@ -151,16 +107,17 @@ export default function Signup() {
     
     })
     .then(function (response) {
-      console.log(response);
+      setLoading(false);
       setSignupSuccess(true);
+      setSignupStatus(3);
+      setAuthToken(response.data.token);
       setTimeout(function() {
         window.location.assign('/');
       }, 5000);
-      setAuthToken(response.data.jwtToken);
     })
     .catch(function (error) {
-      console.log(error);
       setSignupSuccess(false);
+      setLoading(false);
     });
   }
 
@@ -182,14 +139,6 @@ export default function Signup() {
 
   const handleGenderChange = (event) => {
     setGender(event.target.value);
-  };
-
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
-
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
   };
 
   const handleEmailChange = (event) => {
@@ -220,6 +169,14 @@ export default function Signup() {
           <Typography component="h1" variant="h5">
             {t('註冊')}
           </Typography>
+          {
+                signupSuccess == false ?
+
+                <Box>
+                    <Typography component="body1" variant="body1">
+                    {t('註冊失敗，請再試一次')}</Typography>
+                    </Box>: null
+              }
           {signupStatus == 1 ? 
           <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
           >
@@ -289,37 +246,8 @@ export default function Signup() {
                   </FormControl>
 
               </Grid>
-
               <Grid item xs={12}>
-                  
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label={t('密碼')}
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-                <CheckPasswordStrength password={password}/>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="comfirmPassword"
-                  label={t('再次輸入密碼')}
-                  type="password"
-                  id="confirm-password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  color={password === confirmPassword ? 'primary' : 'warning'}
-                />
-                {password === confirmPassword ? null : <Box><Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="6px 0 24px 0px">{t('請輸入相同的密碼')}</Typography></Box>}
+              <PasswordAndCheck setPassword={setPassword} setConfirmPassword={setConfirmPassword}/>
               </Grid>
               <Grid item xs={12}>
               <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
@@ -360,14 +288,7 @@ export default function Signup() {
                   {t('或是直接前往')}<Link href={'/'}>{t('首頁')}</Link></Typography></Box> : 
                   null
               }
-              {
-                signupSuccess == false && signupStatus == 2? 
-
-                <Box>
-                    <Typography component="body1" variant="body1">
-                  註冊失敗，請再試一次</Typography>
-                    </Box>: null
-              }
+              
           </Box>
         
         </Grid>
@@ -386,35 +307,7 @@ export default function Signup() {
           }}
         />
       </Grid>
+      {loading && <Loading/>}
     </ThemeProvider>
   );
 }
-
-
-function CheckPasswordStrength({password}){
-  const { t, i18n } = useTranslation();
-
-  const passwordStrength = testingpasswordStrength(password);
-  const colors = generateColors(passwordStrength);
-
-  return(
-  <Box>
-      <Box display="flex" alignItems="center" justifyContent="center" gap="5px" margin="10px 0">
-      {colors.map((color, index) => (
-        <Box key={index} flex={1} height="5px" borderRadius="5px" bgcolor={color}></Box>
-      ))}
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-start" gap="5px" margin="0 0 15px">
-        <Typography color={colors[0]}>{t(passwordStrength)}</Typography>
-        </Box>
-        {passwordStrength !== PasswordStrength.STRONG && (
-          <Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="0 0 24px 0px">
-            {t('密碼需包含至少 8 個字元，包含至少一個大寫字母、小寫字母、數字、特殊字元')}
-          </Typography>)
-        }
-  </Box>
-  
-
-      );
-    }
