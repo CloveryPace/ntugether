@@ -5,6 +5,7 @@ export const API_SIGN_UP = `${API_HOST}/user/signup`;
 export const API_LOGIN = `${API_HOST}/user/signin`;
 export const API_GOOGLE_LOGIN = `${API_HOST}/user/auth/google/login`;
 export const API_GOOGLE_SIGNUP = `${API_HOST}/user/auth/google/signup`;
+export const USER = `${API_HOST}/user/`;
 
 
 export const API_RESET_PASSWORD = `${API_HOST}/user/resetPassword`;

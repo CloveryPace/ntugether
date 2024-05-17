@@ -15,6 +15,9 @@ import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import Divider from '@mui/material/Divider';
 import { useTranslation } from 'react-i18next';
+import { USER } from '../global/constants';
+import { getAuthToken } from '../utils';
+import axios from 'axios';
 import PasswordAndCheck from '../components/PasswordAndCheck';
 
 const { useState } = React;
@@ -38,9 +41,38 @@ function AccountSetting() {
   };
 
   const { t, i18n } = useTranslation();
+
+
+
   const [email, setEmail] = useState('MyName');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [userToken, setUserToken] = useState(getAuthToken());
+
+  const confirmDelete = () => {
+    if (window.confirm(t("確定要刪除帳號嗎?"))) {
+      deleteUser();
+    }
+  }
+
+
+  const deleteUser = () => {
+    const token = userToken;
+    
+    axios.delete(USER,{
+      headers: { "authorization": `Bearer ${token}`}
+    })
+    .then(function (response) {
+      
+      alert("success");
+      window.location.assign('/login');
+    })
+    .catch(function (err) {
+      console.log(err);
+      alert("error");
+    });
+ 
+  }
 
 
   return (
@@ -131,6 +163,7 @@ function AccountSetting() {
                 <Button
                     variant="outlined" color="error"
                     sx={{ mt: 3, mb: 2, width: 1/3}}
+                    onClick={() => {confirmDelete()}}
                 >
                     {t('刪除此帳號')}
                 </Button>
