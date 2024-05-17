@@ -2153,15 +2153,30 @@
                   "items": {}
                 },
                 "progression": {
-                  "type": "object",
-                  "properties": {
-                    "english": {
-                      "type": "number",
-                      "example": 10
-                    },
-                    "chinese": {
-                      "type": "number",
-                      "example": 5
+                  "type": "array",
+                  "example": [
+                    null,
+                    {
+                      "name": "進度名稱",
+                      "times": "次數",
+                      "need_activity": false
+                    }
+                  ],
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "進度名稱"
+                      },
+                      "times": {
+                        "type": "string",
+                        "example": "次數"
+                      },
+                      "need_activity": {
+                        "type": "boolean",
+                        "example": false
+                      }
                     }
                   }
                 },
@@ -3216,6 +3231,493 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/progress/{progress_id}/userprocess": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "取得用戶進度",
+        "description": "取得單一用戶的單一計畫進度",
+        "parameters": [
+          {
+            "name": "progress_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得用戶進度",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User progress fetched successfully."
+                },
+                "單一用戶的計畫進度列表": {
+                  "type": "object",
+                  "properties": {
+                    "userProgress_id": {
+                      "type": "string",
+                      "example": "用戶進度id"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "用度進度細項"
+                    },
+                    "user_progress_date": {
+                      "type": "string",
+                      "example": "預期完成日期"
+                    },
+                    "activity_detail": {
+                      "type": "string",
+                      "example": "揪團活動細節"
+                    },
+                    "is_finished": {
+                      "type": "string",
+                      "example": "用戶進度計畫是否完成，可用來算次數"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "example": "用戶id"
+                    },
+                    "progress_id": {
+                      "type": "string",
+                      "example": "進度id"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-05-17T12:06:13.000Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-05-17T12:06:13.000Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該用戶進度不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No progress found for the given user."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "其他錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "error.message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{progress_id}/alluserprocess": {
+      "get": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "取得該計畫所有用戶進度資料",
+        "description": "取得該計畫的進度內所有用戶進度的資料",
+        "parameters": [
+          {
+            "name": "progress_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "取得計畫所有用戶進度",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User progress fetched successfully."
+                },
+                "所有用戶的計畫進度列表": {
+                  "type": "object",
+                  "properties": {
+                    "userProgress_id": {
+                      "type": "string",
+                      "example": "用戶進度id"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "用度進度細項"
+                    },
+                    "user_progress_date": {
+                      "type": "string",
+                      "example": "預期完成日期"
+                    },
+                    "activity_detail": {
+                      "type": "string",
+                      "example": "揪團活動細節"
+                    },
+                    "is_finished": {
+                      "type": "string",
+                      "example": "用戶進度計畫是否完成，可用來算次數"
+                    },
+                    "user_id": {
+                      "type": "string",
+                      "example": "用戶id"
+                    },
+                    "progress_id": {
+                      "type": "string",
+                      "example": "進度id"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-05-17T12:06:13.000Z"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "example": "2024-05-17T12:06:13.000Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該計畫進度不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "No progress found for the given process_id."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "其他錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "error.message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{progress_id}": {
+      "put": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "修改進度",
+        "description": "修改該progress內容，僅計畫建立者可以修改",
+        "parameters": [
+          {
+            "name": "progress_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "進度修改細項",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "progress名稱"
+                },
+                "times": {
+                  "type": "string",
+                  "example": "progress次數"
+                },
+                "need_activity": {
+                  "type": "string",
+                  "example": "false/true"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "進度修改成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Progress updated successfully."
+                },
+                "data": {
+                  "type": "string",
+                  "example": "updateProgress詳細資料"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "用戶通過驗證，但用戶不是計劃創立者，沒有修改該進度的權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to update this progress."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該進度不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Progress not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "其他錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "error.message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/progress/{userprogress_id}/userprocess": {
+      "put": {
+        "tags": [
+          "Progress"
+        ],
+        "summary": "修改用戶進度",
+        "description": "修改該用戶進度內容，僅該用戶可以修改",
+        "parameters": [
+          {
+            "name": "userprogress_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "example": "any"
+                },
+                "activity_detail": {
+                  "example": "any"
+                },
+                "is_finished": {
+                  "example": "any"
+                },
+                "user_progress_date": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "進度修改成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User Progress updated successfully."
+                },
+                "data": {
+                  "type": "string",
+                  "example": "updateUserProgress詳細資料"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "403": {
+            "description": "用戶通過驗證，但用戶不是進度創立者，沒有修改該用戶進度的權限",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "You are not authorized to update this user progress."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "用戶進度不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "User Progress not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "其他錯誤",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "error.message"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           }
         }
       }

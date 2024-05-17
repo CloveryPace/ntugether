@@ -2,11 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const authMiddleware = require('../middlewares/authentication');
 const planController = require('../controllers/plan_controller');
+const progressController = require('../controllers/progress_controller');
 
 var router = express.Router();
 router.use(bodyParser.json());
 
 planController.sync();
+progressController.sync();
 
 /**
  * FUNCTION: create an plan
@@ -28,10 +30,9 @@ router.post(
           "end_date": "2024-09-07",
           "tags": ["Exam", "Exercise", "Learning"],
           "invitees": [],
-          "progression": {
-            "english": 10,
-            "chinese": 5,
-          },
+          "progression": [,
+            { "name": "進度名稱", "times": "次數", "need_activity": false }
+          ],
           "need_reviewed": "0",
           "application_problem": "審查問題",
 

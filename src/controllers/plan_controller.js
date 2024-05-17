@@ -1,6 +1,7 @@
 const { ValidationError, Op } = require("sequelize");
 const planModel = require("../model/planModel");
 const User = require("../model/userModel");
+const progressController = require('./progress_controller');
 const { joinSQLFragments } = require("sequelize/lib/utils/join-sql-fragments");
 
 // define constants
@@ -204,8 +205,26 @@ exports.createPlan = async (req, res) => {
         const { tags, invitees, progression, ...body } = req.body;
         body.created_user_id = user_id;
 
-        newPlan = await planModel.Plan.create(body);
-        console.log(newPlan);
+        const newPlan = await planModel.Plan.create(body);
+        
+        // create process
+        const progressPromises = progression.map(progressData => {
+            // Constructing a proper request object for createProgress
+            const progressReq = {
+                body: {
+                    ...progressData,
+                    plan_id: newPlan.plan_id,
+                    user_id: user_id
+                }
+            };
+            const progressRes = {
+                status: () => ({ json: (json) => json }),
+            };
+            return progressController.createProgress(progressReq, progressRes);
+        });
+        // Wait for all progress entries to be created
+        await Promise.all(progressPromises);
+
 
         // creaet tags for the plan
         await addTag(tags, newPlan.plan_id);
