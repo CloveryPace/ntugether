@@ -34,7 +34,7 @@ function ActivityPage() {
 
   useEffect(() => {
         //儲存token
-        const token = userToken;
+        const token = getAuthToken();
         //設定authorization
         const config = {
             headers: { 
