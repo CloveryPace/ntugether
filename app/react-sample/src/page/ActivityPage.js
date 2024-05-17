@@ -21,6 +21,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
 function ActivityPage() {
   const { t, i18n } = useTranslation();
@@ -31,6 +32,7 @@ function ActivityPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
+  const [canAttend, setCanAttend] = useState(false);
 
   useEffect(() => {
         //儲存token
@@ -41,18 +43,7 @@ function ActivityPage() {
               authorization: `Bearer ${token}`
             }
         };
-
-        //取得使用者id
-        axios.get(API_GET_USER, config)
-          .then(function (res) {
-            setUserId(res.data.members['user_id']);
-            console.log("userId");
-            console.log(res.data.members['user_id']);
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("error");
-          });
+        console.log(token);
 
         //取得活動資訊
         axios.get(API_GET_ACTIVITY_DETAIL + id, config)
@@ -62,13 +53,30 @@ function ActivityPage() {
             console.log("creatorId")
             console.log(res.data.created_user_id);
             setCreatorId(res.data.created_user_id);
+            //取得使用者id
+            axios.get(API_GET_USER, config)
+            .then(function (res) {
+              setUserId(res.data.members['user_id']);
+              console.log("userId");
+              console.log(res.data.members['user_id']);
+              // 建立活動者不能參加活動（參加活動按鈕隱藏）
+              setCanAttend(userId === creatorId);
+              console.log("能否參加");
+              console.log(userId === creatorId);
+            })
+            .catch(function (err) {
+              console.log(err);
+              alert("error");
+            });
           })
           .catch(function (err) {
             console.log(err);
             alert("error");
           });
+          console.log("時間")
+          console.log(dayjs(data.date).format('YYYY/MM/DD h:mm A'))
 
-        /*
+
         //取得參加者
         axios.get(API_GET_ACTIVITY_DETAIL + id + '/participants', config)
           .then(function (res) {
@@ -81,7 +89,6 @@ function ActivityPage() {
             console.log(err);
             alert("error");
           });
-          */
 
       }, [id]);
 
@@ -240,7 +247,7 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("活動時間")} </Typography></div>
-        <div><Typography variant="h6"> {data.date? data.date: "尚無活動時間資料"} </Typography></div>
+        <div><Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography></div>
       </div>
 
       <div style={container}>
@@ -302,10 +309,11 @@ function ActivityPage() {
       
       <Grid container justifyContent="center">
         <Grid item>
-        {attend?
-          <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")} </Button>:
-          <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
-        }
+          {canAttend?
+            <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
+            :
+            <></>
+          }
       </Grid>
       </Grid>
 
@@ -315,3 +323,5 @@ function ActivityPage() {
 }
 
 export default ActivityPage;
+
+// <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")}</Button>
