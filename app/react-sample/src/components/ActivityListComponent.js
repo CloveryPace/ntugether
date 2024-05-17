@@ -28,7 +28,7 @@ export default function ActivityList() {
     // .then(function (response) {
     //     console.log(response.status, response.data);
     //     //儲存token
-    //     const token = response.data.jwtToken;
+        const token = getAuthToken();
         //設定authorization
         const config = {
             headers: { 

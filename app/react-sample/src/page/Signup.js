@@ -25,6 +25,7 @@ import theme from '../components/Theme';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import {setAuthToken} from '../utils';
+import Loading from '../components/Loading';
 
 const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
 const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
@@ -90,11 +91,12 @@ export default function Signup() {
   const [username, setUserName] = useState('');
 
   const [error, setError] = useState('');
-
+  const [loading, setLoading] = useState(false);
   let data = new FormData();
 
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
+    setLoading(true);
 
     if(password !== confirmPassword || testingpasswordStrength(password) !== PasswordStrength.STRONG){
       setError(true);
@@ -124,11 +126,13 @@ export default function Signup() {
       .then(function (response) {
         console.log(response);
         setSignupStatus(2);
+        setLoading(false);
 
       })
       .catch(function (error) {
         console.log(error);
         setSignupSuccess(false);
+        setLoading(false);
       });
     }
   }
@@ -139,8 +143,8 @@ export default function Signup() {
     setOtp(newValue)
   }
   const handleComplete = (value) => {
-    console.log(value);
-    console.log(data);
+    setLoading(true);
+
     axios.post(API_SIGN_UP, { 
       name: username,
       password: password,
@@ -151,16 +155,17 @@ export default function Signup() {
     
     })
     .then(function (response) {
-      console.log(response);
+      setLoading(false);
       setSignupSuccess(true);
+      setSignupStatus(3);
+      setAuthToken(response.data.token);
       setTimeout(function() {
         window.location.assign('/');
       }, 5000);
-      setAuthToken(response.data.jwtToken);
     })
     .catch(function (error) {
-      console.log(error);
       setSignupSuccess(false);
+      setLoading(false);
     });
   }
 
@@ -220,6 +225,14 @@ export default function Signup() {
           <Typography component="h1" variant="h5">
             {t('註冊')}
           </Typography>
+          {
+                signupSuccess == false ?
+
+                <Box>
+                    <Typography component="body1" variant="body1">
+                    {t('註冊失敗，請再試一次')}</Typography>
+                    </Box>: null
+              }
           {signupStatus == 1 ? 
           <Box component="form" noValidate onSubmit={handleFirstSignupSubmit} sx={{ mt: 3 }}
           >
@@ -360,14 +373,7 @@ export default function Signup() {
                   {t('或是直接前往')}<Link href={'/'}>{t('首頁')}</Link></Typography></Box> : 
                   null
               }
-              {
-                signupSuccess == false && signupStatus == 2? 
-
-                <Box>
-                    <Typography component="body1" variant="body1">
-                  註冊失敗，請再試一次</Typography>
-                    </Box>: null
-              }
+              
           </Box>
         
         </Grid>
@@ -386,6 +392,7 @@ export default function Signup() {
           }}
         />
       </Grid>
+      {loading && <Loading/>}
     </ThemeProvider>
   );
 }
@@ -414,7 +421,5 @@ function CheckPasswordStrength({password}){
           </Typography>)
         }
   </Box>
-  
-
       );
     }

@@ -24,6 +24,7 @@ import { ClickAwayListener } from '@mui/base/ClickAwayListener';
 import { useTranslation } from 'react-i18next';
 import HomeIcon from '@mui/icons-material/Home';
 import './Style.css';
+import {removeAuthToken} from '../utils';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -151,9 +152,7 @@ export default function HeaderBar() {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userInfo");
-
+    removeAuthToken();
     navigate('/login');
   }
 
