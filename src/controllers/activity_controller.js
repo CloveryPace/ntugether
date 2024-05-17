@@ -206,7 +206,7 @@ exports.getActivitiesList = async (req, res) => {
         res.status(200).json(activities);
     } catch (error) {
         console.error('Error fetching activities:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -216,22 +216,7 @@ exports.getActivitiesList = async (req, res) => {
  * @param {*} res 
  */
 exports.createActivity = async (req, res) => {
-    /*
-    Exampe request format
-    {
-        "id": 10,
-        "name": "example Activity",
-        "introduction": "Introduction of Activity",
-        "date": "2024-04-27T04:56:30.276Z",
-        "need_review": true,
-        "country": "string",
-        "max_participants": 0,
-        "location": "string",
-        "tags": "study,"
-        "application_problem": "string",
-    };
-    */
-
+    
     var newActivity = null;
     try {
         const user_id = req.user_id;
@@ -296,6 +281,7 @@ exports.getActivityDetail = async (req, res) => {
         const activity_id = req.params.activity_id;
         var activity = await activityModel.Activities.findByPk(activity_id);
         if (activity == null) return res.status(404).send("Activity not found");
+        
         activity = await returnActivity(activity_id, activity.is_one_time);
         return res.status(200).json(activity);
     } catch (error) {
@@ -339,7 +325,7 @@ exports.updateActivity = async (req, res) => {
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error updating activity:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 
 };
@@ -378,7 +364,7 @@ exports.deleteActivity = async (req, res) => {
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error deleting activity:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -411,7 +397,7 @@ exports.getAllApplications = async (req, res) => {
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error getting all applications:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -487,7 +473,7 @@ exports.removeUser = async (req, res) => {
 
     } catch (error) {
         console.error('Error removing participants:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -520,7 +506,7 @@ exports.applyActivity = async (req, res) => {
         return noReviewApply(req, res, activity_id, user_id); //add , participant_name
     } catch (error) {
         console.error('Error applying for activity:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -567,7 +553,7 @@ exports.getDiscussion = async (req, res) => {
         return res.status(200).json(discussions);
     } catch (error) {
         console.error('Error getting discussion:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -624,6 +610,6 @@ exports.makeDiscussion = async (req, res) => {
 
     } catch (error) {
         console.error('Error making discussion:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };

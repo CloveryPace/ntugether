@@ -168,8 +168,8 @@ router.post(
       required: true,
       schema: 
       {
-        "email": "用戶信箱",
-        "password": "用戶密碼",
+        "email": "r12725066@ntu.edu.tw",
+        "password": "a"
       }
   } */
   /* #swagger.responses[201] = { 
