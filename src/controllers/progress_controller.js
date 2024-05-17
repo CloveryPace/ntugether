@@ -55,7 +55,10 @@ exports.getAllUserProgress = async (req, res) => {
 
         };
 
-        const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);        
+        const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);      
+        if (AlluserProgress.length === 0) {
+            return res.status(404).json({ error: 'No progress found for the given process_id.' });
+        }  
         
         // Filter the data to only include entries where is_finished is true
         const progressSummary = AlluserProgress.reduce((acc, cur) => {
@@ -79,9 +82,7 @@ exports.getAllUserProgress = async (req, res) => {
           
         console.log(progressSummary);
 
-        if (AlluserProgress.length === 0) {
-            return res.status(404).json({ error: 'No progress found for the given process_id.' });
-        }
+        
 
         return res.status(200).json({ message: 'Progress fetched successfully.', data: progressSummary });
 

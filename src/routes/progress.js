@@ -58,20 +58,20 @@ router.get("/:progress_id/userprocess",
 router.get("/:progress_id/alluserprocess",
     // #swagger.tags = ['Progress']
     // #swagger.summary = '取得該計畫所有用戶進度完成度'
-    // #swagger.description = '取得該計畫的進度內所有用戶進度的完成情況'
+    // #swagger.description = '輸入進度id，會取得該計畫的進度內所有用戶進度的完成情況，可以用於點進去計畫的頁面'
     /* #swagger.responses[200] = { 
       description: "取得計畫所有用戶進度",
       schema: {
         "message": "User progress fetched successfully.",
-        "所有用戶的計畫進度列表":
-            "user_id-progress_id": {
+        "user_id-progress_id":
+                 {
                     "user_id": "用戶id",
                     "progress_id": "進度id",
                     "user_name": "用戶名稱",
                     "progress_name": "進度名稱",
                     "finished_count": "完成次數",
                     "total_count": "總共次數"
-                },
+                }
         }
     } */
 

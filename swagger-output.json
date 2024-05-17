@@ -685,7 +685,7 @@
           }
         ],
         "responses": {
-          "204": {
+          "200": {
             "description": "已成功刪除活動",
             "schema": {
               "type": "string",
@@ -3362,8 +3362,8 @@
         "tags": [
           "Progress"
         ],
-        "summary": "取得該計畫所有用戶進度資料",
-        "description": "取得該計畫的進度內所有用戶進度的資料",
+        "summary": "取得該計畫所有用戶進度完成度",
+        "description": "輸入進度id，會取得該計畫的進度內所有用戶進度的完成情況，可以用於點進去計畫的頁面",
         "parameters": [
           {
             "name": "progress_id",
@@ -3389,29 +3389,9 @@
                   "type": "string",
                   "example": "User progress fetched successfully."
                 },
-                "所有用戶的計畫進度列表": {
+                "user_id-progress_id": {
                   "type": "object",
                   "properties": {
-                    "userProgress_id": {
-                      "type": "string",
-                      "example": "用戶進度id"
-                    },
-                    "description": {
-                      "type": "string",
-                      "example": "用度進度細項"
-                    },
-                    "user_progress_date": {
-                      "type": "string",
-                      "example": "預期完成日期"
-                    },
-                    "activity_detail": {
-                      "type": "string",
-                      "example": "揪團活動細節"
-                    },
-                    "is_finished": {
-                      "type": "string",
-                      "example": "用戶進度計畫是否完成，可用來算次數"
-                    },
                     "user_id": {
                       "type": "string",
                       "example": "用戶id"
@@ -3420,13 +3400,21 @@
                       "type": "string",
                       "example": "進度id"
                     },
-                    "createdAt": {
+                    "user_name": {
                       "type": "string",
-                      "example": "2024-05-17T12:06:13.000Z"
+                      "example": "用戶名稱"
                     },
-                    "updatedAt": {
+                    "progress_name": {
                       "type": "string",
-                      "example": "2024-05-17T12:06:13.000Z"
+                      "example": "進度名稱"
+                    },
+                    "finished_count": {
+                      "type": "string",
+                      "example": "完成次數"
+                    },
+                    "total_count": {
+                      "type": "string",
+                      "example": "總共次數"
                     }
                   }
                 }

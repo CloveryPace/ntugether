@@ -268,7 +268,6 @@ exports.createActivity = async (req, res) => {
             {
                 joined_activities: newActivity.activity_id,
                 participants: user_id,
-                // participant_name: user.name
             }
         );
 
@@ -370,9 +369,12 @@ exports.deleteActivity = async (req, res) => {
         if (activity.created_user_id != user_id) {
             return res.status(403).json({ error: 'You are not authorized to delete this activity' });
         }
-        await activity.destroy();
+        const deleteRows = await activityModel.Activities.destroy({ where: { activity_id } });
+        if (deleteRows > 0){
+            return res.status(200).send("sucessfully delete");
+        }
 
-        res.status(204).send("sucessfully delete");
+        
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error deleting activity:', error);

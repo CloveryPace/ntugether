@@ -178,7 +178,7 @@ router.delete(
   // #swagger.tags = ['Activity']
   // #swagger.summary = '刪除活動'
   // #swagger.description = '刪除該單一活動'
-  /* #swagger.responses[204] = { 
+  /* #swagger.responses[200] = { 
     description: "已成功刪除活動",
     schema: "sucessfully delete"
   } */
