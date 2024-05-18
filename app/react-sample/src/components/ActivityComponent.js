@@ -14,6 +14,30 @@ import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getAuthToken } from '../utils';
 import dayjs from 'dayjs';
+import AvatarGroup from '@mui/material/AvatarGroup';
+
+// 頭像顏色根據名字變化
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name[0]}`,
+  };
+}
 
 export default function ActivityComponent({data, key}) {
     const [userToken, setUserToken] = useState(getAuthToken());
@@ -82,13 +106,14 @@ export default function ActivityComponent({data, key}) {
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
                   {atendee.length > 0 ?
-                    (atendee.map((person) => {
-                      return (
-                        <div style={{alignSelf: 'center'}}>
-                          <Chip avatar={<Avatar>{person.participants? person.participants: "未知"}</Avatar>} label={person.participants? person.participants: "未知"} />
-                        </div>
-                      );
-                    }))
+                    <AvatarGroup
+                    renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
+                    total={atendee.length}
+                    >
+                      <div style={{alignSelf: 'center'}}>
+                        <Chip avatar={<Avatar {...stringAvatar(atendee[0].User? atendee[0].User.name: "未知")}/>} label={atendee[0].User? atendee[0].User.name: "未知"} />
+                      </div>
+                    </AvatarGroup>
                     :
                     <div style={{alignSelf: 'center'}}>
                         尚無參加者

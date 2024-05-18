@@ -23,6 +23,29 @@ import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 
+// 頭像顏色根據名字變化
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name[0]}`,
+  };
+}
+
 function ActivityPage() {
   const { t, i18n } = useTranslation();
   const { state } = useLocation();
@@ -266,7 +289,7 @@ function ActivityPage() {
             (atendee.map((person) => {
               return (
                 <div style={{alignSelf: 'center'}}>
-                  <Chip avatar={<Avatar>{person.participants? person.participants: "未知"}</Avatar>} label={person.participants? person.participants: "未知"} />
+                  <Chip avatar={<Avatar {...stringAvatar(person.User? person.User.name: "未知")}/>} label={person.User? person.User.name: "未知"} />
                 </div>
               );
             })):
