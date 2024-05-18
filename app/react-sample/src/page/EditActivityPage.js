@@ -173,44 +173,31 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   };
 
   const handleDelete = (id) => {
-    axios.post(API_LOGIN, {
-      "email": "r12725066@ntu.edu.tw",
-      "password": "a"
-    })
-    .then(function (response) {
-        console.log(response.status, response.data);
-        //儲存token
-        const token = response.data.jwtToken;
-        console.log(token);
-        //設定authorization
-        const bodyParameters = {
-          key: "value",
-        };
-        const config = {bodyParameters,
-            headers: { "authorization": `Bearer ${token}`}
-        };
-
-        //刪除活動
-        console.log(id);
-        axios.delete(API_GET_ACTIVITY_DETAIL + ID, config)
-          .then(function (res) {
-              console.log(res);
-              alert('已刪除活動');
-              onHide();
-              navigate('/activitylist');
-          })
-          .catch(function (err) {
-              if (err.message === "Request failed with status code 403"){
-                alert("非活動建立者無權限刪除活動");
-              }
-              else{
-                alert("刪除失敗");
-              }
-        });
-    })
-    .catch(function (error) {
-      // 登入中間出錯
-      console.log(error);
+    //儲存token
+    const token = userToken;
+    //設定authorization
+    const bodyParameters = {
+      key: "value",
+    };
+    const config = {bodyParameters,
+        headers: { "authorization": `Bearer ${token}`}
+    };
+    //刪除活動
+    console.log(id);
+    axios.delete(API_GET_ACTIVITY_DETAIL + ID, config)
+      .then(function (res) {
+          console.log(res);
+          alert('已刪除活動');
+          onHide();
+          navigate('/activitylist');
+      })
+      .catch(function (err) {
+          if (err.message === "Request failed with status code 403"){
+            alert("非活動建立者無權限刪除活動");
+          }
+          else{
+            alert("刪除失敗");
+          }
     });
   };
 
