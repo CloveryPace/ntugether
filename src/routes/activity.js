@@ -10,38 +10,71 @@ router.use(bodyParser.json());
 
 activityController.sync();
 
-// TODO: join and leave an activity
-// TODO: type table
-// TODO: long term activity
-// TODO: filter type
-// TODO: authorization
 
-/**
- * ROUTES: /activity
- * METHOD: get
- * FUNCTION: get activity list
- * NOTE: probably should make people get activity list without authentication
- */
+
 router.get(
   "/",
-  // #swagger.tags = ['Activity']
-  // #swagger.summary = '取得活動列表'
-  // #swagger.description = '取得活動列表'
 
-  /* #swagger.responses[400] = { 
+  /*  
+  #swagger.tags = ['Activity']
+  #swagger.summary = '取得活動列表'
+  #swagger.description = '取得活動列表'
+  #swagger.parameters = [
+    {
+      name: "mode",
+      in: "query",
+      description: "allow modes: [all, joined, owned]",
+      type: "string",
+    },
+  ]
+  #swagger.responses[200] = {
+    description: "success",
+    schema:   
+    [
+      {
+        "activity_id": 32,
+        "name": "Example Activity",
+        "introduction": "Introduction of Activity",
+        "date": [
+          "1999-12-31T16:00:00.000Z",
+          "2000-12-31T16:00:00.000Z"
+        ],
+        "country": "Taiwan",
+        "location": "Taipei",
+        "max_participants": 10,
+        "need_reviewed": true,
+        "is_one_time": false,
+        "application_problem": "Are you happy?",
+        "check_by_organizer": false,
+        "type": null,
+        "created_user_id": 6,
+        "Creator": {
+          "name": "creator's name",
+          "email": "creator's email",
+          "phoneNum": "creator's phone number",
+          "photo": "",
+          "gender": "creator's gender"
+        },
+        "Participants": [
+          {
+            "name": "participant's name",
+            "photo": "",
+            "gender": "participant's gender"
+          }
+        ]
+      }
+    ]
+  }
+  #swagger.responses[400] = { 
     description: "mode 未填或不符合格式",
     schema: "invalid mode"
-  } */
+  } 
+  */
 
 
   authMiddleware.authentication, activityController.getActivitiesList);
 
-/**
- * ROUTE: /activity
- * METHOD: post
- * AUTH: JWT token
- * FUNCTION: create an activity
- */
+
 router.post(
   "/",
   // #swagger.tags = ['Activity']
@@ -294,7 +327,7 @@ router.post(
       "application_response": "審核回覆",
     }
   } */
-  
+
 
   /* #swagger.responses[200] = { 
     description: "用戶成功加入，活動不需審核",
@@ -310,7 +343,7 @@ router.post(
       description: "申請者已加入活動",
       schema: "applier has already joined"
   } */
-  
+
   /* #swagger.responses[403] = { 
     description: "用戶通過驗證，但為活動創立者，不應該申請",
     schema: "Activity creator should not apply."
@@ -326,7 +359,7 @@ router.post(
       description: "申請者已存在",
       schema: "Applicant already exist."
   } */
-    
+
 
 
   authMiddleware.authentication, activityController.applyActivity);

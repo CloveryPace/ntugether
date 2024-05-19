@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "localhost:4000",
+  "host": "http://localhost:4000:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -259,12 +259,124 @@
           {
             "name": "mode",
             "in": "query",
+            "description": "allow modes: [all, joined, owned]",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "activity_id": {
+                    "type": "number",
+                    "example": 32
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Example Activity"
+                  },
+                  "introduction": {
+                    "type": "string",
+                    "example": "Introduction of Activity"
+                  },
+                  "date": {
+                    "type": "array",
+                    "example": [
+                      "1999-12-31T16:00:00.000Z",
+                      "2000-12-31T16:00:00.000Z"
+                    ],
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "country": {
+                    "type": "string",
+                    "example": "Taiwan"
+                  },
+                  "location": {
+                    "type": "string",
+                    "example": "Taipei"
+                  },
+                  "max_participants": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "need_reviewed": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "is_one_time": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "application_problem": {
+                    "type": "string",
+                    "example": "Are you happy?"
+                  },
+                  "check_by_organizer": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "type": {},
+                  "created_user_id": {
+                    "type": "number",
+                    "example": 6
+                  },
+                  "Creator": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "creator's name"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "creator's email"
+                      },
+                      "phoneNum": {
+                        "type": "string",
+                        "example": "creator's phone number"
+                      },
+                      "photo": {
+                        "type": "string",
+                        "example": ""
+                      },
+                      "gender": {
+                        "type": "string",
+                        "example": "creator's gender"
+                      }
+                    }
+                  },
+                  "Participants": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "participant's name"
+                        },
+                        "photo": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "gender": {
+                          "type": "string",
+                          "example": "participant's gender"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
             "description": "mode 未填或不符合格式",
@@ -2223,7 +2335,7 @@
           "Plan"
         ],
         "summary": "獲得計畫列表",
-        "description": "API Document未完成",
+        "description": "",
         "parameters": [
           {
             "name": "authorization",
@@ -2260,15 +2372,88 @@
           {
             "name": "mode",
             "in": "query",
+            "description": "allow modes: [all, joined, owned]",
             "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "success",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "plan_id": {
+                    "type": "string",
+                    "example": "Id of the plan"
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Plan name"
+                  },
+                  "goal": {
+                    "type": "string",
+                    "example": "Goal description"
+                  },
+                  "introduction": {
+                    "type": "string",
+                    "example": "Introduction to the plan"
+                  },
+                  "progression": {
+                    "type": "string",
+                    "example": "progression"
+                  },
+                  "start_date": {
+                    "type": "string",
+                    "example": "2024-03-21T00:00:00.000Z"
+                  },
+                  "end_date": {
+                    "type": "string",
+                    "example": "2024-09-07T00:00:00.000Z"
+                  },
+                  "application_problem": {
+                    "type": "string",
+                    "example": "Application problem"
+                  },
+                  "need_reviewed": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "is_grouped": {
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "createdAt": {
+                    "type": "string",
+                    "example": "2024-05-02T05:57:58.000Z"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "example": "2024-05-02T07:02:17.000Z"
+                  },
+                  "created_user_id": {
+                    "type": "string",
+                    "example": "ID of the creator"
+                  },
+                  "Creator": {
+                    "type": "object",
+                    "properties": {
+                      "User fields": {
+                        "type": "string",
+                        "example": "Creator information"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "invalid mode in query"
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2281,7 +2466,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "internal server error"
           }
         }
       }
@@ -2292,7 +2477,7 @@
           "Plan"
         ],
         "summary": "獲得計畫細節",
-        "description": "API Document未完成",
+        "description": "",
         "parameters": [
           {
             "name": "plan_id",
@@ -2310,10 +2495,127 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "plan_id": {
+                  "type": "string",
+                  "example": "Id of the plan"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Plan name"
+                },
+                "goal": {
+                  "type": "string",
+                  "example": "Goal description"
+                },
+                "introduction": {
+                  "type": "string",
+                  "example": "Introduction to the plan"
+                },
+                "progression": {
+                  "type": "string",
+                  "example": "progression"
+                },
+                "start_date": {
+                  "type": "string",
+                  "example": "2024-03-21T00:00:00.000Z"
+                },
+                "end_date": {
+                  "type": "string",
+                  "example": "2024-09-07T00:00:00.000Z"
+                },
+                "application_problem": {
+                  "type": "string",
+                  "example": "Application problem"
+                },
+                "need_reviewed": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "is_grouped": {
+                  "type": "boolean",
+                  "example": false
+                },
+                "createdAt": {
+                  "type": "string",
+                  "example": "2024-05-02T05:57:58.000Z"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "example": "2024-05-02T07:02:17.000Z"
+                },
+                "created_user_id": {
+                  "type": "string",
+                  "example": "ID of the creator"
+                },
+                "Creator": {
+                  "type": "object",
+                  "properties": {
+                    "User fields": {
+                      "type": "string",
+                      "example": "Creator information"
+                    }
+                  }
+                },
+                "Participants": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "User fields": {
+                        "type": "string",
+                        "example": "Participant's Information"
+                      }
+                    }
+                  }
+                },
+                "Discussions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "discussion_id": {
+                        "type": "number",
+                        "example": 2
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "I love cow soooo much!"
+                      },
+                      "sender_id": {
+                        "type": "number",
+                        "example": 7
+                      },
+                      "plan_id": {
+                        "type": "number",
+                        "example": 29
+                      }
+                    }
+                  }
+                },
+                "PlanTypes": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "typeName": {
+                        "type": "string",
+                        "example": "Name of type"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "plan not found"
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -2326,7 +2628,7 @@
             }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "internal server error"
           }
         }
       },

@@ -93,7 +93,7 @@ async function removeParticipants(removed_participants, plan_id) {
 }
 
 async function needReviewApply(req, res, plan_id, user_id, application_response) {
-    
+
     participantsExist = await planModel.PlanParticipantsStatus.findOne({
         where: {
             joined_plan_id: plan_id,
@@ -102,7 +102,7 @@ async function needReviewApply(req, res, plan_id, user_id, application_response)
     });
 
     if (participantsExist) return res.status(400).send("applier has already joined");
-    
+
 
     const applicantExist = await planModel.Applications.findOne({
         where: {
@@ -127,7 +127,7 @@ async function needReviewApply(req, res, plan_id, user_id, application_response)
 }
 
 
-async function noReviewApply(req, res, plan_id, user_id) { 
+async function noReviewApply(req, res, plan_id, user_id) {
     participantsExist = await planModel.PlanParticipantsStatus.findOne({
         where: {
             joined_plan_id: plan_id,
@@ -136,7 +136,7 @@ async function noReviewApply(req, res, plan_id, user_id) {
     });
 
     if (participantsExist) return res.status(400).send("applier has already joined");
-    
+
     const user = await User.findOne({
         where: { user_id: user_id }
 
@@ -206,7 +206,7 @@ exports.createPlan = async (req, res) => {
         body.created_user_id = user_id;
 
         const newPlan = await planModel.Plan.create(body);
-        
+
         // create process
         const progressPromises = progression.map(progressData => {
             // Constructing a proper request object for createProgress
@@ -378,7 +378,6 @@ exports.deletePlan = async (req, res) => {
  * @param {*} res 
  */
 exports.getPlanDetail = async (req, res) => {
-    // NOTE: no need to get the plan progress for now
 
     try {
         const user_id = req.user_id;
@@ -388,10 +387,15 @@ exports.getPlanDetail = async (req, res) => {
                 {
                     model: User,
                     as: 'Creator',
+                    attributes: ["name", "email", "phoneNum", "photo", "gender"]
                 },
                 {
                     model: User,
                     as: 'Participants',
+                    attributes: ["name", "photo", "gender"],
+                    through: {
+                        attributes: []
+                    }
                 },
                 {
                     model: planModel.Discussion,
@@ -399,13 +403,18 @@ exports.getPlanDetail = async (req, res) => {
                 },
                 {
                     model: planModel.PlanTypes,
+                    attributes: ["typeName"],
+                    through: {
+                        attributes: []
+                    }
                 }
             ],
         });
 
 
-        if (plan == null) return res.status(400).send("no plan");
+        if (plan == null) return res.status(400).json({ error: "plan not found" });
 
+        // determine the access right to get the detail view of the activity
         var accessRight = 0;
         if (
             planModel.PlanParticipantsStatus.findOne({
@@ -415,17 +424,18 @@ exports.getPlanDetail = async (req, res) => {
                 }
             })
         ) accessRight = 1;
-        
+
         if (plan.created_user_id == user_id) accessRight = 2;
 
+        // NOTE: return plan detail based on the access right
         if (accessRight == 0) {
             return res.status(200).json(plan);
         } else if (accessRight == 1) {
-            // NOTE: add self progress
+            // TODO: add self progress
             return res.status(200).json(plan);
 
         } else if (accessRight == 2) {
-            // NOTE: add all progress
+            // TODO: add all progress
             return res.status(200).json(plan);
 
         }
@@ -511,7 +521,7 @@ exports.getPlanList = async (req, res) => {
  * @param {*} res 
  */
 exports.getApplicationDetail = async (req, res) => {
-    
+
     try {
         const user_id = req.user_id;
         const application_id = req.params.application_id;
@@ -549,7 +559,7 @@ exports.getApplicationDetail = async (req, res) => {
  * @param {*} res 
  */
 exports.getAllApplications = async (req, res) => {
-    
+
     try {
         const user_id = req.user_id;
         const plan_id = req.params.plan_id;
@@ -635,8 +645,8 @@ exports.approve = async (req, res) => {
  * @param {*} res 
  */
 exports.applyPlan = async (req, res) => {
-    
-    const { application_response } = req.body
+
+    const { application_response } = req.body;
     try {
         const user_id = req.user_id;
         const plan_id = req.params.plan_id;
@@ -808,10 +818,10 @@ exports.makeDiscussion = async (req, res) => {
         if (!isParicipant) return res.status(403).send("User hasn't joined the plan");
 
         const user = await User.findOne({
-            where: {user_id : user_id}
-        
+            where: { user_id: user_id }
+
         });
-        
+
         const discussion = planModel.Discussion.create(
             {
                 sender_id: user_id,
