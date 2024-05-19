@@ -27,7 +27,11 @@ exports.getApplicationDetail = async (req, res) => {
     try {
         const user_id = req.user_id;
         const application_id = req.params.application_id;
-        const application = await activityModel.Applications.findByPk(application_id, {
+        const application = await activityModel.Applications.findOne({
+            where: {
+                application_id: application_id,
+                is_approved: false                
+            },
             include: [
                 {
                     model: User,
@@ -40,17 +44,18 @@ exports.getApplicationDetail = async (req, res) => {
                 }
             ]
         });
+        if (!application) return res.status(404).send("Application not found or has approved");
 
         // validation
         const activity_id = application.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
-        if (!application) return res.status(404).send("Application not found");
+        
 
         return res.status(200).json(application);
     } catch (error) {
         console.error('Error fetching application:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -109,6 +114,6 @@ exports.approve = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving application:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message});
     }
 };

@@ -389,11 +389,15 @@ exports.getAllApplications = async (req, res) => {
 
         const applications = await activityModel.Applications.findAll({
             where: {
-                activity_id: activity_id
+                activity_id: activity_id,
+                is_approved: false
             }
         });
+        if (!applications) {
+            return res.status(404).json({ error: 'Application not found' });
+        }
 
-        res.json(applications);
+        return res.json(applications);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error getting all applications:', error);

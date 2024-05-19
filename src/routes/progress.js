@@ -92,11 +92,35 @@ router.get("/:progress_id/alluserprocess",
 
     authMiddleware.authentication, progressController.getAllUserProgress);
 
+// router.get("/:progress_id/oneuserprocess",
+//   // #swagger.tags = ['Progress']
+//   // #swagger.summary = '取得單一用戶參與的所有進度'
+//   // #swagger.description = '輸入進度id，會取得該用戶所有進度資料'
+  
+
+//   /* #swagger.responses[404] = { 
+//     description: "該計畫進度不存在",
+//     schema: {
+//       "error": "No progress found for the given process_id."
+//     }
+//   } */
+
+//   /* #swagger.responses[500] = { 
+//     description: "其他錯誤",
+//     schema: {
+//       "error": "error.message"
+//     }
+//   } */
+
+
+//   authMiddleware.authentication, progressController.getOneUserProgress);
+
 // POST routes
 // router.post( 
 //     progressController.createProgress);
 
 // PUT routes
+
 router.put("/:progress_id", 
     // #swagger.tags = ['Progress']
     // #swagger.summary = '修改進度'

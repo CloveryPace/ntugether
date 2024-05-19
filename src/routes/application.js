@@ -37,7 +37,7 @@ router.get(
 
     /* #swagger.responses[404] = { 
       description: "未找到該Application",
-      schema:  'Application not found'
+      schema:  'Application not found or has approved'
       } */
       
 

@@ -111,7 +111,7 @@
             "description": "未找到該Application",
             "schema": {
               "type": "string",
-              "example": "Application not found",
+              "example": "Application not found or has approved",
               "xml": {
                 "name": "main"
               }
@@ -816,10 +816,10 @@
             }
           },
           "404": {
-            "description": "未找到該用戶",
+            "description": "未找到該Activity/Application",
             "schema": {
               "type": "string",
-              "example": "Participants not found.",
+              "example": "Activity/Application not found.",
               "xml": {
                 "name": "main"
               }
@@ -1857,11 +1857,11 @@
               "properties": {
                 "email": {
                   "type": "string",
-                  "example": "用戶信箱"
+                  "example": "r12725066@ntu.edu.tw"
                 },
                 "password": {
                   "type": "string",
-                  "example": "用戶密碼"
+                  "example": "a"
                 }
               }
             }
@@ -2154,14 +2154,6 @@
                 },
                 "progression": {
                   "type": "array",
-                  "example": [
-                    null,
-                    {
-                      "name": "進度名稱",
-                      "times": "次數",
-                      "need_activity": false
-                    }
-                  ],
                   "items": {
                     "type": "object",
                     "properties": {
@@ -2182,7 +2174,7 @@
                 },
                 "need_reviewed": {
                   "type": "string",
-                  "example": "0"
+                  "example": "boolean"
                 },
                 "application_problem": {
                   "type": "string",

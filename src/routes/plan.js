@@ -30,10 +30,11 @@ router.post(
           "end_date": "2024-09-07",
           "tags": ["Exam", "Exercise", "Learning"],
           "invitees": [],
-          "progression": [,
+          "progression": 
+          [
             { "name": "進度名稱", "times": "次數", "need_activity": false }
           ],
-          "need_reviewed": "0",
+          "need_reviewed": "boolean",
           "application_problem": "審查問題",
 
       }

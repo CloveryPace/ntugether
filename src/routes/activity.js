@@ -228,8 +228,8 @@ router.get(
   } */
 
   /* #swagger.responses[404] = { 
-  description: "未找到該用戶",
-  schema: "Participants not found."
+  description: "未找到該Activity/Application",
+  schema: "Activity/Application not found."
   } */
 
   authMiddleware.authentication, activityController.getAllApplications);
