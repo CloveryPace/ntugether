@@ -5,7 +5,7 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
+import { API_CREATE_ACTIVITY, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
@@ -13,27 +13,21 @@ import axios from 'axios';
 import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { getAuthToken } from '../utils';
+import dayjs from 'dayjs';
 
 export default function ActivityComponent({data, key}) {
     const [userToken, setUserToken] = useState(getAuthToken());
+    const [atendee, setAtendee] = useState([]);
     const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'
     };
 
-    // TODO: navigate到特定活動頁面（參數：ID）
     useEffect(() => {
-    //登入
-    // axios.post(API_LOGIN, {
-    //   "email": "r12725066@ntu.edu.tw",
-    //   "password": "a"
-    // })
-    // .then(function (response) {
-    //     console.log(response.status, response.data);
-    //     //儲存token
+        //儲存token
         const token = userToken;
-    //     //設定authorization
+        //設定authorization
         const config = {
             headers: { 
               authorization: `Bearer ${token}`
@@ -49,10 +43,19 @@ export default function ActivityComponent({data, key}) {
             alert("error");
           });
 
-      // })
-      // .catch(function (error) {
-      //     console.log(error);
-      // });
+        //取得參加者
+        axios.get(API_GET_ACTIVITY_DETAIL + data.activity_id + '/participants', config)
+          .then(function (res) {
+            console.log("取得參加者成功");
+            setAtendee(res.data);
+            console.log(res.data);
+          })
+          .catch(function (err) {
+            console.log("取得參加者出現錯誤");
+            console.log(err);
+            alert("error");
+          });
+
     }, [key]);
 
     return (
@@ -70,7 +73,7 @@ export default function ActivityComponent({data, key}) {
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
-                  <Typography variant="body1">{data.date? data.date: "未指定日期"}</Typography>
+                  <Typography variant="body1">{data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "未指定日期"}</Typography>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>
@@ -78,7 +81,19 @@ export default function ActivityComponent({data, key}) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  <Avatar alt="Remy Sharp"/>
+                  {atendee.length > 0 ?
+                    (atendee.map((person) => {
+                      return (
+                        <div style={{alignSelf: 'center'}}>
+                          <Chip avatar={<Avatar>{person.participants? person.participants: "未知"}</Avatar>} label={person.participants? person.participants: "未知"} />
+                        </div>
+                      );
+                    }))
+                    :
+                    <div style={{alignSelf: 'center'}}>
+                        尚無參加者
+                    </div>
+                  }
                 </div>
               </Stack>
             </div>

@@ -93,7 +93,7 @@ function UserProfile() {
 
   const getUserData = () => {
     axios.get(API_GET_USER, {headers:{ 
-      authorization: 'bearer ' + userToken
+      authorization: 'bearer ' + getAuthToken()
     
     }})
     .then(function (response) {

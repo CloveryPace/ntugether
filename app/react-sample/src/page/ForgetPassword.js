@@ -14,56 +14,10 @@ import theme from '../components/Theme';
 import { API_RESET_PASSWORD, API_FORGET_PASSWORD } from '../global/constants';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import Loading from '../components/Loading';
+import PasswordAndCheck from '../components/PasswordAndCheck';
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const { useState } = React;
-
-const atLeastMinimumLength = (password) => new RegExp(/(?=.{8,})/).test(password);
-const atLeastOneUppercaseLetter = (password) => new RegExp(/(?=.*?[A-Z])/).test(password);
-const atLeastOneLowercaseLetter = (password) => new RegExp(/(?=.*?[a-z])/).test(password);
-const atLeastOneNumber = (password) => new RegExp(/(?=.*?[0-9])/).test(password);
-const atLeastOneSpecialChar = (password) => new RegExp(/(?=.*?[#?!@$ %^&*-])/).test(password);
-
-const PasswordStrength = {  
-  WEAK: '弱',
-  MEDIUM: '中',
-  STRONG: '強'
-};
-
-function testingpasswordStrength(password){
-    if (!password) return PasswordStrength.WEAK;
-    let points = 0;
-    if (atLeastMinimumLength(password)) points += 1;
-    if (atLeastOneUppercaseLetter(password)) points += 1;
-    if (atLeastOneLowercaseLetter(password)) points += 1;
-    if (atLeastOneNumber(password)) points += 1;
-    if (atLeastOneSpecialChar(password)) points += 1;
-    if (points >= 5) return PasswordStrength.STRONG;
-    if (points >= 3) return PasswordStrength.MEDIUM;
-    return PasswordStrength.WEAK;
-}
-
-function generateColors(strength) {
-    let result = [];
-    const COLORS = {
-      NEUTRAL: 'hsla(0, 0%, 88%, 1)',
-      WEAK : 'hsla(353, 100%, 38%, 1)',
-      MEDIUM: 'hsla(40, 71%, 51%, 1)',
-      STRONG : 'hsla(134, 73%, 30%, 1)'
-    };
-    switch (strength) {
-      case PasswordStrength.WEAK:
-      result = [COLORS.WEAK, COLORS.NEUTRAL, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.MEDIUM:
-      result = [COLORS .MEDIUM, COLORS.MEDIUM, COLORS.NEUTRAL, COLORS.NEUTRAL];
-      break;
-      case PasswordStrength.STRONG:
-      result = [ COLORS .STRONG, COLORS.STRONG, COLORS.STRONG, COLORS.STRONG];
-      break;
-    }
-    return result;
-}
 
 export default function ForgetPassword() {
   const { t, i18n } = useTranslation();
@@ -74,11 +28,12 @@ export default function ForgetPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [forgetpwdStatus, setForgetpwdStatus] = useState(1);  // 1: initial, 2: success
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
+    setLoading(true);
     axios.get(API_FORGET_PASSWORD, {params:{ 
         email: email,
       
@@ -86,16 +41,19 @@ export default function ForgetPassword() {
       .then(function (response) {
         console.log(response);
         setForgetpwdStatus(2);
+        setLoading(false);
       })
       .catch(function (error) {
         console.log(error);
+        setLoading(false);
       });
   };
 
   const handleChangeSubmit = (event) => {
     event.preventDefault();
+    setLoading(true);
 
-    if(password !== confirmPassword || testingpasswordStrength(password) !== PasswordStrength.STRONG){
+    if(password !== confirmPassword || password === '' || confirmPassword === ''){
       setError(true);
       console.log('error');
     }else{
@@ -112,9 +70,11 @@ export default function ForgetPassword() {
       })
       .then(function (response) {
         console.log(response);
+        setLoading(false);
         window.location.assign('/login');
       })
       .catch(function (error) {
+        setLoading(false);
         console.log(error);
       });
     }
@@ -124,16 +84,10 @@ export default function ForgetPassword() {
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
-  const handlePasswordChange = (event) => {
-    setPassword(event.target.value);
-  };
   const handleCodeChange = (event) => {
     setCode(event.target.value);
   };
 
-  const handleConfirmPasswordChange = (event) => {
-    setConfirmPassword(event.target.value);
-  };
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -180,32 +134,7 @@ export default function ForgetPassword() {
                 onChange={handleCodeChange}
                 autoFocus
               />
-              <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label={t('密碼')}
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                />
-                <CheckPasswordStrength password={password}/>
-                <TextField
-                  required
-                  fullWidth
-                  name="comfirmPassword"
-                  label={t('再次輸入密碼')}
-                  type="password"
-                  id="confirm-password"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={handleConfirmPasswordChange}
-                  color={password === confirmPassword ? 'primary' : 'warning'}
-                />
-                {password === confirmPassword ? null : <Box><Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="6px 0 24px 0px">{t('請輸入相同的密碼')}</Typography></Box>}
+              <PasswordAndCheck setPassword={setPassword} setConfirmPassword={setConfirmPassword}/>
               
               <Button
                 type="submit"
@@ -266,34 +195,7 @@ export default function ForgetPassword() {
           }}
         />
       </Grid>
+      {loading && <Loading/>}
     </ThemeProvider>
   );
 }
-
-function CheckPasswordStrength({password}){
-  const { t, i18n } = useTranslation();
-
-  const passwordStrength = testingpasswordStrength(password);
-  const colors = generateColors(passwordStrength);
-
-  return(
-  <Box>
-      <Box display="flex" alignItems="center" justifyContent="center" gap="5px" margin="10px 0">
-      {colors.map((color, index) => (
-        <Box key={index} flex={1} height="5px" borderRadius="5px" bgcolor={color}></Box>
-      ))}
-      </Box>
-      <Box display="flex" alignItems="center" justifyContent="flex-start" gap="5px" margin="0 0 15px">
-        <Typography color={colors[0]}>{t(passwordStrength)}</Typography>
-        </Box>
-        {passwordStrength !== PasswordStrength.STRONG && (
-          <Typography variant="subtitle2" fontSize="14px" fontWeight={500} color="text.bodyLight"
-          margin="0 0 24px 0px">
-            {t('密碼需包含至少 8 個字元，包含至少一個大寫字母、小寫字母、數字、特殊字元')}
-          </Typography>)
-        }
-  </Box>
-  
-
-      );
-    }

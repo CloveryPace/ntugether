@@ -103,4 +103,4 @@ const AddProgress = ({ onProgressChange }) => {
   );
 };
 
-export default AddProgress;
+export default AddProgress; 
