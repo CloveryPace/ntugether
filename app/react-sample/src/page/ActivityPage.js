@@ -55,7 +55,6 @@ function ActivityPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
-  const [canAttend, setCanAttend] = useState(false);
 
   useEffect(() => {
         //儲存token
@@ -73,19 +72,11 @@ function ActivityPage() {
           .then(function (res) {
             console.log(res.data);
             setData(res.data);
-            console.log("creatorId")
-            console.log(res.data.created_user_id);
             setCreatorId(res.data.created_user_id);
             //取得使用者id
             axios.get(API_GET_USER, config)
             .then(function (res) {
               setUserId(res.data.members['user_id']);
-              console.log("userId");
-              console.log(res.data.members['user_id']);
-              // 建立活動者不能參加活動（參加活動按鈕隱藏）
-              setCanAttend(userId === creatorId);
-              console.log("能否參加");
-              console.log(userId === creatorId);
             })
             .catch(function (err) {
               console.log(err);
@@ -105,7 +96,6 @@ function ActivityPage() {
           .then(function (res) {
             console.log("取得參加者成功");
             setAtendee(res.data);
-            console.log(res.data);
           })
           .catch(function (err) {
             console.log("取得參加者出現錯誤");
@@ -118,57 +108,6 @@ function ActivityPage() {
 
   const [editingShow, setEditingShow] = useState(false);
   const [attend, setAttend] = useState(false); // 參加活動
-  const handleAttend = () => {
-    if(data.need_review){
-      //儲存token
-      const token = userToken;
-      console.log(token);
-      //設定authorization
-      const bodyParameters = {
-        key: "value",
-      };
-      const config = {bodyParameters,
-          headers: { "authorization": `Bearer ${token}`}
-      };
-
-      //送加入申請
-      axios.post(API_GET_ACTIVITY_DETAIL + id + 'apply', config)
-        .then(function (res) {
-            console.log(res);
-            setAttend(true);
-            alert('已送出申請');
-        })
-        .catch(function (err) {
-            alert("送出失敗");
-            console.log(err);
-      });
-      
-    }
-    else{
-      //儲存token
-      const token = userToken;
-      console.log(token);
-      //設定authorization
-      const bodyParameters = {
-        key: "value",
-      };
-      const config = {bodyParameters,
-          headers: { "authorization": `Bearer ${token}`}
-      };
-
-      //送加入申請
-      axios.post(API_GET_ACTIVITY_DETAIL + id + '/apply', config)
-        .then(function (res) {
-            console.log(res);
-            setAttend(true);
-            alert('已加入');
-        })
-        .catch(function (err) {
-            alert("加入失敗");
-            console.log(err);
-      });
-      }
-  };
 
   const handleQuit = () => {
     setAttend(false);
@@ -258,7 +197,7 @@ function ActivityPage() {
         <Stack direction="row" spacing={3}>
           <Chip avatar={<Avatar>M</Avatar>} label={t(data.Creator? data.Creator.name: "未知建立者")} />
           <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={t(data.is_one_time? "一次性活動": "長期性活動")}/>
-          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={t(data.need_review? "需審核": "不需審核")}/>
+          <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={t(data.need_reviewed? "需審核": "不需審核")}/>
           <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={t(data.type? data.type: "未指定")}/>
         </Stack>
       </Box>
@@ -303,7 +242,7 @@ function ActivityPage() {
       <br/>
 
 
-      {(data.need_review? "需審核":"不需審核") === "需審核"?
+      {(data.need_reviewed && (userId === creatorId))?
         <Box
         sx={{
           display: 'flex',
@@ -332,8 +271,8 @@ function ActivityPage() {
       
       <Grid container justifyContent="center">
         <Grid item>
-          {canAttend?
-            <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
+          {(userId !== creatorId)?
+            <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed}/>
             :
             <></>
           }

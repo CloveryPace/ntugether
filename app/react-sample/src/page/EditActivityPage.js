@@ -17,7 +17,7 @@ import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
-import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import { API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getAuthToken } from '../utils';
@@ -54,9 +54,9 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_review, type, application_problem}) {
+export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_reviewed, type, application_problem}) {
   const [OneTime, setOneTime] = useState(oneTime); // 一次性活動: true, 長期性活動：false
-  const [review, setReview] = useState(need_review); // 需審核: true, 不需審核：false
+  const [review, setReview] = useState(need_reviewed); // 需審核: true, 不需審核：false
   const [Type, setType] = useState(type); // 活動類型
   const [actDate, setActDate] = useState(dayjs(date)); 
   const [ID, serID] = useState(id);
@@ -106,7 +106,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     const newLimitPerson = inputRefLimitPerson.current.value;
     const newReviewQuestion = inputRefreviewquestion.current.value;
 
-    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review || newReviewQuestion !== application_problem) {
+    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_reviewed || newReviewQuestion !== application_problem) {
       try { 
             //儲存token
             const token = userToken;
