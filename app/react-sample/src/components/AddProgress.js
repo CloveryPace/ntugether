@@ -7,7 +7,7 @@ import { useEffect} from "react";
 
 const AddProgress = ({ onProgressChange }) => {
   // Adjusted to match the data model
-  const [items, setItems] = useState([{ name: '', time_to_finished: '', need_activity: false }]);
+  const [items, setItems] = useState([{ name: '', times: '', need_activity: false }]);
 
   const handleChange = (index, field, value) => {
     const newItems = [...items];
@@ -16,7 +16,7 @@ const AddProgress = ({ onProgressChange }) => {
   };
 
   const handleAddClick = () => {
-    setItems([...items, { name: '', time_to_finished: '', need_activity: false }]);
+    setItems([...items, { name: '', times: '', need_activity: false }]);
   };
 
   const handleDeleteClick = (index) => {
@@ -77,8 +77,8 @@ const AddProgress = ({ onProgressChange }) => {
                 sx={{ flex: 1 }}
                 label="次數"
                 variant="outlined"
-                value={item.time_to_finished}
-                onChange={(e) => handleChange(index, 'time_to_finished', handleNumberInput(e))}
+                value={item.times}
+                onChange={(e) => handleChange(index, 'times', handleNumberInput(e))}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
             <FormControlLabel
