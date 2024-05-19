@@ -6,6 +6,19 @@ host = "http://localhost:4000"
 activity_id = 39
 
 
+def api_test(func):
+    def wrapper():
+        res: requests.Response = func()
+        print(res.status_code)
+        print(res.text)
+
+        with open("result.json", "w") as f:
+            json.dump(json.loads(res.text), f, ensure_ascii=False, indent=2)
+
+    return wrapper
+
+
+@api_test
 def signup():
     payload = json.dumps(
         {
@@ -21,8 +34,7 @@ def signup():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
 def signin():
@@ -41,9 +53,6 @@ def signin():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
-
     try:
         return json.loads(res.text)["jwtToken"]
     except Exception as e:
@@ -57,6 +66,7 @@ token = signin()
 """ API """
 
 
+@api_test
 def create_activity():
     payload = json.dumps(
         {
@@ -82,22 +92,22 @@ def create_activity():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity/?limit=5&search=example&country=Taiwan&location=Taipei&mode=owned",
+        url=f"{host}/activity/?limit=20&search=example&country=Taiwan&location=Taipei&mode=owned",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_acitvity_detail():
     res = requests.get(
         url=f"{host}/activity/{activity_id}",
@@ -106,10 +116,10 @@ def get_acitvity_detail():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def update_activity():
     payload = json.dumps(
         {
@@ -129,10 +139,10 @@ def update_activity():
         },        data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def delete_activity():
     res = requests.patch(
         url=f"{host}/activity/12",
@@ -141,10 +151,10 @@ def delete_activity():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def apply():
     payload = json.dumps(
         {
@@ -160,10 +170,10 @@ def apply():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def approve():
 
     res = requests.patch(
@@ -173,10 +183,10 @@ def approve():
         data=json.dumps({})
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def remove_user():
     payload = json.dumps(
         {
@@ -192,10 +202,10 @@ def remove_user():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_activity_applications():
     res = requests.get(
         url=f"{host}/activity/{activity_id}/application",
@@ -205,10 +215,10 @@ def get_activity_applications():
         },
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_application_detail():
     res = requests.get(
         url=f"{host}/application/2",
@@ -217,10 +227,10 @@ def get_application_detail():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def make_discussion():
     payload = json.dumps(
         {
@@ -235,10 +245,10 @@ def make_discussion():
         },        data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_disccussion():
 
     res = requests.get(
@@ -248,10 +258,10 @@ def get_disccussion():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def create_plan():
     payload = json.dumps({
         "name": "Learning Plan",
@@ -278,10 +288,10 @@ def create_plan():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def update_plan():
     payload = json.dumps({
         "name": "Not Cool Plan",
@@ -308,10 +318,10 @@ def update_plan():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def delete_plan():
     res = requests.delete(
         url=f"{host}/plan/2",
@@ -321,10 +331,10 @@ def delete_plan():
         },
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_plan_detail():
     res = requests.get(
         url=f"{host}/plan/29",
@@ -334,10 +344,10 @@ def get_plan_detail():
         },
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_plan_list():
     res = requests.get(
         url=f"{host}/plan?limit=30&search=Cool&mode=owned",
@@ -347,10 +357,10 @@ def get_plan_list():
         },
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def apply_plan():
     payload = json.dumps(
         {
@@ -366,10 +376,10 @@ def apply_plan():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def approve_plan():
 
     res = requests.patch(
@@ -381,10 +391,10 @@ def approve_plan():
         data=json.dumps({})
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_plan_application():
     res = requests.get(
         url=f"{host}/plan/application/2",
@@ -393,10 +403,10 @@ def get_plan_application():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_plan_applications():
     res = requests.get(
         url=f"{host}/plan/29/applications",
@@ -405,10 +415,10 @@ def get_plan_applications():
             "authorization": f"bearer {token}"
         },)
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def make_plan_discussion():
     payload = json.dumps(
         {
@@ -423,10 +433,10 @@ def make_plan_discussion():
         },        data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def get_plan_discussion():
 
     res = requests.get(
@@ -435,10 +445,10 @@ def get_plan_discussion():
             "content-type": "application/json",
         })
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
+@api_test
 def respond_to_invitation():
 
     payload = json.dumps(
@@ -455,15 +465,14 @@ def respond_to_invitation():
         data=payload,
     )
 
-    print(res.text)
-    print(res.status_code)
+    return res
 
 
 if __name__ == '__main__':
 
     # signup()
     # create_activity()
-    # get_acitvity_list()
+    get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()

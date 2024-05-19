@@ -1,7 +1,8 @@
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 const { parse } = require('yamljs');
+const { PassThrough } = require('nodemailer/lib/xoauth2');
 User.sync();
 
 const allowTags = ["exercise", "study"];
@@ -13,23 +14,34 @@ const allowTags = ["exercise", "study"];
  * 
  * TODO: maybe directly add include the user data to an instance passed of, instead of doing query again
  */
-async function returnActivity(activity_id, is_one_time) {
+async function returnActivity(activity_id) {
     var includeModels = [
         {
             model: User,
             as: 'Creator',
+            attributes: ["name", "email", "phoneNum", "photo", "gender"]
         },
         {
             model: User,
             as: 'Participants',
+            attributes: ["name", "photo", "gender"],
+            through: {
+                attributes: [],
+            }
         },
     ];
 
     var activity = await activityModel.Activities.findByPk(activity_id, { include: includeModels });
 
+    if (!activity) {
+        console.log(`activity with id ${activity_id} not found`);
+        return null;
+    }
+
     var activityJson = activity.toJSON();
 
-    if (!is_one_time) {
+    console.log(activity.is_one_time);
+    if (!activity.is_one_time) {
         activityJson.date = [];
         longTermInstances = await activityModel.LongTermActivities.findAll(
             {
@@ -40,7 +52,6 @@ async function returnActivity(activity_id, is_one_time) {
         );
 
         longTermInstances.forEach(e => {
-            console.log("date", e.date);
             activityJson.date.push(e.date);
         });
 
@@ -153,7 +164,7 @@ exports.getActivitiesList = async (req, res) => {
         const search = req.query.search;
         const country = req.query.country;
         const location = req.query.location;
-        const is_long_term = req.query.is_long_term || false;
+        const is_long_term = req.query.is_long_term;
         const mode = req.query.mode || "all";
 
         allowModes = ["owned", "joined", "all"];
@@ -161,10 +172,9 @@ exports.getActivitiesList = async (req, res) => {
         if (allowModes.includes(mode) == false) return res.status(400).send("invalid mode");
 
         // set search condition
-        var condition = {
-            is_one_time: !is_long_term,
-        };
+        var condition = {};
 
+        if (is_long_term) condition.is_one_time = !is_long_term;
         if (country) condition.country = country;
         if (location) condition.location = location;
         if (search) condition.name = { [Op.like]: '%' + search + '%' };
@@ -187,6 +197,9 @@ exports.getActivitiesList = async (req, res) => {
         if (mode == "owned") includeConditions.push({
             model: User,
             as: 'Creator',
+            where: {
+                user_id: user_id,
+            }
         });
         else if (mode == "joined") includeConditions.push({
             model: User,
@@ -203,7 +216,14 @@ exports.getActivitiesList = async (req, res) => {
             offset: offset,
         });
 
-        res.status(200).json(activities);
+
+        var parsedActivities = [];
+        for (var activity in activities) {
+            var activityData = await returnActivity(activity);
+            parsedActivities.push(activityData);
+        }
+
+        res.status(200).json(parsedActivities);
     } catch (error) {
         console.error('Error fetching activities:', error);
         res.status(500).json({ error: error.message });
@@ -216,7 +236,7 @@ exports.getActivitiesList = async (req, res) => {
  * @param {*} res 
  */
 exports.createActivity = async (req, res) => {
-    
+
     var newActivity = null;
     try {
         const user_id = req.user_id;
@@ -281,8 +301,8 @@ exports.getActivityDetail = async (req, res) => {
         const activity_id = req.params.activity_id;
         var activity = await activityModel.Activities.findByPk(activity_id);
         if (activity == null) return res.status(404).send("Activity not found");
-        
-        activity = await returnActivity(activity_id, activity.is_one_time);
+
+        activity = await returnActivity(activity_id);
         return res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
@@ -298,7 +318,7 @@ exports.getActivityDetail = async (req, res) => {
  * @param {*} res 
  */
 exports.updateActivity = async (req, res) => {
-   
+
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
@@ -319,8 +339,8 @@ exports.updateActivity = async (req, res) => {
 
         const { ...updateParams } = req.body; // NOTE: might use ...updateParams to separate update data and others
         await activity.update(updateParams);
-        var updatedActivity = await returnActivity(activity_id, this.updateActivity.is_one_time);
-        
+        var updatedActivity = await returnActivity(activity_id);
+
         return res.status(200).json(updatedActivity);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
@@ -356,11 +376,11 @@ exports.deleteActivity = async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to delete this activity' });
         }
         const deleteRows = await activityModel.Activities.destroy({ where: { activity_id } });
-        if (deleteRows > 0){
+        if (deleteRows > 0) {
             return res.status(200).send("sucessfully delete");
         }
 
-        
+
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error deleting activity:', error);
@@ -488,7 +508,7 @@ exports.removeUser = async (req, res) => {
  */
 exports.applyActivity = async (req, res) => {
 
-    
+
     const { application_response } = req.body;
     try {
         const user_id = req.user_id;
@@ -597,8 +617,8 @@ exports.makeDiscussion = async (req, res) => {
         }
 
         const user = await User.findOne({
-            where: {user_id : user_id}
-        
+            where: { user_id: user_id }
+
         });
 
         const discussion = activityModel.Discussion.create(
