@@ -396,83 +396,83 @@ router.use(passport.initialize());
 router.use(passport.session());
 
 // Signup route
-router.get('/auth/google/signup',
-  // #swagger.description = 'Oauth註冊API，請注意不要跟/user/signup之信箱相同'
-  // #swagger.tags = ['User']
-  passport.authenticate('signup-google', { scope: ['profile', 'email'] })
-);
+// router.get('/auth/google/signup',
+//   // #swagger.description = 'Oauth註冊API，請注意不要跟/user/signup之信箱相同'
+//   // #swagger.tags = ['User']
+//   passport.authenticate('signup-google', { scope: ['profile', 'email'] })
+// );
 
-router.get(
-  '/oauth2callback/signup',
-  // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
-  // #swagger.tags = ['User']
+// router.get(
+//   '/oauth2callback/signup',
+//   // #swagger.description = 'OAuth callback for signup. Redirects to home page on success.'
+//   // #swagger.tags = ['User']
   
-  passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
-  (req, res) => {
-    const user = req.user;
-    console.log(user.user_id);
-    const token = jwt.sign(
-      { userId: user.user_id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: process.env.JWT_EXPIRES_IN } 
-    );
+//   passport.authenticate('signup-google', { session: false, failureRedirect: '/auth/failure' }),
+//   (req, res) => {
+//     const user = req.user;
+//     console.log(user.user_id);
+//     const token = jwt.sign(
+//       { userId: user.user_id }, 
+//       process.env.JWT_SECRET, 
+//       { expiresIn: process.env.JWT_EXPIRES_IN } 
+//     );
 
-    // res.status(200).json ({
-    //   status: 'success',
-    //   message: 'User authenticated successfully',
-    //   token
-    // })
-    console.log(token);
-    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org'  });
-    res.redirect('http://ntugether.zapto.org:3000');
-  }
-);
+//     // res.status(200).json ({
+//     //   status: 'success',
+//     //   message: 'User authenticated successfully',
+//     //   token
+//     // })
+//     console.log(token);
+//     res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org'  });
+//     res.redirect('http://ntugether.zapto.org:3000');
+//   }
+// );
 
-// Login route
-router.get('/auth/google/login',
-  // #swagger.description = 'Oauth登入API'
-  // #swagger.tags = ['User']
-  passport.authenticate('login-google', { scope: ['profile', 'email'] })
-);
+// // Login route
+// router.get('/auth/google/login',
+//   // #swagger.description = 'Oauth登入API'
+//   // #swagger.tags = ['User']
+//   passport.authenticate('login-google', { scope: ['profile', 'email'] })
+// );
 
-router.get(
-  '/oauth2callback/login',
-  // #swagger.description = 'OAuth callback for login. Redirects to home page on success.'
-  // #swagger.tags = ['User']
-  /* #swagger.responses[200] = { 
-      description: "Google Oauth登入成功",
-      schema: {
-            "status": "success",
-            "message": "User authenticated successfully",
-            "token": "jwt_token"
-          }
-      } */
-  passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
-  (req, res) => {
-    const user = req.user;
-    console.log(user.user_id);
-    const token = jwt.sign(
-      { userId: user.user_id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: process.env.JWT_EXPIRES_IN } 
-    );
-    // res.status(200).json ({
-    //   status: 'success',
-    //   message: 'User authenticated successfully',
-    //   token
-    // })
-    console.log(token);
-    res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org' });
-    res.redirect('http://ntugether.zapto.org:3000');
-  }
-);
+// router.get(
+//   '/oauth2callback/login',
+//   // #swagger.description = 'OAuth callback for login. Redirects to home page on success.'
+//   // #swagger.tags = ['User']
+//   /* #swagger.responses[200] = { 
+//       description: "Google Oauth登入成功",
+//       schema: {
+//             "status": "success",
+//             "message": "User authenticated successfully",
+//             "token": "jwt_token"
+//           }
+//       } */
+//   passport.authenticate('login-google', { failureRedirect: '/auth/failure' }),
+//   (req, res) => {
+//     const user = req.user;
+//     console.log(user.user_id);
+//     const token = jwt.sign(
+//       { userId: user.user_id }, 
+//       process.env.JWT_SECRET, 
+//       { expiresIn: process.env.JWT_EXPIRES_IN } 
+//     );
+//     // res.status(200).json ({
+//     //   status: 'success',
+//     //   message: 'User authenticated successfully',
+//     //   token
+//     // })
+//     console.log(token);
+//     res.cookie('token', token, { httpOnly: false, secure: false, domain: '.zapto.org' });
+//     res.redirect('http://ntugether.zapto.org:3000');
+//   }
+// );
 
 
 
-router.get('/auth/failure', (req, res) => {
-  // #swagger.description = 'Oauth驗證失敗API'
-  // #swagger.tags = ['User']
-  return res.send('Failed to authenticate.');
-});
+// router.get('/auth/failure', (req, res) => {
+//   // #swagger.description = 'Oauth驗證失敗API'
+//   // #swagger.tags = ['User']
+//   return res.send('Failed to authenticate.');
+// });
 
 module.exports = router;

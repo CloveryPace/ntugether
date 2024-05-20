@@ -63,7 +63,7 @@ const UserProgress = sequelize.define("UserProgress", {
     }
 }, { sequelize, tableName: 'UserProgress' });
 
-UserProgress.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserProgress.belongsTo(User, { foreignKey: 'user_id', as: 'Users' });
 UserProgress.belongsTo(Progress, { foreignKey: 'progress_id', as: 'progress' });
 
 User.hasMany(UserProgress, { foreignKey: 'user_id', as: 'userProgresses' });

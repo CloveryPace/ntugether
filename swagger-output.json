@@ -5,7 +5,7 @@
     "description": "Description",
     "version": "1.0.0"
   },
-  "host": "http://localhost:4000:4000",
+  "host": "localhost:4000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -2117,91 +2117,6 @@
           },
           "500": {
             "description": "網路或其他不明原因錯誤"
-          }
-        }
-      }
-    },
-    "/user/auth/google/signup": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "Oauth註冊API，請注意不要跟/user/signup之信箱相同",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/user/oauth2callback/signup": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "OAuth callback for signup. Redirects to home page on success.",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/user/auth/google/login": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "Oauth登入API",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/user/oauth2callback/login": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "OAuth callback for login. Redirects to home page on success.",
-        "responses": {
-          "200": {
-            "description": "Google Oauth登入成功",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "success"
-                },
-                "message": {
-                  "type": "string",
-                  "example": "User authenticated successfully"
-                },
-                "token": {
-                  "type": "string",
-                  "example": "jwt_token"
-                }
-              },
-              "xml": {
-                "name": "main"
-              }
-            }
-          }
-        }
-      }
-    },
-    "/user/auth/failure": {
-      "get": {
-        "tags": [
-          "User"
-        ],
-        "description": "Oauth驗證失敗API",
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         }
       }
