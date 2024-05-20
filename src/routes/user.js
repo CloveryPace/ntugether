@@ -19,7 +19,7 @@ const authMiddleware = require('../middlewares/authentication');
 // GET routes
 router.get(
   "/", authMiddleware.authentication, 
-  // swagger.description = "取得特定會員資料"
+  // #swagger.description = "取得特定會員資料"
   // #swagger.tags = ['User']
   /* 
   
@@ -44,7 +44,7 @@ router.get(
 
 router.get(
   "/allMembers", authMiddleware.authentication, 
-  // swagger.description = "取得所有會員資料"
+  // #swagger.description = "取得所有會員資料"
   // #swagger.tags = ['User']
   /* 
   
@@ -118,7 +118,7 @@ router.get(
 // POST routes
 router.post(
   "/signup",
-  // swagger.description = "註冊，請先至/user/emailSend取得驗證碼"
+  // #swagger.description = "註冊，請先至/user/emailSend取得驗證碼"
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -158,8 +158,45 @@ router.post(
 userController.signUp);
 
 router.post(
+  "/oauthSignup",
+  // #swagger.description = "Oauth註冊，會回傳jwt token" 
+  // #swagger.tags = ['User']
+  /* 
+  #swagger.parameters['body'] = {
+      in: 'body',
+      description: 'Oauth Sign up 內容',
+      required: true,
+      schema: 
+      {
+        "name": "用戶姓名",
+        "email": "r12725066@ntu.edu.tw",
+        "oauthProvider": "Google"
+      }
+  } */
+  /* #swagger.responses[201] = { 
+      description: "登入成功",
+      schema: {
+            "message": "Sign in successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  
+  /* #swagger.responses[409] = {
+      description: "Email Conflict",
+      schema: {
+            "error": "Email already exists"
+        }
+  } */
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+  } */
+
+  userController.oauthSingup);
+
+router.post(
   "/signin",
-  // swagger.description = "登入，請先確定已註冊成功" 
+  // #swagger.description = "登入，請先確定已註冊成功" 
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -197,10 +234,9 @@ router.post(
 
 userController.signIn);
 
-
 router.post(
   "/resetPassword",
-  // swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"
+  // #swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"
   // #swagger.tags = ['User']
   /* #swagger.parameters['body'] = {
     in: 'body',
@@ -241,7 +277,7 @@ router.post(
 // PUT routes
 router.put(
   "/", authMiddleware.authentication, 
-  // swagger.description = "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.description = "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token "
   // #swagger.tags = ['User']
   /* #swagger.security = [{
             "bearerAuth": [
@@ -290,7 +326,7 @@ userController.updateMember);
 // DELETE routes
 router.delete(
   "/", authMiddleware.authentication, 
-  // swagger.description = "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.description = "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token "
   // #swagger.tags = ['User']
   /* #swagger.security = [{
             "bearerAuth": [

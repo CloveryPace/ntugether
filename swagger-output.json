@@ -1463,7 +1463,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "取得特定會員資料",
         "parameters": [
           {
             "name": "authorization",
@@ -1526,7 +1526,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token ",
         "parameters": [
           {
             "name": "authorization",
@@ -1628,7 +1628,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token ",
         "parameters": [
           {
             "name": "authorization",
@@ -1705,7 +1705,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "取得所有會員資料",
         "parameters": [
           {
             "name": "authorization",
@@ -1870,7 +1870,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "註冊，請先至/user/emailSend取得驗證碼",
         "parameters": [
           {
             "name": "body",
@@ -1952,12 +1952,84 @@
         }
       }
     },
+    "/user/oauthSignup": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "description": "Oauth註冊，會回傳jwt token",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Oauth Sign up 內容",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "用戶姓名"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "r12725066@ntu.edu.tw"
+                },
+                "oauthProvider": {
+                  "type": "string",
+                  "example": "Google"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "登入成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Sign in successfully."
+                },
+                "token": {
+                  "type": "string",
+                  "example": "JWT_token"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "409": {
+            "description": "Email Conflict",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "Email already exists"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        }
+      }
+    },
     "/user/signin": {
       "post": {
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "登入，請先確定已註冊成功",
         "parameters": [
           {
             "name": "body",
@@ -2043,7 +2115,7 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "description": "重設密碼，請確定已從/user/forgetPassword取得驗證碼",
         "parameters": [
           {
             "name": "body",

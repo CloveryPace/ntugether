@@ -248,7 +248,7 @@ exports.createPlan = async (req, res) => {
         if (error instanceof ValidationError) res.status(400).json({ message: error.message });
 
         console.error("Error creating new plan", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -335,7 +335,7 @@ exports.updatePlan = async (req, res) => {
 
         if (error instanceof TypeError) res.status(400).json({ message: "invalid body format" });
         if (error instanceof ValidationError) res.status(400).json({ message: error.message });
-        else res.status(500).json({ error: "Internal server error" });
+        else res.status(500).json({ error: error.message });
     }
 };
 
@@ -387,12 +387,12 @@ exports.getPlanDetail = async (req, res) => {
                 {
                     model: User,
                     as: 'Creator',
-                    attributes: ["name", "email", "phoneNum", "photo", "gender"]
+                    attributes: ["user_id", "name", "email", "phoneNum", "photo", "gender"]
                 },
                 {
                     model: User,
                     as: 'Participants',
-                    attributes: ["name", "photo", "gender"],
+                    attributes: ["user_id", "name", "photo", "gender"],
                     through: {
                         attributes: []
                     }
@@ -444,7 +444,7 @@ exports.getPlanDetail = async (req, res) => {
 
     } catch (error) {
         console.error("Error getting plan detail", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -509,7 +509,7 @@ exports.getPlanList = async (req, res) => {
         res.status(200).json(plans);
     } catch (error) {
         console.error("Error getting plan detail", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: error.message });
     }
 };
 

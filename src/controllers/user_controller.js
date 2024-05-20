@@ -91,7 +91,7 @@ async function signUp( req, res){
     if (error.name === 'SequelizeUniqueConstraintError') {
             return res.status(409).json({ error: "Email already exists" });
     }
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: error.message });
   }
 
 }
@@ -135,10 +135,48 @@ async function emailSend ( req, res) {
 
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: error.message });
   }
 
 }
+
+async function oauthSingup (req, res) {
+  try {
+    const { name, email, oauthProvider} = req.body;
+    console.log("email", email);
+    console.log("name", name);
+
+    const newUser = await User.create({
+      name: name,
+      email: email,
+      oauthProvider: oauthProvider
+
+    });
+
+    console.log(newUser.user_id); // Assuming 'id' is the auto-generated field for user_id
+
+    // Create json web token
+    const token = jwt.sign(
+      { userId: newUser.user_id }, // Use the newly created user's id
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
+    );
+
+    return res.status(201).json({
+      message: 'Member created successfully.',
+      token: token, // JWT token
+    });
+
+  } catch (error) {
+    console.log(error);
+    if (error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(409).json({ error: "Email already exists" });
+    }
+    return res.status(500).json({ error: error.messages });
+  }
+}
+
+
 
 async function signIn(req, res) {
   try {
@@ -281,7 +319,7 @@ async function getMember(req, res) {
     })
     .catch(error => {
       console.error("Error querying the database:", error);
-      res.status(500).send("Internal Server Error");
+      res.status(500).send(error.message);
     });
 }
 
@@ -298,7 +336,7 @@ async function getAllMembers(req, res) {
 
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal server error")
+    res.status(500).send(error.message)
   }
 }
 
@@ -352,6 +390,7 @@ module.exports = {
     forgetPassword: forgetPassword,
     emailSend: emailSend,
     signUp: signUp,
+    oauthSingup: oauthSingup,
     signIn: signIn,
     resetPassword: resetPassword,
     updateMember: updateMember,
