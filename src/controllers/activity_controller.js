@@ -174,7 +174,7 @@ exports.getActivitiesList = async (req, res) => {
         // set search condition
         var condition = {};
 
-        if (is_long_term) condition.is_one_time = !is_long_term;
+        if (is_long_term != null) condition.is_one_time = !is_long_term;
         if (country) condition.country = country;
         if (location) condition.location = location;
         if (search) condition.name = { [Op.like]: '%' + search + '%' };
@@ -220,7 +220,7 @@ exports.getActivitiesList = async (req, res) => {
         var parsedActivities = [];
         for (var activity in activities) {
             var activityData = await returnActivity(activity);
-            parsedActivities.push(activityData);
+            if (activityData != null) parsedActivities.push(activityData);
         }
 
         res.status(200).json(parsedActivities);
@@ -377,7 +377,7 @@ exports.deleteActivity = async (req, res) => {
         }
         const deleteRows = await activityModel.Activities.destroy({ where: { activity_id } });
         if (deleteRows > 0) {
-            return res.status(200).send("sucessfully delete");
+            return res.status(200).json({ message: "sucessfully delete" });
         }
 
 

@@ -98,7 +98,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity/?limit=50&search=example&country=Taiwan&location=Taipei&mode=all",
+        url=f"{host}/activity/",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -144,8 +144,8 @@ def update_activity():
 
 @api_test
 def delete_activity():
-    res = requests.patch(
-        url=f"{host}/activity/12",
+    res = requests.delete(
+        url=f"{host}/activity/17",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -472,7 +472,7 @@ if __name__ == '__main__':
 
     # signup()
     # create_activity()
-    # get_acitvity_list()
+    get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
@@ -487,7 +487,7 @@ if __name__ == '__main__':
     # create_plan()
     # update_plan()
     # delete_plan()
-    get_plan_detail()
+    # get_plan_detail()
     # get_plan_list()
     # apply_plan()
     # approve_plan()
