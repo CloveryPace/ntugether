@@ -49,7 +49,7 @@ const UserProgress = sequelize.define("UserProgress", {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-            model: 'users', // table name of User model
+            model: 'Users', // table name of User model
             key: 'user_id' // primary key in User model
         }
     },
