@@ -8,10 +8,18 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import CompletedProgressItemList from './CompletedProgressItemList';
 import UpcomingProgressItemList from './UpcomingProgressItemList';
+
+
+import { API_GET_USER_PROGRESS } from '../global/constants'; // API 常數
+
+
 const { useState } = React;
 
-export default function MyProgress() {
+export default function MyProgress({ id }) {
+
     const [progress, setProgress] = useState(70);
+
+    
     return (
         <Box sx={{ width: '100%' }}>
             <Card variant="outlined">

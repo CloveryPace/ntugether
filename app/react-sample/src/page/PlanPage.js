@@ -62,6 +62,7 @@ function PlanPage() {
     // 取得計畫資訊
     axios.get(API_GET_PLAN_DETAIL + id, config)
     .then(res => {
+      console.log(res.data);
       const formattedData = {
         ...res.data,
         start_date: res.data.start_date ? new Date(res.data.start_date).toISOString().split('T')[0] : '',
@@ -224,7 +225,7 @@ function PlanPage() {
           }}
         >
           <div style={subtitle}><Typography variant="h6"> {t('我的進度')} </Typography></div>
-          <div style={{ flexGrow: 1 }}><MyProgress /></div>
+          <div style={{ flexGrow: 1 }}><MyProgress id={id} /></div>
         </Box>
 
         <Box

@@ -16,3 +16,5 @@ export const API_GET_ACTIVITY_DETAIL = `${API_HOST}/activity/`;
 
 export const API_CREATE_PLAN = `${API_HOST}/plan`;
 export const API_GET_PLAN_DETAIL = `${API_HOST}/plan/`;
+
+export const API_GET_USER_PROGRESS = `${API_HOST}/progress/`;
