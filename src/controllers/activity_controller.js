@@ -156,7 +156,7 @@ exports.getActivitiesList = async (req, res) => {
     try {
         const user_id = req.user_id;
 
-        const limit = parseInt(req.query.limit);
+        const limit = parseInt(req.query.limit) || 50;
         const offset = parseInt(req.query.offset) || 0;
         const start_date = req.query.start_date;
         const end_date = req.query.end_date;
