@@ -414,7 +414,7 @@ router.post(
     
    authMiddleware.authentication, userController.unfollowMember)
 
-router.post(
+router.get(
   "/:user_id/following", 
   // #swagger.summary = "取得會員追蹤中列表"
   // #swagger.description = "取得一位會員追蹤中的所有會員列表"
@@ -448,7 +448,7 @@ router.post(
   
   authMiddleware.authentication, userController.getFollowing)
 
-router.post(
+router.get(
   "/:user_id/follower", 
   // #swagger.summary = "取得會員追蹤者"
   // #swagger.description = "取得一位會員的追蹤者列表"
@@ -480,9 +480,7 @@ router.post(
       } */
   
 
-  /* #swagger.responses[500] = { 
-      description: "網路或其他不明原因錯誤"
-      } */
+  
   
   
   authMiddleware.authentication, userController.getFollower)

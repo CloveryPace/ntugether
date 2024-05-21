@@ -2401,7 +2401,7 @@
       }
     },
     "/user/{user_id}/following": {
-      "post": {
+      "get": {
         "tags": [
           "User"
         ],
@@ -2491,7 +2491,7 @@
       }
     },
     "/user/{user_id}/follower": {
-      "post": {
+      "get": {
         "tags": [
           "User"
         ],
