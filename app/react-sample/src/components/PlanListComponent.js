@@ -5,50 +5,67 @@ import Button from '@mui/material/Button';
 
 import { Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY } from '../global/constants';
+import { API_CREATE_PLAN } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 
+import { getAuthToken } from '../utils';
+
+
 
 export default function PlanListComponent() {
-  const [t, i18n] = useTranslation();
-  /*
   const [data, setData] = useState([]);
+  const [userToken, setUserToken] = useState(getAuthToken());
+  const { t, i18n } = useTranslation();
+
 
 
   useEffect(() => {
     console.log('execute function in useEffect');
-    axios.get(API_CREATE_ACTIVITY)
-          .then(function (response) {
-            console.log(response);
-            setData(response.data.reverse())
+    //登入
+    // axios.post(API_LOGIN, {
+    //   "email": "r12725066@ntu.edu.tw",
+    //   "password": "a"
+    // })
+    // .then(function (response) {
+    //     console.log(response.status, response.data);
+    //     //儲存token
+    //     const token = response.data.jwtToken;
+        //設定authorization
+        const config = {
+            headers: { 
+              authorization: `Bearer ${userToken}`
+            }
+        };
+        //取得活動list
+        axios.get(API_CREATE_PLAN, config)
+          .then(function (res) {
+            console.log(res.data);
+            setData(res.data);
           })
-          .catch(function (error) {
-            console.log(error);
+          .catch(function (err) {
+            console.log(err);
+            alert("error");
           });
-    }
-  ,[]);
-  */
+
+      // })
+      // .catch(function (error) {
+      //     console.log(error);
+      // });
+    }, []);
 
     return (
 
     <div>
       <Grid container spacing={2}>
-        <PlanComponent />
-        <PlanComponent />
-        <PlanComponent />
-        <PlanComponent />
-        <PlanComponent />
-        <PlanComponent />
         
-            
-           {/* (data.map((activity) => {
+           {(data.map((plan) => {
               return (
-                <ActivityComponent data={activity} key={activity.id} />
+                <PlanComponent data={plan} key={plan.id} />
               );
             }))
-          */}
+          }
 
       </Grid>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
