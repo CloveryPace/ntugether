@@ -27,6 +27,8 @@ import dayjs from 'dayjs';
 import {setAuthToken} from '../utils';
 import Loading from '../components/Loading';
 import PasswordAndCheck from '../components/PasswordAndCheck';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { useEffect } from 'react';
 
 const { useState } = React;
 
@@ -45,7 +47,16 @@ export default function Signup() {
 
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [ user, setUser ] = useState([]);
+  const [ profile, setProfile ] = useState([]);
+
   let data = new FormData();
+
+  const sociallogin = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
   const handleFirstSignupSubmit = (event) => {
     event.preventDefault();
@@ -121,20 +132,39 @@ export default function Signup() {
     });
   }
 
-  const googleLogin = () => {
-    axios.get(API_GOOGLE_SIGNUP, {
-      headers: {
-        'Access-Control-Allow-Origin': '*'
-      }
-    })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
+  const oauthSignup = (userData) => {
+    axios.post(API_GOOGLE_SIGNUP, {
+        email: userData.email,
+        name: userData.name,
+        oauthProvider: "Google",
+        oauthId: userData.id
+    }).then(function (response) {
+        setAuthToken(response.data.token);
+        window.location.assign('/');
+    }).catch(function (error) {
+        console.log(error);
     });
-
   }
+
+  useEffect(
+    () => {
+        if (user) {
+            axios
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    setProfile(res.data);
+                    oauthSignup(res.data);
+                })
+                .catch((err) => console.log(err));
+        }
+    },
+    [ user ]
+);
 
 
   const handleGenderChange = (event) => {
@@ -253,7 +283,7 @@ export default function Signup() {
               <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
               </Grid>
               <Grid item xs={12}>
-              <Button onClick={googleLogin} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶註冊')}</Button>
+              <Button onClick={() => sociallogin()} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶註冊')}</Button>
               </Grid>
             </Grid>
             <Button
