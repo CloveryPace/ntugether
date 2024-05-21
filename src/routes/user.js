@@ -338,8 +338,8 @@ router.post(
   // #swagger.summary = "追蹤會員"
   // #swagger.description = "追蹤其他會員"
   // #swagger.tags = ['User']
-  /* #swagger.parameters['body'] = {
-      in: 'body',
+  /* #swagger.parameters['user_id'] = {
+      in: 'path',
       description: '追蹤會員id',
       required: true
   } */
@@ -379,8 +379,8 @@ router.post(
   // #swagger.summary = "取消追蹤會員"
   // #swagger.description = "取消追蹤其他會員"
   // #swagger.tags = ['User']
-  /* #swagger.parameters['body'] = {
-      in: 'body',
+  /* #swagger.parameters['user_id'] = {
+      in: 'path',
       description: '取消追蹤會員id',
       required: true
   } */
