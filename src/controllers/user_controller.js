@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const User = require('../model/userModel');
+const { userFollow } = require("../model/userModel");
 // User.sync();
 
 const SECRET_KEY = 'sdm_is_so_fun';
@@ -257,7 +258,7 @@ async function forgetPassword(req, res) {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).send('Internal server error');
+    res.status(500).send(error.message);
   }
 
 }
@@ -295,7 +296,7 @@ async function resetPassword(req, res) {
 
   } catch (error) {
     console.log(error);
-    res.status(500).send('Internal server error');
+    res.status(500).send(error.message);
   }
 }
 
@@ -360,10 +361,149 @@ async function updateMember(req, res) {
     }
   } catch (error) {
     console.error('Error updating member:', error);
-    return res.status(500).send('Internal Server Error');
+    return res.status(500).send(error.message);
   }
 }
 
+
+async function followMember(req, res) {
+  // follower call this api
+  const user_id = req.user_id;
+  const followingId = req.params.user_id;
+
+  try {
+    const following_user = await User.findOne({
+      where: { user_id: followingId }
+
+    });
+    if (!following_user)
+      return res.status(404).send({"message": "Following User not found."});
+
+    const userFollow_relation = await userFollow.findOne({ 
+      where: { 
+        followerId: user_id,
+        followingId: followingId 
+      }
+    });
+    if (userFollow_relation) return res.status(402).send({"message": "Already follow this user."});
+
+    const follow = await userFollow.create({ 
+      followerId: user_id,
+      followingId: followingId
+    });
+    return res.status(201).json({
+      "message": "Member followed successfully",
+      follow
+    });
+
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+
+}
+
+async function unfollowMember(req, res) {
+
+  const user_id = req.user_id;
+  const followingId = req.params.followingId;
+
+  try {
+    const following_user = await User.findOne({
+      where: { 
+        user_id: followingId 
+      }
+    });
+    if (!following_user)
+      return res.status(404).send({"message": "Following User not found."});
+
+    const userFollow_relation = await userFollow.findOne({ 
+      where: { 
+        followerId: user_id,
+        followingId: followingId 
+      }
+    });
+    if (!userFollow_relation) return res.status(402).send({"message": "You are not following this user."});
+
+    await userFollow_relation.destroy();
+
+    return res.status(200).json({
+      "message": "Unfollowed successfully",
+    });
+
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+
+}
+
+async function getFollower(req, res) {
+
+  // const user_id = req.user_id;
+  const followerId = req.params.user_id;
+
+  try {
+    const user = await User.findOne({
+      where: { user_id: followerId }
+
+    });
+    if (!user)
+      return res.status(404).send({"message": "User not found."});
+    
+  
+  const followers = await userFollow.findAll({
+    where: {
+        followingId: followerId
+    },
+    include: [{
+        model: User,
+        as: 'Follower',
+        attributes: ['name', 'self_introduction']
+    }]
+
+  });
+
+    return res.status(200).json(followers);
+    
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+
+}
+
+async function getFollowing(req, res) {
+
+  // const user_id = req.user_id;
+  const followingId = req.params.user_id;
+  console.log(followingId);
+
+  try {
+    const user = await User.findOne({
+      where: { user_id: followingId }
+
+    });
+    if (!user)
+      return res.status(404).send({"message": "User not found."});
+    
+  
+  const following = await userFollow.findAll({
+    where: {
+      followerId: followingId
+    },
+    include: [{
+        model: User,
+        as: 'Following',
+        attributes: ['name', 'self_introduction']
+    }]
+
+  });
+
+    return res.status(200).json(following);
+    
+  } catch (error) {
+    return res.status(500).send(error.message);
+  }
+
+}
 
 async function deleteMember(req, res) {
   // const { user_id } = req.body; // Get the id of the member to delete
@@ -378,7 +518,7 @@ async function deleteMember(req, res) {
     }
   } catch (error) {
     console.log('Error deleting member:', error);
-    return res.status(500).send('Internal Server Error');
+    return res.status(500).send(error.message);
   }
 }
 
@@ -394,5 +534,9 @@ module.exports = {
     signIn: signIn,
     resetPassword: resetPassword,
     updateMember: updateMember,
+    followMember: followMember,
+    unfollowMember: unfollowMember,
+    getFollower: getFollower,
+    getFollowing: getFollowing,
     deleteMember: deleteMember
   };

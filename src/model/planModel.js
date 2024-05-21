@@ -52,7 +52,7 @@ User.hasMany(Plan, { as: "CreatedPlan", foreignKey: "created_user_id", });
 
 Plan.belongsToMany(User, { as: "Participants", through: "PlanParticipantsStatus", foreignKey: "joined_plan_id" });
 User.belongsToMany(Plan, { as: "JoinedPlan", through: "PlanParticipantsStatus", foreignKey: "participant_id" });
-
+PlanParticipantsStatus.belongsTo(User, {foreignKey: 'participant_id' });
 
 const PlanTypes = sequelize.define("PlanTypes", {
     plan_type_id: {

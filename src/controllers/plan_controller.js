@@ -2,6 +2,7 @@ const { ValidationError, Op } = require("sequelize");
 const planModel = require("../model/planModel");
 const User = require("../model/userModel");
 const progressController = require('./progress_controller');
+const progressModel = require("../model/progressModel");
 const { joinSQLFragments } = require("sequelize/lib/utils/join-sql-fragments");
 
 // define constants
@@ -146,8 +147,7 @@ async function noReviewApply(req, res, plan_id, user_id) {
     await planModel.PlanParticipantsStatus.create(
         {
             joined_plan_id: plan_id,
-            participant_id: user_id,
-            participant_name: user.name
+            participant_id: user_id
         }
     );
     // return res.status(200).send("joined!");
@@ -407,6 +407,12 @@ exports.getPlanDetail = async (req, res) => {
                     through: {
                         attributes: []
                     }
+                },
+                {
+                    model: progressModel.Progress,
+                    as: 'progresses',
+                    attributes: ["progress_id", "name", "times", "need_activity"]
+
                 }
             ],
         });
@@ -427,15 +433,15 @@ exports.getPlanDetail = async (req, res) => {
 
         if (plan.created_user_id == user_id) accessRight = 2;
 
-        // NOTE: return plan detail based on the access right
+        // NOTE: return plan detail based on the access right => deal with this in userprogress part
         if (accessRight == 0) {
             return res.status(200).json(plan);
         } else if (accessRight == 1) {
-            // TODO: add self progress
+            
             return res.status(200).json(plan);
 
         } else if (accessRight == 2) {
-            // TODO: add all progress
+            
             return res.status(200).json(plan);
 
         }
@@ -574,16 +580,49 @@ exports.getAllApplications = async (req, res) => {
 
         const applications = await planModel.Applications.findAll({
             where: {
-                plan_id: plan_id
+                plan_id: plan_id,
+                is_approved: false
             }
         });
+        if (applications.length === 0) {
+            return res.status(404).json({ error: 'Application not found or already approved' });
+        }
 
-        return res.json(applications);
+        return res.status(200).json(applications);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error getting all applications:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+};
+
+exports.getAllParticipants = async (req, res) => {
+
+    try {
+        // const user_id = req.user_id;
+
+        const plan_id = req.params.plan_id;
+        var plan= await planModel.Plan.findByPk(plan_id);
+        if (plan == null) return res.status(404).send("Plan not found.");
+
+        const participants = await planModel.PlanParticipantsStatus.findAll({
+            where: {
+                joined_plan_id: plan_id
+            },
+            include: [{
+                model: User,
+                // as: "Participants",
+                attributes: ['name']
+            }]
+
+        });
+        return res.status(200).json(participants);
+
+    } catch (error) {
+        console.error("Error getting participants list.", error);
+        res.status(500).json({ error: error.message });
+    }
+
 };
 
 /**
@@ -611,15 +650,7 @@ exports.approve = async (req, res) => {
         // get applicant
         const applicant_id = application.applicant_id;
 
-        // participantsExist = await planModel.PlanParticipantsStatus.findOne({
-        //     where: {
-        //         joined_plan_id: plan_id,
-        //         participant_id: applicant_id,
-        //     }
-        // });
-
-        // if (participantsExist) return res.status(409).send("participant has already joined");
-
+        
         // deleteApplication
         // 不應該刪除，否則無法得知已申請通過==；要不上面的邏輯就要改
         // await application.destroy();
@@ -696,7 +727,7 @@ exports.leavePlan = async (req, res) => { };
  * @param {*} res 
  * @returns 
  */
-exports.inviteUser = async (req, res) => { };
+// exports.inviteUser = async (req, res) => { };
 
 /**
  * Accept/Decline Invitation for joining plan
@@ -710,6 +741,7 @@ exports.respondToInvitation = async (req, res) => {
         const plan_id = req.params.plan_id;
         const { ...body } = req.body;
 
+        // Todo: Can selected from followers
         invitation = await planModel.Invitations.findOne({
             where: {
                 "plan_id": plan_id,
@@ -721,7 +753,7 @@ exports.respondToInvitation = async (req, res) => {
 
         await planModel.Plan.findByPk(plan_id).then(
             (plan) => {
-                if (!plan) return res.status(400).json({ message: "plan not found" });
+                if (!plan) return res.status(404).json({ message: "plan not found" });
             }
         );
 

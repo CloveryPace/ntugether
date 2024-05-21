@@ -10,8 +10,10 @@ var router = express.Router();
 router.use(bodyParser.json());
 
 const User = require('../model/userModel');
+const { userFollow } = require("../model/userModel");
 const userController = require('../controllers/user_controller');
 // User.sync();
+userFollow.sync()
 const authMiddleware = require('../middlewares/authentication');
 
 
@@ -20,6 +22,7 @@ const authMiddleware = require('../middlewares/authentication');
 router.get(
   "/", authMiddleware.authentication, 
   // #swagger.description = "取得特定會員資料"
+  // #swagger.summary = "取得單一會員資料"
   // #swagger.tags = ['User']
   /* 
   
@@ -45,6 +48,7 @@ router.get(
 router.get(
   "/allMembers", authMiddleware.authentication, 
   // #swagger.description = "取得所有會員資料"
+  // #swagger.summary = "取得所有會員資料"
   // #swagger.tags = ['User']
   /* 
   
@@ -94,6 +98,7 @@ router.get(
 router.get(
   "/emailSend", 
   // #swagger.description = "信箱註冊驗證碼發送"
+  // #swagger.summary = "發送註冊信"
   // #swagger.tags = ['User']
   /* 
   
@@ -119,6 +124,7 @@ router.get(
 router.post(
   "/signup",
   // #swagger.description = "註冊，請先至/user/emailSend取得驗證碼"
+  // #swagger.summary = "會員註冊"
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -160,6 +166,7 @@ userController.signUp);
 router.post(
   "/oauthSignup",
   // #swagger.description = "Oauth註冊，會回傳jwt token" 
+  // #swagger.summary = "Oauth會員註冊"
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -197,6 +204,7 @@ router.post(
 router.post(
   "/signin",
   // #swagger.description = "登入，請先確定已註冊成功" 
+  // #swagger.summary = "會員登入"
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -237,6 +245,7 @@ userController.signIn);
 router.post(
   "/resetPassword",
   // #swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"
+  // #swagger.summary = "重設密碼"
   // #swagger.tags = ['User']
   /* #swagger.parameters['body'] = {
     in: 'body',
@@ -278,6 +287,7 @@ router.post(
 router.put(
   "/", authMiddleware.authentication, 
   // #swagger.description = "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.summary = "更新會員資料"
   // #swagger.tags = ['User']
   /* #swagger.security = [{
             "bearerAuth": [
@@ -323,10 +333,165 @@ router.put(
 
 userController.updateMember);
 
+router.post(
+  "/:user_id/follow", 
+  // #swagger.summary = "追蹤會員"
+  // #swagger.description = "追蹤其他會員"
+  // #swagger.tags = ['User']
+  /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '追蹤會員id',
+      required: true
+  } */
+
+  /* #swagger.responses[201] = { 
+      description: "會員追蹤成功",
+      schema: {
+            "message": "Member followed successfully",
+            "follow": "追蹤資料"
+          }
+      } */
+
+   /* #swagger.responses[402] = { 
+      description: "已追蹤該會員",
+      schema: {
+             "message": "Already follow this user.",
+          }
+      } */
+
+
+  /* #swagger.responses[404] = { 
+      description: "要追蹤的會員不存在",
+      schema: {
+             "message": "Following User not found.",
+          }
+      } */
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  
+  authMiddleware.authentication, userController.followMember)
+
+router.post(
+  "/:user_id/unfollow", 
+  // #swagger.summary = "取消追蹤會員"
+  // #swagger.description = "取消追蹤其他會員"
+  // #swagger.tags = ['User']
+  /* #swagger.parameters['body'] = {
+      in: 'body',
+      description: '取消追蹤會員id',
+      required: true
+  } */
+
+  /* #swagger.responses[201] = { 
+      description: "會員取消追蹤成功",
+      schema: {
+            "message": "Unfollowed successfully",
+          }
+      } */
+
+    /* #swagger.responses[400] = { 
+      description: "未追蹤該會員",
+      schema: {
+              "message": "You are not following this user.",
+          }
+      } */
+
+
+  /* #swagger.responses[404] = { 
+      description: "要取消追蹤的會員不存在",
+      schema: {
+              "message": "Following User not found.",
+          }
+      } */
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+    
+   authMiddleware.authentication, userController.unfollowMember)
+
+router.post(
+  "/:user_id/following", 
+  // #swagger.summary = "取得會員追蹤中列表"
+  // #swagger.description = "取得一位會員追蹤中的所有會員列表"
+  // #swagger.tags = ['User']
+  
+
+  /* #swagger.responses[200] = { 
+      description: "會員追蹤中列表",
+      schema: {
+          "follow_id": "追蹤id",
+          "followerId": "追蹤者id",
+          "followingId": "被追蹤者id",
+          "Following": {
+            "name": "用戶名稱",
+            "self_introduction": "簡介"
+          }
+      },
+    } */
+
+  /* #swagger.responses[404] = { 
+      description: "會員不存在",
+      schema: {
+             "message": "User not found.",
+          }
+      } */
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  
+  authMiddleware.authentication, userController.getFollowing)
+
+router.post(
+  "/:user_id/follower", 
+  // #swagger.summary = "取得會員追蹤者"
+  // #swagger.description = "取得一位會員的追蹤者列表"
+  // #swagger.tags = ['User']
+  
+
+  /* #swagger.responses[200] = { 
+      description: "會員追蹤者列表",
+      schema: {
+          "follow_id": "追蹤id",
+          "followerId": "追蹤者id",
+          "followingId": "被追蹤者id",
+          "Follower": {
+            "name": "用戶名稱",
+            "self_introduction": "簡介"
+          }
+      },
+    } */
+
+  /* #swagger.responses[404] = { 
+      description: "會員不存在",
+      schema: {
+             "message": "User not found.",
+          }
+      } */
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+  
+  
+  authMiddleware.authentication, userController.getFollower)
+
 // DELETE routes
 router.delete(
   "/", authMiddleware.authentication, 
   // #swagger.description = "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token "
+  // #swagger.summary = "刪除會員"
   // #swagger.tags = ['User']
   /* #swagger.security = [{
             "bearerAuth": [

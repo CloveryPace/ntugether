@@ -1463,6 +1463,7 @@
         "tags": [
           "User"
         ],
+        "summary": "取得單一會員資料",
         "description": "取得特定會員資料",
         "parameters": [
           {
@@ -1526,6 +1527,7 @@
         "tags": [
           "User"
         ],
+        "summary": "更新會員資料",
         "description": "修改會員資料，請確定Authorization格式正確 'bearer '+ JWT token ",
         "parameters": [
           {
@@ -1628,6 +1630,7 @@
         "tags": [
           "User"
         ],
+        "summary": "刪除會員",
         "description": "刪除會員，請確定Authorization格式正確 'bearer '+ JWT token ",
         "parameters": [
           {
@@ -1705,6 +1708,7 @@
         "tags": [
           "User"
         ],
+        "summary": "取得所有會員資料",
         "description": "取得所有會員資料",
         "parameters": [
           {
@@ -1820,6 +1824,7 @@
         "tags": [
           "User"
         ],
+        "summary": "發送註冊信",
         "description": "信箱註冊驗證碼發送",
         "parameters": [
           {
@@ -1870,6 +1875,7 @@
         "tags": [
           "User"
         ],
+        "summary": "會員註冊",
         "description": "註冊，請先至/user/emailSend取得驗證碼",
         "parameters": [
           {
@@ -1957,6 +1963,7 @@
         "tags": [
           "User"
         ],
+        "summary": "Oauth會員註冊",
         "description": "Oauth註冊，會回傳jwt token",
         "parameters": [
           {
@@ -2029,6 +2036,7 @@
         "tags": [
           "User"
         ],
+        "summary": "會員登入",
         "description": "登入，請先確定已註冊成功",
         "parameters": [
           {
@@ -2115,6 +2123,7 @@
         "tags": [
           "User"
         ],
+        "summary": "重設密碼",
         "description": "重設密碼，請確定已從/user/forgetPassword取得驗證碼",
         "parameters": [
           {
@@ -2178,6 +2187,384 @@
               "type": "object",
               "properties": {
                 "error": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        }
+      }
+    },
+    "/user/{user_id}/follow": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "追蹤會員",
+        "description": "追蹤其他會員",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "追蹤會員id",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "會員追蹤成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Member followed successfully"
+                },
+                "follow": {
+                  "type": "string",
+                  "example": "追蹤資料"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "402": {
+            "description": "已追蹤該會員",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Already follow this user."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "要追蹤的會員不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Following User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        }
+      }
+    },
+    "/user/{user_id}/unfollow": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "取消追蹤會員",
+        "description": "取消追蹤其他會員",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "取消追蹤會員id",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "會員取消追蹤成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Unfollowed successfully"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "400": {
+            "description": "未追蹤該會員",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "You are not following this user."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "402": {
+            "description": "Payment Required"
+          },
+          "404": {
+            "description": "要取消追蹤的會員不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Following User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        }
+      }
+    },
+    "/user/{user_id}/following": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "取得會員追蹤中列表",
+        "description": "取得一位會員追蹤中的所有會員列表",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "會員追蹤中列表",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "follow_id": {
+                  "type": "string",
+                  "example": "追蹤id"
+                },
+                "followerId": {
+                  "type": "string",
+                  "example": "追蹤者id"
+                },
+                "followingId": {
+                  "type": "string",
+                  "example": "被追蹤者id"
+                },
+                "Following": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "用戶名稱"
+                    },
+                    "self_introduction": {
+                      "type": "string",
+                      "example": "簡介"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "會員不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "User not found."
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "網路或其他不明原因錯誤"
+          }
+        }
+      }
+    },
+    "/user/{user_id}/follower": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "取得會員追蹤者",
+        "description": "取得一位會員的追蹤者列表",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "會員追蹤者列表",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "follow_id": {
+                  "type": "string",
+                  "example": "追蹤id"
+                },
+                "followerId": {
+                  "type": "string",
+                  "example": "追蹤者id"
+                },
+                "followingId": {
+                  "type": "string",
+                  "example": "被追蹤者id"
+                },
+                "Follower": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "用戶名稱"
+                    },
+                    "self_introduction": {
+                      "type": "string",
+                      "example": "簡介"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "會員不存在",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
                   "type": "string",
                   "example": "User not found."
                 }
@@ -3131,6 +3518,94 @@
         }
       }
     },
+    "/plan/{plan_id}/participants": {
+      "get": {
+        "tags": [
+          "Plan"
+        ],
+        "summary": "取得計畫參與者",
+        "description": "回傳計畫所有參與者",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "輸入bearer空格 + jwt_token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "回傳該計畫參與紀錄",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "createdAt": {
+                    "type": "string",
+                    "example": "datetime"
+                  },
+                  "updatedAt": {
+                    "type": "string",
+                    "example": "datetime"
+                  },
+                  "joined_plan_id": {
+                    "type": "string",
+                    "example": "參與計畫id"
+                  },
+                  "participants": {
+                    "type": "string",
+                    "example": "參與者id"
+                  },
+                  "User": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "example": "參與者姓名"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "401": {
+            "description": "用戶未通過驗證，jwt_token或header錯誤",
+            "schema": {
+              "type": "string",
+              "example": "authorization fail",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "該計畫不存在",
+            "schema": {
+              "type": "string",
+              "example": "Plan not found",
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/plan/{plan_id}/apply": {
       "post": {
         "tags": [
@@ -3250,7 +3725,7 @@
           "Plan"
         ],
         "summary": "接受/拒絕計畫邀請",
-        "description": "接受或拒絕該計畫的邀請，目前還有bug",
+        "description": "接受或拒絕該計畫的邀請",
         "parameters": [
           {
             "name": "plan_id",
@@ -3268,10 +3743,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "接受計畫邀請",
+            "schema": {
+              "type": "string",
+              "example": "response sent",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "已在計畫中",
+            "schema": {
+              "type": "string",
+              "example": "already in the plan",
+              "xml": {
+                "name": "main"
+              }
+            }
           },
           "401": {
             "description": "用戶未通過驗證，jwt_token或header錯誤",
@@ -3282,37 +3771,12 @@
                 "name": "main"
               }
             }
-          }
-        }
-      }
-    },
-    "/plan/{plan_id}/leave": {
-      "patch": {
-        "tags": [
-          "Plan"
-        ],
-        "description": "該功能尚未完成QQ",
-        "parameters": [
-          {
-            "name": "plan_id",
-            "in": "path",
-            "required": true,
-            "type": "string"
           },
-          {
-            "name": "authorization",
-            "in": "header",
-            "description": "輸入bearer空格 + jwt_token",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "401": {
-            "description": "用戶未通過驗證，jwt_token或header錯誤",
+          "404": {
+            "description": "計畫不存在",
             "schema": {
               "type": "string",
-              "example": "authorization fail",
+              "example": "plan not found",
               "xml": {
                 "name": "main"
               }

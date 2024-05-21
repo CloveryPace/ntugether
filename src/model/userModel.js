@@ -70,4 +70,38 @@ const UserInterest = sequelize.define('UserInterests', {
     tableName: 'UserInterests'
 });
 
+const userFollow = sequelize.define('userFollow', {
+    follow_id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    followerId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'user_id',
+      },
+    },
+    followingId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Users',
+        key: 'user_id',
+      },
+    },
+  }, {
+    timestamps: false,
+    
+  });
+  
+User.hasMany(userFollow, { as: 'Followers', foreignKey: 'followingId' });
+User.hasMany(userFollow, { as: 'Followings', foreignKey: 'followerId' });
+userFollow.belongsTo(User, { as: 'Follower', foreignKey: 'followerId' });
+userFollow.belongsTo(User, { as: 'Following', foreignKey: 'followingId' });
+  
+
 module.exports = User;
+module.exports.userFollow = userFollow;

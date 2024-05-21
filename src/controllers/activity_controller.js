@@ -128,7 +128,6 @@ async function noReviewApply(req, res, activity_id, user_id) {
         {
             joined_activities: activity_id,
             participants: user_id
-            // participant_name: user.name
         }
     );
     return res.status(200).send("joined!");
@@ -306,7 +305,7 @@ exports.getActivityDetail = async (req, res) => {
         return res.status(200).json(activity);
     } catch (error) {
         console.error("Error getting activity detail", error);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(500).json({ error: error.message });
     }
 
 };
@@ -413,8 +412,8 @@ exports.getAllApplications = async (req, res) => {
                 is_approved: false
             }
         });
-        if (!applications) {
-            return res.status(404).json({ error: 'Application not found' });
+        if (applications.length === 0) {
+            return res.status(404).json({ error: 'Application not found or already approved' });
         }
 
         return res.json(applications);
@@ -448,7 +447,7 @@ exports.getAllParticipants = async (req, res) => {
 
     } catch (error) {
         console.error("Error getting participants list.", error);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: error.message });
     }
 
 };

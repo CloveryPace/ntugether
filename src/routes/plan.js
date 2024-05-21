@@ -363,6 +363,36 @@ router.get(
 
   authMiddleware.authentication, planController.getAllApplications);
 
+
+  router.get(
+    "/:plan_id/participants",
+    // #swagger.tags = ['Plan']
+    // #swagger.summary = 取得計畫參與者
+    // #swagger.description = '回傳計畫所有參與者'
+  
+    /* #swagger.responses[200] = { 
+    description: "回傳該計畫參與紀錄",
+    schema:
+        [{
+            "createdAt": "datetime",
+            "updatedAt": "datetime",
+            "joined_plan_id": "參與計畫id",
+            "participants": "參與者id",
+            "User": {
+              "name": "參與者姓名"
+            }
+        }]
+    } */
+  
+    /* #swagger.responses[404] = { 
+      description: "該計畫不存在",
+      schema: "Plan not found"
+    } */
+  
+  
+  
+    authMiddleware.authentication, planController.getAllParticipants);
+
 /**
  * FUNCTION: apply for a plan
  */
@@ -421,7 +451,30 @@ router.post(
   "/:plan_id/invitation",
   // #swagger.tags = ['Plan']
   // #swagger.summary = '接受/拒絕計畫邀請'
-  // #swagger.description = '接受或拒絕該計畫的邀請，目前還有bug'
+  // #swagger.description = '接受或拒絕該計畫的邀請'
+
+  /* #swagger.responses[200] = { 
+    description: "接受計畫邀請",
+    schema: "response sent"
+  } */
+
+  /* #swagger.responses[400] = { 
+    description: "沒有收到計畫邀請",
+    schema: "not invited"
+  } */
+
+  /* #swagger.responses[400] = { 
+    description: "已在計畫中",
+    schema: "already in the plan"
+  } */
+
+  /* #swagger.responses[404] = { 
+    description: "計畫不存在",
+    schema: "plan not found"
+  } */
+
+  
+
 
 
   authMiddleware.authentication, planController.respondToInvitation);
@@ -429,12 +482,12 @@ router.post(
 /**
  * FUNCTION: leave the plan given the plan
  */
-router.patch(
-  "/:plan_id/leave",
-  // #swagger.tags = ['Plan']
-  // #swagger.description = '該功能尚未完成QQ'
+// router.patch(
+//   "/:plan_id/leave",
+//   // #swagger.tags = ['Plan']
+//   // #swagger.description = '該功能尚未完成QQ'
 
-  authMiddleware.authentication, planController.leavePlan); // TODO: implement
+//   authMiddleware.authentication, planController.leavePlan); // TODO: implement
 
 
 /**
