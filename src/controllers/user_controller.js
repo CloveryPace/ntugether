@@ -143,14 +143,13 @@ async function emailSend ( req, res) {
 
 async function oauthSingup (req, res) {
   try {
-    const { name, email, oauthProvider} = req.body;
-    console.log("email", email);
-    console.log("name", name);
+    const { name, email, oauthProvider, oauthId} = req.body;
 
     const newUser = await User.create({
       name: name,
       email: email,
-      oauthProvider: oauthProvider
+      oauthProvider: oauthProvider,
+      oauthId: oauthId
 
     });
 
@@ -405,7 +404,7 @@ async function followMember(req, res) {
 async function unfollowMember(req, res) {
 
   const user_id = req.user_id;
-  const followingId = req.params.followingId;
+  const followingId = req.params.user_id;
 
   try {
     const following_user = await User.findOne({

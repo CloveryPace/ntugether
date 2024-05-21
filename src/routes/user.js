@@ -177,7 +177,8 @@ router.post(
       {
         "name": "用戶姓名",
         "email": "r12725066@ntu.edu.tw",
-        "oauthProvider": "Google"
+        "oauthProvider": "Google",
+        "oauthId": "oauthId"
       }
   } */
   /* #swagger.responses[201] = { 
