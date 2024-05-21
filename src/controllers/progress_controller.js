@@ -37,7 +37,7 @@ exports.getAllUserProgress = async (req, res) => {
                 include:[
                     {
                         model: User,
-                        as: 'user',
+                        as: 'Users',
                         where: {
                             user_id: user_id
                         },
