@@ -306,7 +306,10 @@ function PlanNew() {
                     </Grid>
                 </Grid>
                 <Divider sx={{my: 4,}}/>
-                <Typography variant="h6"> 進度項目 </Typography>
+                <Typography variant="h6"> 進度項目</Typography>
+                <span >* 考慮到參與者們的個人安排與完成度計算，進度項目一經建立，就不能刪除和編輯，請謹慎考慮！ *</span>
+                <br/>
+                <br/>
                 <AddProgress onProgressChange={handleProgressChange} />
                 <Divider sx={{my: 4,}}/>
                 <Grid container justifyContent="center">

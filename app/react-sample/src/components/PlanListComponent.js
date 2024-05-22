@@ -38,7 +38,7 @@ export default function PlanListComponent() {
               authorization: `Bearer ${userToken}`
             }
         };
-        //取得活動list
+        //取得計畫列表
         axios.get(API_CREATE_PLAN, config)
           .then(function (res) {
             console.log(res.data);
