@@ -2,7 +2,8 @@ module.exports = {
   apps : [
       {
         name: "sdm-backend",
-        script: "./index.js",
+        script: "npm",
+        args: "start",
         watch: true,
         time: true,
         log_date_format: "YYYY-MM-DD HH:mm Z",
