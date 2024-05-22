@@ -370,7 +370,7 @@ async function getMember(req, res) {
     selfUser = await User.findByPk(user_id, {
       attributes: { exclude: ['password', 'oauthId'] }
     });
-    return res.status(200).json(selfUser);
+    return res.status(200).json({ members: selfUser });
   }
     
 

@@ -57,7 +57,7 @@ exports.getAllUserProgress = async (req, res) => {
 
         const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);      
         if (AlluserProgress.length === 0) {
-            return res.status(404).json({ error: 'No progress found for the given process_id.' });
+            return res.status(404).json({ error: 'No progress found for the given progress_id.' });
         }  
         
         // Filter the data to only include entries where is_finished is true
@@ -119,42 +119,70 @@ exports.getUserProgress = async (req, res) => {
 
 exports.createProgress = async (req, res) => {
     try {
-        const { plan_id, user_id, ...body } = req.body;
-        console.log("plan_id", plan_id);
-        console.log("user_id", user_id);
-        console.log("pregression", body);
-        const newProgress = await progressModel.Progress.create({
-            
-            name:  body.name,
-            times:  body.times,
-            need_activity:  body.need_activity,
-            // body,
-            plan_id: plan_id
-
-        });
-        console.log("newProgress.progress_id", newProgress.progress_id);
-        console.log("newProgress.time", newProgress.times);
+        const { plan_id, user_id, progressItems } = req.body;
+        const plan = await planModel.Plan.findByPk(plan_id);
+        // console.log(progressItems);
         
-        const currentDate = new Date();
         try {
-            for (let i = 0; i < newProgress.times; i++) {
-                const newUserProgress = await progressModel.UserProgress.create({
-                    user_id: user_id,
-                    progress_id: newProgress.progress_id, 
-                    description: '', 
-                    user_progress_date: currentDate, 
-                    activity_detail: '', 
-                    is_finished: false
-                });
-            
-                // console.log(`UserProgress ${i+1} created:`, newUserProgress);
+            for (const progressItem of progressItems) {
+                const { times, progress_id } = progressItem;
+                for (let i = 0; i < times; i++) {
+                    const newUserProgress = await progressModel.UserProgress.create({
+                        user_id: user_id,
+                        progress_id: progress_id, 
+                        description: '', 
+                        user_progress_date: '' || plan.end_date,
+                        activity_detail: '', 
+                        is_finished: false
+                    });
+                
+                    // console.log(`UserProgress ${i+1} created:`, newUserProgress);
+                }
             }
+            return res.status(201).json({ message: "UserProgress entries created successfully." });
         } catch (error) {
             console.log({error: error.message});
         }
 
-    
+    } catch (error) {
+        return res.status(500).json({error: error.message});
+    }
+}
 
+exports.createUserProgress = async (req, res) => {
+    try {
+        const { plan_id, user_id } = req.body;
+        const plan = await planModel.Plan.findByPk(plan_id);
+        const progress = await progressModel.Progress.findAll({
+            where:{
+                plan_id: plan_id
+            }
+        });
+        console.log(progress);
+        
+        try {
+            for (const progressItem of progress) {
+                const { times, progress_id } = progressItem;
+                for (let i = 0; i < times; i++) {
+                    const newUserProgress = await progressModel.UserProgress.create({
+                        user_id: user_id,
+                        progress_id: progress_id, 
+                        description: '', 
+                        user_progress_date: '' || plan.end_date,
+                        activity_detail: '', 
+                        is_finished: false
+                    });
+                
+                    // console.log(`UserProgress ${i+1} created:`, newUserProgress);
+                }
+            }
+            // if (!newUserProgress) return res.status(400).json({ message: "UserProgress entries created fail." });
+            
+            return res.status(201).json({ message: "UserProgress entries created successfully." });
+        } catch (error) {
+            console.log({error: error.message});
+        }
+        // return res.status(200).json("successful");
 
     } catch (error) {
         return res.status(500).json({error: error.message});

@@ -154,7 +154,21 @@ async function noReviewApply(req, res, plan_id, user_id) {
         }
     );
 
-    // return res.status(200).send("joined!");
+    const progressReq = {
+        body: {
+            user_id: user_id,
+            plan_id: plan_id
+
+        }
+    };
+    const progressRes = {
+        status: () => ({ json: (json) => json }),
+    };    
+
+    const progressResponse = await progressController.createUserProgress(progressReq, progressRes);
+    // console.log(progressResponse);
+
+    
     return res.status(200).send("joined!");
 
 
@@ -212,22 +226,32 @@ exports.createPlan = async (req, res) => {
         const newPlan = await planModel.Plan.create(body);
 
         // create process
-        const progressPromises = progression.map(progressData => {
+        const newProgress = await Promise.all(progression.map(async (prog) => {
+            return await progressModel.Progress.create({
+              name: prog.name,
+              times: prog.times,
+              need_activity: prog.need_activity,
+              plan_id: newPlan.plan_id
+            });
+          }));
+
+        console.log(newProgress);
+
+        const progressReq = {
+            body: {
+                progressItems: newProgress,
+                user_id: user_id,
+                plan_id: newPlan.plan_id
+            }
+        };
+        const progressRes = {
+            status: () => ({ json: (json) => json }),
+        };         
             
-            const progressReq = {
-                body: {
-                    ...progressData,
-                    plan_id: newPlan.plan_id,
-                    user_id: user_id
-                }
-            };
-            const progressRes = {
-                status: () => ({ json: (json) => json }),
-            };
-            return progressController.createProgress(progressReq, progressRes);
-        });
-        // Wait for all progress entries to be created
-        await Promise.all(progressPromises);
+        // return progressController.createProgress(progressReq, progressRes);
+        const progressResponse = await progressController.createProgress(progressReq, progressRes);
+        // console.log(progressResponse);
+
 
 
         // creaet tags for the plan
@@ -661,7 +685,7 @@ exports.approve = async (req, res) => {
 
         
         // deleteApplication
-        // 不應該刪除，否則無法得知已申請通過==；要不上面的邏輯就要改
+        // 不應該刪除，否則無法得知已申請通過
         // await application.destroy();
 
         // update participants
@@ -671,6 +695,20 @@ exports.approve = async (req, res) => {
                 participant_id: applicant_id,
             }
         );
+
+        const progressReq = {
+            body: {
+                user_id: applicant_id,
+                plan_id: plan_id
+
+            }
+        };
+        const progressRes = {
+            status: () => ({ json: (json) => json }),
+        };    
+        const progressResponse = await progressController.createUserProgress(progressReq, progressRes);
+        // console.log(progressResponse);
+
         return res.status(200).send("approved!");
 
     } catch (error) {
