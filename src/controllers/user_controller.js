@@ -145,38 +145,100 @@ async function oauthSingup (req, res) {
   try {
     const { name, email, oauthProvider, oauthId} = req.body;
 
-    const newUser = await User.create({
-      name: name,
-      email: email,
-      oauthProvider: oauthProvider,
+    const oauthUser = await User.findOne({ where: { oauthId: oauthId } });
+    if (oauthUser) {
+      const token = jwt.sign(
+        { userId: oauthUser.user_id }, 
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN } 
+      );
+      return res.status(200).json({
+        message: 'Member sign in successfully.',
+        token: token, // JWT token
+      });
+    }
+
+    // not oauthuser then sign up
+    const user = await User.findOne({ where: { email: email } });
+    if (user) {
+      await user.update({
+        oauthId: oauthId,
+        oauthProvider: oauthProvider
+      });
+
+      const token = jwt.sign(
+        { userId: user.user_id }, 
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN } 
+      );
+      return res.status(202).json({
+        message: 'The member has already linked their Google account.',
+        token: token, // JWT token
+      });
+
+
+    } else {
+      const newUser = await User.create({
+        name: name,
+        email: email,
+        oauthProvider: oauthProvider,
+        oauthId: oauthId
+      });
+
+      console.log(newUser.user_id); 
+
+      // Create json web token
+      const token = jwt.sign(
+        { userId: newUser.user_id }, 
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN } 
+      );
+
+      return res.status(201).json({
+        message: 'Member created successfully.',
+        token: token, // JWT token
+      });
+
+
+    }
+    
+  } catch (error) {
+    console.log(error);
+    // if (error.name === 'SequelizeUniqueConstraintError') {
+    //         return res.status(409).json({ error: "Email already exists" });
+    // }
+    return res.status(500).json({ error: error.messages });
+  }
+}
+
+async function oauthSingin (req, res) {
+  try {
+    const { oauthId} = req.body;
+
+    const user = await User.findOne({
+      // email: email,
       oauthId: oauthId
-
     });
+    if (!user) return res.status(404).json({"message": "User not found."})
 
-    console.log(newUser.user_id); // Assuming 'id' is the auto-generated field for user_id
+    console.log(user.user_id); 
 
     // Create json web token
     const token = jwt.sign(
-      { userId: newUser.user_id }, // Use the newly created user's id
+      { userId: user.user_id },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
     );
 
     return res.status(201).json({
-      message: 'Member created successfully.',
+      message: 'Member sign in successfully.',
       token: token, // JWT token
     });
 
   } catch (error) {
-    console.log(error);
-    if (error.name === 'SequelizeUniqueConstraintError') {
-            return res.status(409).json({ error: "Email already exists" });
-    }
     return res.status(500).json({ error: error.messages });
   }
 }
-
-
 
 async function signIn(req, res) {
   try {
@@ -302,10 +364,11 @@ async function resetPassword(req, res) {
 
 async function getMember(req, res) {
   const user_id = req.user_id;
+  const targetUserId = req.params.user_id;
 
   await User.findOne({
     where: {
-     user_id: user_id,
+     user_id: targetUserId,
     }
   })
     .then(results => {
@@ -530,6 +593,7 @@ module.exports = {
     emailSend: emailSend,
     signUp: signUp,
     oauthSingup: oauthSingup,
+    oauthSingin: oauthSingin,
     signIn: signIn,
     resetPassword: resetPassword,
     updateMember: updateMember,

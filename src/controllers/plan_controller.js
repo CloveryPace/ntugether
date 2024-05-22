@@ -143,6 +143,9 @@ async function noReviewApply(req, res, plan_id, user_id) {
 
     });
 
+
+    
+
     // update participants
     await planModel.PlanParticipantsStatus.create(
         {
@@ -150,6 +153,7 @@ async function noReviewApply(req, res, plan_id, user_id) {
             participant_id: user_id
         }
     );
+
     // return res.status(200).send("joined!");
     return res.status(200).send("joined!");
 
@@ -209,7 +213,7 @@ exports.createPlan = async (req, res) => {
 
         // create process
         const progressPromises = progression.map(progressData => {
-            // Constructing a proper request object for createProgress
+            
             const progressReq = {
                 body: {
                     ...progressData,
@@ -495,11 +499,16 @@ exports.getPlanList = async (req, res) => {
         var includeConditions = new Array();
         if (mode == "owned") includeConditions.push({
             model: User,
-            as: 'Creator'
+            as: 'Creator',
+            attributes: ["name", "email", "phoneNum", "photo", "gender"],
+            where: {
+                user_id: user_id,
+            }
         });
         else if (mode == "joined") includeConditions.push({
             model: User,
             as: 'Participants',
+            attributes: ["name", "photo", "gender"],
             where: {
                 user_id: user_id,
             }

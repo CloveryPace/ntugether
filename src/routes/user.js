@@ -20,7 +20,7 @@ const authMiddleware = require('../middlewares/authentication');
 
 // GET routes
 router.get(
-  "/", authMiddleware.authentication, 
+  "/:user_id", authMiddleware.authentication, 
   // #swagger.description = "取得特定會員資料"
   // #swagger.summary = "取得單一會員資料"
   // #swagger.tags = ['User']
@@ -165,8 +165,8 @@ userController.signUp);
 
 router.post(
   "/oauthSignup",
-  // #swagger.description = "Oauth註冊，會回傳jwt token" 
-  // #swagger.summary = "Oauth會員註冊"
+  // #swagger.description = "Oauth註冊與登入，會回傳jwt token" 
+  // #swagger.summary = "Oauth會員註冊與登入"
   // #swagger.tags = ['User']
   /* 
   #swagger.parameters['body'] = {
@@ -176,26 +176,34 @@ router.post(
       schema: 
       {
         "name": "用戶姓名",
-        "email": "r12725066@ntu.edu.tw",
+        "email": "用戶信箱",
         "oauthProvider": "Google",
         "oauthId": "oauthId"
       }
   } */
-  /* #swagger.responses[201] = { 
+  /* #swagger.responses[200] = { 
       description: "登入成功",
       schema: {
-            "message": "Sign in successfully.",
+            "message": "Member sign in successfully.",
             "token": "JWT_token"
           }
       } */
   
-  /* #swagger.responses[409] = {
-      description: "Email Conflict",
+  /* #swagger.responses[201] = { 
+      description: "註冊成功",
       schema: {
-            "error": "Email already exists"
-        }
-  } */
-
+            "message": "Member created successfully.",
+            "token": "JWT_token"
+          }
+      } */
+  /* #swagger.responses[202] = { 
+      description: "綁定成功",
+      schema: {
+            "message": "The member has already linked their Google account.",
+            "token": "JWT_token"
+          }
+      } */
+  
   /* #swagger.responses[500] = { 
       description: "網路或其他不明原因錯誤"
   } */
