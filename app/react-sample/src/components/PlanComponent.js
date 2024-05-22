@@ -13,8 +13,15 @@ import { API_CREATE_PLAN } from '../global/constants';
 import { getAuthToken } from '../utils';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
+import theme from '../components/Theme';
+import { API_GET_USER, API_GET_PLAN_DETAIL } from '../global/constants'; // API 常數
 
 export default function PlanComponent({data, key}) {
+
+  const { t, i18n } = useTranslation();
+
+
   const [userToken, setUserToken] = useState(getAuthToken());
   const navigate = useNavigate();
     const style = { 
@@ -25,22 +32,17 @@ export default function PlanComponent({data, key}) {
 
 // TODO: navigate到特定活動頁面（參數：ID）
 useEffect(() => {
-  //登入
-  // axios.post(API_LOGIN, {
-  //   "email": "r12725066@ntu.edu.tw",
-  //   "password": "a"
-  // })
-  // .then(function (response) {
-  //     console.log(response.status, response.data);
-  //     //儲存token
+
+
       const token = userToken;
-  //     //設定authorization
+
       const config = {
           headers: { 
             authorization: `Bearer ${token}`
           }
       };
-      //取得活動資訊
+
+      //取得計畫列表
       axios.get(API_CREATE_PLAN, config, key)
         .then(function (res) {
           console.log(res.data);
@@ -67,8 +69,8 @@ useEffect(() => {
           <div onClick={() => navigate(`/planPage`, { state: {id: data.plan_id } })} style={{cursor: 'pointer'}}>
             <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名計畫"}</Typography>
               <Stack direction="row" spacing={1}>
-                <Chip color="secondary" label={data.type || "未指定"}/>
-                <Chip color="secondary" label={data.activity_id? data.activity_id:"ID"}/>
+                <Chip sx={{ bgcolor: theme.palette.hashtag.review }} label={t(data.need_reviewed ? "需審核" : "不需審核")} />
+                <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.PlanTypes ? data.PlanTypes[0].typeName : "未指定")} />
               </Stack >
 
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>

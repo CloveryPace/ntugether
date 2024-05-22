@@ -48,8 +48,8 @@ function PlanNew() {
     const navigate = useNavigate();
 
     const SearchName = useRef(); // 輸入想邀請的人
-    const [need_reviewed, setReview] = useState(false); // 需審核: true, 不需審核：false
-    const [tags, setTags] = useState(['運動']); // 活動類型
+    const [need_reviewed, setReview] = useState('false'); // 需審核: true, 不需審核：false
+    const [tags, setTags] = useState(['Exercise']); // 活動類型
     const [startDate, setStartDate] = useState(null); 
     const [endDate, setEndDate] = useState(null); 
     const [userToken, setUserToken] = useState(getAuthToken());
@@ -58,13 +58,13 @@ function PlanNew() {
     const [planData, setPlanData] = useState({
         name: '',
         goal: '',
-        tags: ['運動'],
+        tags: ['Exercise'],
         introduction: '',
         // create_user: '', // ?
         progression: '', // ?
         start_date: '',
         end_date: '',
-        need_reviewed: '',
+        need_reviewed: 'false',
         application_problem: '',
         invitees: [],
         // discussion: '', // ?
@@ -77,7 +77,6 @@ function PlanNew() {
             ...prevState,
             [name]: value
         }));
-
     };
 
     const handleSubmit = (event) => {
@@ -128,12 +127,22 @@ function PlanNew() {
 
     const handleChangeTags = (event) => {
         const tagValue = event.target.value;
-        setTags([tagValue]);
+    
+        const tagMapping = {
+            "運動": "Exercise",
+            "學習": "Learning",
+            "考試": "Exam"
+        };
+    
+        const englishTag = tagMapping[tagValue] || tagValue;
+    
+        setTags([englishTag]);
         setPlanData(prevState => ({
             ...prevState,
-            tags: [tagValue]
+            tags: [englishTag]
         }));
     };
+    
 
     const handleChangeStartDate = (dateData) => {
         console.log(dateData);
@@ -273,7 +282,7 @@ function PlanNew() {
                         />
                         <Typography variant="h6"> 計畫類型 </Typography>
                         <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue="運動">
-                            {['運動', '讀書會', "出遊"].map((value) => (
+                            {['運動', '學習', "考試"].map((value) => (
                             <Grid item key={value}>
                                 <ItemTag> 
                                     <FormControlLabel
@@ -297,7 +306,10 @@ function PlanNew() {
                     </Grid>
                 </Grid>
                 <Divider sx={{my: 4,}}/>
-                <Typography variant="h6"> 進度項目 </Typography>
+                <Typography variant="h6"> 進度項目</Typography>
+                <span >* 考慮到參與者們的個人安排與完成度計算，進度項目一經建立，就不能刪除和編輯，請謹慎考慮！ *</span>
+                <br/>
+                <br/>
                 <AddProgress onProgressChange={handleProgressChange} />
                 <Divider sx={{my: 4,}}/>
                 <Grid container justifyContent="center">

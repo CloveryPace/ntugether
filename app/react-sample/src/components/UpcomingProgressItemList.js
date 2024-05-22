@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import { List, Typography, Button } from '@mui/material';
-import UpcomingProgressItem from './UpcomingProgressItem';
+import ProgressItemInList from './ProgressItemInList';
 import { Box} from '@mui/material';
 
-export default function UpcomingProgressItemList() {
 
-  const initialDisplayCount = 2;
+export default function UpcomingProgressItemList({ progressItems, onUpdate }) {
+  const initialDisplayCount = 3;
   const incrementCount = 3;
-
-  const recentActivity = [
-    { time: '2024/01/01', name: '英文' , detail: 'XXXX'},
-    { time: '2024/01/01', name: '英文', detail: 'XXXX'},
-    { time: '2024/01/01', name: '英文', detail: 'XXXX'},
-  ];
 
   const [displayCount, setDisplayCount] = useState(initialDisplayCount);
 
@@ -26,11 +20,11 @@ export default function UpcomingProgressItemList() {
         待完成列表
       </Typography>
       <List>
-        {recentActivity.slice(0, displayCount).map((item, index) => (
-          <UpcomingProgressItem key={index} item={item} />
+        {progressItems.slice(0, displayCount).map((item, index) => (
+          <ProgressItemInList key={index} item={item} onUpdate={onUpdate}/>
         ))}
       </List>
-      {displayCount < recentActivity.length && (
+      {displayCount < progressItems.length && (
         <Box sx={{ display: 'flex', justifyContent: 'center'}}>
           <Button onClick={handleShowMore}>
             <Typography>查看更多</Typography>
