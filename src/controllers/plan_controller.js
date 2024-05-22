@@ -496,6 +496,7 @@ exports.getPlanList = async (req, res) => {
         const end_date = req.query.end_date;
         const search = req.query.search;
         const mode = req.query.mode || "all";
+        
 
         allowModes = ["owned", "joined", "all"];
 
@@ -535,8 +536,27 @@ exports.getPlanList = async (req, res) => {
             attributes: ["name", "photo", "gender"],
             where: {
                 user_id: user_id,
+            },
+        });
+        else if (mode == "all") includeConditions.push({
+            model: User,
+            as: 'Participants',
+            attributes: ["name"],
+            through: {
+                attributes: [] // Exclude all attributes from the intermediate table
+            }
+            
+        })
+        
+        includeConditions.push({
+            model: planModel.PlanTypes,
+            through: planModel.PlanTypeAssociation,
+            attributes: ['typeName'],
+            through: {
+                attributes: [] // Exclude all attributes from the intermediate table
             }
         });
+        
 
         const plans = await planModel.Plan.findAll({
             include: includeConditions,
