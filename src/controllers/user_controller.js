@@ -364,12 +364,23 @@ async function resetPassword(req, res) {
 
 async function getMember(req, res) {
   const user_id = req.user_id;
-  const targetUserId = req.params.user_id;
+  const targetUserId = req.query.user_id;
+
+  if (!targetUserId){
+    selfUser = await User.findByPk(user_id, {
+      attributes: { exclude: ['password', 'oauthId'] }
+    });
+    return res.status(200).json(selfUser);
+  }
+    
+
+  
 
   await User.findOne({
     where: {
      user_id: targetUserId,
-    }
+    },
+    attributes: { exclude: ['password', 'oauthId']}
   })
     .then(results => {
 

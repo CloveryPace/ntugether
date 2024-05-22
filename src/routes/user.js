@@ -20,11 +20,11 @@ const authMiddleware = require('../middlewares/authentication');
 
 // GET routes
 router.get(
-  "/:user_id", authMiddleware.authentication, 
+  "/", authMiddleware.authentication, 
   // #swagger.description = "取得特定會員資料"
   // #swagger.summary = "取得單一會員資料"
   // #swagger.tags = ['User']
-  /* 
+  
   
   /* #swagger.responses[200] = { 
       description: '用戶詳細資料',
@@ -75,6 +75,7 @@ router.get(
   "/forgetPassword", 
   // #swagger.tags = ['User']
   // #swagger.description = '忘記密碼，輸入信箱後發送驗證碼'
+  // #swagger.summary = '忘記密碼'
   /* 
   
   /* #swagger.responses[200] = { 
