@@ -40,6 +40,7 @@ export default function Login() {
       .then(function (response) {
         setLoading(false);
         setAuthToken(response.data.jwtToken);
+        console.log(response.data.jwtToken);
         window.location.assign('/');
       })
       .catch(function (error) {

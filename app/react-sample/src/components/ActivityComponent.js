@@ -39,7 +39,7 @@ function stringAvatar(name) {
   };
 }
 
-export default function ActivityComponent({data, key}) {
+export default function ActivityComponent({data}) {
     const [userToken, setUserToken] = useState(getAuthToken());
     const [atendee, setAtendee] = useState([]);
     const navigate = useNavigate();
@@ -58,7 +58,7 @@ export default function ActivityComponent({data, key}) {
             }
         };
         //取得活動資訊
-        axios.get(API_CREATE_ACTIVITY, config, key)
+        axios.get(API_CREATE_ACTIVITY, config, data.activity_id)
           .then(function (res) {
             console.log(res.data);
           })
@@ -80,7 +80,7 @@ export default function ActivityComponent({data, key}) {
             alert("error");
           });
 
-    }, [key]);
+    }, []);
 
     return (
         <Grid item xs={12} md={4}>
@@ -90,7 +90,7 @@ export default function ActivityComponent({data, key}) {
             <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名活動"}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={data.type || "未指定"}/>
-                <Chip color="secondary" label={data.oneTime? "一次性":"長期活動"}/>
+                <Chip color="secondary" label={data.is_one_time? "一次性":"長期活動"}/>
                 <Chip color="secondary" label={data.activity_id? data.activity_id:"ID"}/>
               </Stack >
 

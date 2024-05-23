@@ -13,18 +13,16 @@ import { getAuthToken } from '../utils';
 export default function PendingReview({id}) {
     const [data, setData] = useState([]);
     const [userToken, setUserToken] = useState(getAuthToken());
-    const style = { 
-      display: "flex",
-      border: '1.5px solid rgba(0, 0, 0, 0.1)',
-      padding: '1rem',
-      spacing: "5rem",
-      direction: "row"
-    };
     const component = { 
         width: "10rem",
         border: '1.5px solid rgba(0, 0, 0, 0.1)',
         padding: '1rem'
     };
+    const component_2 = { 
+      width: "10rem",
+      border: '1.5px solid rgba(0, 0, 0, 0)',
+      padding: '1.3rem'
+  };
 
     useEffect(() => {
       //儲存token
@@ -49,7 +47,7 @@ export default function PendingReview({id}) {
 
     }, [id]);
 
-    const handleApprove = (apply_id) => {
+    const handleApprove = (apply_id) => { 
       //儲存token
       const token = userToken;
       //設定authorization
@@ -58,10 +56,6 @@ export default function PendingReview({id}) {
             authorization: `Bearer ${token}`
           }
       };
-
-      console.log("apply_id");
-      console.log(apply_id);
-      console.log(API_GET_APPLICATION + apply_id + '/approve');
   
       //審核通過
       axios.patch(API_GET_APPLICATION + apply_id + '/approve',{ 
@@ -92,7 +86,7 @@ export default function PendingReview({id}) {
             </div>
           );
         })):
-        <div style = {component}>
+        <div style = {component_2}>
             尚無申請資料
         </div>
         }

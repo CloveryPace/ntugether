@@ -51,7 +51,6 @@ function ActivityPage() {
   const { state } = useLocation();
   const { id } = state; // Read values passed on state
   const [data, setData] = useState([]);
-  const [userToken, setUserToken] = useState(getAuthToken());
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
@@ -162,7 +161,7 @@ function ActivityPage() {
             date={data.date? data.date: ""}
             location={data.location? data.location: ""}
             max_participants={data.max_participants? data.max_participants: ""}
-            ActivityAtendee=""
+            ActivityAtendee={atendee}
             oneTime={data.is_one_time? data.is_one_time: ""}
             need_reviewed={data.need_reviewed? data.need_reviewed: ""}
             type={data.type? data.type: "未指定"}
@@ -223,7 +222,9 @@ function ActivityPage() {
       </div>
 
       <div style={container}>
-        <div style={subtitle}><Typography variant="h6"> {t("參加者")} </Typography></div>
+        <div style={subtitle}>
+          <Typography variant="h6"> {t("參加者")} </Typography>
+        </div>
         {atendee.length > 0 ?
             (atendee.map((person) => {
               return (
@@ -231,13 +232,13 @@ function ActivityPage() {
                   <Chip avatar={<Avatar {...stringAvatar(person.User? person.User.name: "未知")}/>} label={person.User? person.User.name: "未知"} />
                 </div>
               );
-            })):
+            }))
+            :
           <div style={{alignSelf: 'center'}}>
               尚無參加者
           </div>
         }
       </div>
-
       <br/>
       <br/>
 
