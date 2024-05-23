@@ -222,7 +222,6 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
       .then(function (res) {
           console.log(res);
           alert('已刪除活動');
-          onHide();
           navigate('/activitylist');
       })
       .catch(function (err) {
