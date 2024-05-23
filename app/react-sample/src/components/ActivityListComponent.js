@@ -1,11 +1,9 @@
 import * as React from 'react'; 
-
 import ActivityComponent from './ActivityComponent';
 import Button from '@mui/material/Button';
-
 import { Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY, API_LOGIN } from '../global/constants';
+import { API_CREATE_ACTIVITY } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
@@ -19,14 +17,13 @@ export default function ActivityList() {
 
   useEffect(() => {
     console.log('execute function in useEffect');
-        const token = getAuthToken();
-
         //設定authorization
         const config = {
             headers: { 
               authorization: `Bearer ${userToken}`
             }
         };
+        console.log(userToken);
         //取得活動list
         axios.get(API_CREATE_ACTIVITY, config)
           .then(function (res) {
@@ -37,7 +34,7 @@ export default function ActivityList() {
             console.log(err);
             alert("error");
           });
-    }, []);
+    }, [userToken]);
   
 
     return (

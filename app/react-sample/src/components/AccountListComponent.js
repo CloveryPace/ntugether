@@ -15,15 +15,15 @@ export default function AccountListComponent() {
   useEffect(() => {
     console.log('execute function in useEffect');
     axios.get(API_CREATE_ACTIVITY)
-          .then(function (response) {
-            console.log(response);
-            setData(response.data.reverse())
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
+      .then(function (response) {
+        console.log(response);
+        setData(response.data.reverse())
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     }
-  ,[]);
+  ,[ ]);
   
 
     return (

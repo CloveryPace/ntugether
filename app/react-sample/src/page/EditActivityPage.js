@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { useRef } from "react";
-import { Stack } from '@mui/material';
+import { Stack, speedDialActionClasses } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import TextField from "@mui/material/TextField";
 import Button from '@mui/material/Button';
@@ -17,10 +17,42 @@ import { DesktopDateTimePicker } from '@mui/x-date-pickers/DesktopDateTimePicker
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs from "dayjs";
-import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import { API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { getAuthToken } from '../utils';
+import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+
+// 頭像顏色根據名字變化
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name[0]}`,
+  };
+}
+
+const container = { 
+  display: "flex",
+  margin: "1rem"
+};
 
 const style = {
   position: 'absolute',
@@ -54,15 +86,17 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_review, type, application_problem}) {
+export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_reviewed, type, application_problem}) {
   const [OneTime, setOneTime] = useState(oneTime); // 一次性活動: true, 長期性活動：false
-  const [review, setReview] = useState(need_review); // 需審核: true, 不需審核：false
+  const [review, setReview] = useState(need_reviewed); // 需審核: true, 不需審核：false
   const [Type, setType] = useState(type); // 活動類型
   const [actDate, setActDate] = useState(dayjs(date)); 
   const [ID, serID] = useState(id);
   const [userToken, setUserToken] = useState(getAuthToken());
 
-
+  console.log("參加者有這些")
+  console.log(ActivityAtendee);
+  
   const defaultreview = review ? "需審核" : "不需審核";
   const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
 
@@ -106,7 +140,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     const newLimitPerson = inputRefLimitPerson.current.value;
     const newReviewQuestion = inputRefreviewquestion.current.value;
 
-    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_review || newReviewQuestion !== application_problem) {
+    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_reviewed || newReviewQuestion !== application_problem) {
       try { 
             //儲存token
             const token = userToken;
@@ -173,44 +207,62 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   };
 
   const handleDelete = (id) => {
-    axios.post(API_LOGIN, {
-      "email": "r12725066@ntu.edu.tw",
-      "password": "a"
-    })
-    .then(function (response) {
-        console.log(response.status, response.data);
-        //儲存token
-        const token = response.data.jwtToken;
-        console.log(token);
-        //設定authorization
-        const bodyParameters = {
-          key: "value",
-        };
-        const config = {bodyParameters,
-            headers: { "authorization": `Bearer ${token}`}
-        };
+    //儲存token
+    const token = userToken;
+    //設定authorization
+    const bodyParameters = {
+      key: "value",
+    };
+    const config = {bodyParameters,
+        headers: { "authorization": `Bearer ${token}`}
+    };
+    //刪除活動
+    console.log(id);
+    axios.delete(API_GET_ACTIVITY_DETAIL + ID, config)
+      .then(function (res) {
+          console.log(res);
+          alert('已刪除活動');
+          onHide();
+          navigate('/activitylist');
+      })
+      .catch(function (err) {
+          if (err.message === "Request failed with status code 403"){
+            alert("非活動建立者無權限刪除活動");
+          }
+          else{
+            alert("刪除失敗");
+          }
+    });
+  };
 
-        //刪除活動
-        console.log(id);
-        axios.delete(API_GET_ACTIVITY_DETAIL + ID, config)
-          .then(function (res) {
-              console.log(res);
-              alert('已刪除活動');
-              onHide();
-              navigate('/activitylist');
-          })
-          .catch(function (err) {
-              if (err.message === "Request failed with status code 403"){
-                alert("非活動建立者無權限刪除活動");
-              }
-              else{
-                alert("刪除失敗");
-              }
-        });
-    })
-    .catch(function (error) {
-      // 登入中間出錯
-      console.log(error);
+  const handleDeleteAttendee = (user_id) => {
+    //儲存token
+    const token = userToken;
+    //設定authorization
+    const bodyParameters = {
+      key: "value",
+    };
+    const config = {bodyParameters,
+        headers: { "authorization": `Bearer ${token}`}
+    };
+    //刪除參加者
+    console.log(id); //活動id
+    axios.patch(API_GET_ACTIVITY_DETAIL + ID + '/remove-user', {
+      "remove_user_id": user_id
+    },
+    config)
+      .then(function (res) {
+          console.log(res);
+          alert('已刪除參加者');
+          window.location.reload(false);
+      })
+      .catch(function (err) {
+          if (err.message === "Request failed with status code 403"){
+            alert("非活動建立者無權限刪除參加者");
+          }
+          else{
+            alert("刪除失敗");
+          }
     });
   };
 
@@ -279,6 +331,25 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                       name="limitnumber"
                       label="輸入人數上限"
                   />
+                <Typography variant="h6">參加者</Typography>
+                <div style={container}>
+                  {ActivityAtendee.length > 0 ?
+                    (ActivityAtendee.map((person) => {
+                      return (
+                          <div style={{alignSelf: 'center', margin: "0.5rem"}}>
+                            <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.participants)}>
+                              <DeleteIcon/>
+                            </IconButton>
+                            <Chip avatar={<Avatar {...stringAvatar(person.User? person.User.name: "未知")}/>} label={person.User? person.User.name: "未知"}></Chip>
+                          </div>
+                      );
+                    }))
+                    :
+                  <div style={{alignSelf: 'center'}}>
+                      尚無參加者
+                  </div>
+                }
+                </div>
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6"> 活動類型 </Typography>

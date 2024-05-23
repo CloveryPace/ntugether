@@ -13,8 +13,7 @@ export const API_FORGET_PASSWORD = `${API_HOST}/user/forgetPassword`;
 export const API_GET_USER = `${API_HOST}/user`;
 export const API_CREATE_ACTIVITY = `${API_HOST}/activity`;
 export const API_GET_ACTIVITY_DETAIL = `${API_HOST}/activity/`;
-
+export const API_GET_APPLICATION = `${API_HOST}/application/`;
 export const API_CREATE_PLAN = `${API_HOST}/plan`;
 export const API_GET_PLAN_DETAIL = `${API_HOST}/plan/`;
-
 export const API_GET_USER_PROGRESS = `${API_HOST}/progress/`;

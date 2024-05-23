@@ -3,13 +3,13 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import TextField from "@mui/material/TextField";
 import { useRef } from "react";
-import { API_LOGIN, API_GET_ACTIVITY_DETAIL } from '../global/constants';
+import { API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export default function ReviewBox({id, question, need_reviewed, attendfuction}) {
+export default function ReviewBox({id, question, need_reviewed}) {
     const { t, i18n } = useTranslation();
     const Answer = useRef();
     const [userToken, setUserToken] = useState(getAuthToken());
