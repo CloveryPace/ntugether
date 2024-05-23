@@ -144,7 +144,7 @@ async function noReviewApply(req, res, plan_id, user_id) {
     });
 
 
-    
+
 
     // update participants
     await planModel.PlanParticipantsStatus.create(
@@ -163,12 +163,12 @@ async function noReviewApply(req, res, plan_id, user_id) {
     };
     const progressRes = {
         status: () => ({ json: (json) => json }),
-    };    
+    };
 
     const progressResponse = await progressController.createUserProgress(progressReq, progressRes);
     // console.log(progressResponse);
 
-    
+
     return res.status(200).send("joined!");
 
 
@@ -228,12 +228,12 @@ exports.createPlan = async (req, res) => {
         // create process
         const newProgress = await Promise.all(progression.map(async (prog) => {
             return await progressModel.Progress.create({
-              name: prog.name,
-              times: prog.times,
-              need_activity: prog.need_activity,
-              plan_id: newPlan.plan_id
+                name: prog.name,
+                times: prog.times,
+                need_activity: prog.need_activity,
+                plan_id: newPlan.plan_id
             });
-          }));
+        }));
 
         console.log(newProgress);
 
@@ -246,8 +246,8 @@ exports.createPlan = async (req, res) => {
         };
         const progressRes = {
             status: () => ({ json: (json) => json }),
-        };         
-            
+        };
+
         // return progressController.createProgress(progressReq, progressRes);
         const progressResponse = await progressController.createProgress(progressReq, progressRes);
         // console.log(progressResponse);
@@ -268,7 +268,7 @@ exports.createPlan = async (req, res) => {
             }
         );
 
-        return res.status(201).json({ "message": "plan created" });
+        return res.status(201).json({ "message": `plan created, plan id ${newPlan.plan_id}` });
 
     } catch (error) {
         if (newPlan) await newPlan.destroy();
@@ -465,11 +465,11 @@ exports.getPlanDetail = async (req, res) => {
         if (accessRight == 0) {
             return res.status(200).json(plan);
         } else if (accessRight == 1) {
-            
+
             return res.status(200).json(plan);
 
         } else if (accessRight == 2) {
-            
+
             return res.status(200).json(plan);
 
         }
@@ -496,7 +496,7 @@ exports.getPlanList = async (req, res) => {
         const end_date = req.query.end_date;
         const search = req.query.search;
         const mode = req.query.mode || "all";
-        
+
 
         allowModes = ["owned", "joined", "all"];
 
@@ -545,9 +545,9 @@ exports.getPlanList = async (req, res) => {
             through: {
                 attributes: [] // Exclude all attributes from the intermediate table
             }
-            
-        })
-        
+
+        });
+
         includeConditions.push({
             model: planModel.PlanTypes,
             through: planModel.PlanTypeAssociation,
@@ -556,7 +556,7 @@ exports.getPlanList = async (req, res) => {
                 attributes: [] // Exclude all attributes from the intermediate table
             }
         });
-        
+
 
         const plans = await planModel.Plan.findAll({
             include: includeConditions,
@@ -655,7 +655,7 @@ exports.getAllParticipants = async (req, res) => {
         // const user_id = req.user_id;
 
         const plan_id = req.params.plan_id;
-        var plan= await planModel.Plan.findByPk(plan_id);
+        var plan = await planModel.Plan.findByPk(plan_id);
         if (plan == null) return res.status(404).send("Plan not found.");
 
         const participants = await planModel.PlanParticipantsStatus.findAll({
@@ -703,7 +703,7 @@ exports.approve = async (req, res) => {
         // get applicant
         const applicant_id = application.applicant_id;
 
-        
+
         // deleteApplication
         // 不應該刪除，否則無法得知已申請通過
         // await application.destroy();
@@ -725,7 +725,7 @@ exports.approve = async (req, res) => {
         };
         const progressRes = {
             status: () => ({ json: (json) => json }),
-        };    
+        };
         const progressResponse = await progressController.createUserProgress(progressReq, progressRes);
         // console.log(progressResponse);
 

@@ -66,7 +66,7 @@ router.get(
     ]
   }
   #swagger.responses[400] = { 
-    description: "mode 未填或不符合格式",
+    description: "Query Parameter不符合格式",
     schema: "invalid mode"
   } 
   */

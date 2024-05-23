@@ -1,8 +1,6 @@
-const { Op, where, AccessDeniedError } = require('sequelize');
+const { Op } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
-const { parse } = require('yamljs');
-const { PassThrough } = require('nodemailer/lib/xoauth2');
 User.sync();
 
 const allowTags = ["exercise", "study"];
@@ -208,22 +206,53 @@ exports.getActivitiesList = async (req, res) => {
         });
 
         const activities = await activityModel.Activities.findAll({
-            include: includeConditions,
+            include: [
+                {
+                    model: User,
+                    as: 'Creator',
+                    attributes: ["user_id", "name", "email", "phoneNum", "photo", "gender"],
+                    where: mode == "owned" ? { user_id: user_id } : null,
+                },
+                {
+                    model: User,
+                    as: 'Participants',
+                    attributes: ["user_id", "name", "photo", "gender"],
+                    through: {
+                        attributes: [],
+                    },
+                    where: mode == "joined" ? { user_id: user_id } : null,
+
+                },
+            ],
             where: condition,
             limit: limit,
             offset: offset,
         });
 
-
-        var parsedActivities = [];
-
+        parsedActivities = [];
 
         for (var i = 0; i < activities.length; i++) {
             activity = activities[i];
-            if (activity) {
-                var activityData = await returnActivity(activity.activity_id);
-                parsedActivities.push(activityData);
+            let activityJson = activity.toJSON();
+
+            if (!activity.is_one_time) {
+                activityJson.date = [];
+                longTermInstances = await activityModel.LongTermActivities.findAll(
+                    {
+                        where: {
+                            activity_id: activity.activity_id
+                        }
+                    }
+                );
+
+                longTermInstances.forEach(e => {
+                    activityJson.date.push(e.date);
+                });
+
             }
+
+            if (activityJson) parsedActivities.push(activityJson);
+
         }
 
         res.status(200).json(parsedActivities);
@@ -410,14 +439,26 @@ exports.getAllApplications = async (req, res) => {
         }
 
         const applications = await activityModel.Applications.findAll({
+            include: [
+                {
+                    model: User,
+                    as: "Applicant",
+                    attributes: ["user_id", "name", "photo", "gender"],
+                },
+                {
+                    model: activityModel.Activities,
+                    as: "Activity",
+                    attributes: ['activity_id', 'name'],
+                }
+            ],
             where: {
                 activity_id: activity_id,
                 is_approved: false
             }
         });
-        if (applications.length === 0) {
-            return res.status(404).json({ error: 'Application not found or already approved' });
-        }
+        // if (applications.length === 0) {
+        //     return res.status(404).json({ error: 'no application found' });
+        // }
 
         return res.json(applications);
     } catch (error) {

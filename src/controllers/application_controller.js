@@ -1,5 +1,3 @@
-const express = require('express');
-const { Op } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 
@@ -30,17 +28,18 @@ exports.getApplicationDetail = async (req, res) => {
         const application = await activityModel.Applications.findOne({
             where: {
                 application_id: application_id,
-                is_approved: false                
+                is_approved: false
             },
             include: [
                 {
                     model: User,
                     as: "Applicant",
+                    attributes: ["user_id", "name", "photo", "gender"],
                 },
                 {
                     model: activityModel.Activities,
                     as: "Activity",
-                    attributes: ['activity_id'],
+                    attributes: ['activity_id', 'name'],
                 }
             ]
         });
@@ -50,7 +49,7 @@ exports.getApplicationDetail = async (req, res) => {
         const activity_id = application.activity_id;
         const activity = await activityModel.Activities.findByPk(activity_id);
         if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
-        
+
 
         return res.status(200).json(application);
     } catch (error) {
@@ -114,6 +113,6 @@ exports.approve = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving application:', error);
-        res.status(500).json({ error: error.message});
+        res.status(500).json({ error: error.message });
     }
 };

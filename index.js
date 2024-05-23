@@ -7,7 +7,8 @@ const application_routes = require("./src/routes/application");
 const activity_routes = require('./src/routes/activity');
 const plan_routes = require("./src/routes/plan");
 const user_routes = require('./src/routes/user.js');
-const progress_routes = require('./src/routes/progress.js')
+const progress_routes = require('./src/routes/progress.js');
+const notification_routes = require('./src/routes/notification.js');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use("/activity", activity_routes);
 app.use("/user", user_routes);
 app.use("/plan", plan_routes);
 app.use("/progress", progress_routes);
+app.use("/notification", notification_routes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Health check

@@ -4,6 +4,7 @@ import json
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
 activity_id = 39
+plan_id = 39
 
 
 def api_test(func):
@@ -12,9 +13,12 @@ def api_test(func):
         print(res.status_code)
         print(res.text)
 
-        with open("result.json", "w") as f:
-            json.dump(json.loads(res.text), f, ensure_ascii=False, indent=2)
-
+        try:
+            with open("result.json", "w") as f:
+                json.dump(json.loads(res.text), f,
+                          ensure_ascii=False, indent=2)
+        except Exception:
+            pass
     return wrapper
 
 
@@ -39,8 +43,8 @@ def signup():
 
 def signin():
     payload = json.dumps({
-        "email": "daniel.bb0321@gmail.com",
-        # "email": "b09611028@ntu.edu.tw",
+        # "email": "daniel.bb0321@gmail.com",
+        "email": "b09611028@ntu.edu.tw",
         # "email": "r12725066@ntu.edu.tw",
         "password": "pwd"
         # "password": "a"
@@ -98,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?mode=owned&is_long_term=false",
+        url=f"{host}/activity?mode=owned&is_long_term=false&search=example",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -126,7 +130,7 @@ def update_activity():
             "name": "cool Activity",
             "introduction": "updated Introduction of Activity",
             "date": "2024-04-27T06:26:48.578Z",
-            "need_review": True,
+            "need_reviewed": True,
             "county": "Taiwan",
             "application_problem": "enjoy!"
         }
@@ -267,16 +271,19 @@ def create_plan():
         "name": "Learning Plan",
         "goal": "Learn how to become a cow",
         "introduction": "Let's do it!",
-        "progression": {
-            "english": 10,
-            "chinese": 5,
-        },
+        "progression": [
+            {
+                "name": "Read English book",
+                "times": 10,
+                "need_activity": False
+            }
+        ],
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
         "application_problem": "hello?",
         "tags": ["Learning"],
-        "invitees": [1, 2, 5],
-        "need_review": True,
+        "invitees": [1, 2, 5, 6],
+        "need_reviewed": True,
     })
 
     res = requests.post(
@@ -306,7 +313,7 @@ def update_plan():
         "tags": ["Exam"],
         "invitees": [3],
         # "removed_participants": [],
-        "need_review": False,
+        "need_reviewed": False,
     })
 
     res = requests.patch(
@@ -337,7 +344,7 @@ def delete_plan():
 @api_test
 def get_plan_detail():
     res = requests.get(
-        url=f"{host}/plan/29",
+        url=f"{host}/plan/{plan_id}",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -350,7 +357,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan?limit=30&search=Cool&mode=owned",
+        url=f"{host}/plan",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -368,7 +375,7 @@ def apply_plan():
         }
     )
     res = requests.post(
-        url=f"{host}/plan/29/apply",
+        url=f"{host}/plan/{plan_id}/apply",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -409,7 +416,7 @@ def get_plan_application():
 @api_test
 def get_plan_applications():
     res = requests.get(
-        url=f"{host}/plan/29/applications",
+        url=f"{host}/plan/{plan_id}/applications",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -426,7 +433,7 @@ def make_plan_discussion():
         }
     )
     res = requests.post(
-        url=f"{host}/plan/29/discussion",
+        url=f"{host}/plan/{plan_id}/discussion",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -440,7 +447,7 @@ def make_plan_discussion():
 def get_plan_discussion():
 
     res = requests.get(
-        url=f"{host}/plan/29/discussion?limit=5&offset=0",
+        url=f"{host}/plan/{plan_id}/discussion?limit=5&offset=0",
         headers={
             "content-type": "application/json",
         })
@@ -457,7 +464,7 @@ def respond_to_invitation():
         }
     )
     res = requests.post(
-        url=f"{host}/plan/29/invitation",
+        url=f"{host}/plan/{plan_id}/invitation",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -468,11 +475,25 @@ def respond_to_invitation():
     return res
 
 
+@api_test
+def get_notifications():
+
+    res = requests.get(
+        url=f"{host}/notification?contents=invitation,application&types=activity,plan",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
+    )
+
+    return res
+
+
 if __name__ == '__main__':
 
     # signup()
     # create_activity()
-    get_acitvity_list()
+    # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
@@ -496,5 +517,7 @@ if __name__ == '__main__':
     # make_plan_discussion()
     # get_plan_discussion()
     # respond_to_invitation()
+
+    get_notifications()
 
     pass
