@@ -1,6 +1,10 @@
-// 活動完整資訊
 import HeaderBar from '../components/HeaderBar';
+import AddProgress from '../components/AddProgress';
+import { getAuthToken } from '../utils';
+import { API_CREATE_PLAN } from '../global/constants';
+
 import './Common.css';
+import theme from '../components/Theme'; 
 
 import Stack from '@mui/material/Stack';
 import TextField from "@mui/material/TextField";
@@ -20,22 +24,10 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import axios from 'axios';
-import { API_CREATE_ACTIVITY } from '../global/constants';
 import dayjs from 'dayjs';
-
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
 import { Divider } from '@mui/material';
-
-import theme from '../components/Theme'; 
-import AddProgress from '../components/AddProgress';
-
-const ItemOneTime = styled(Paper)(({ theme }) => ({
-  backgroundColor: theme.palette.hashtag.oneTime,
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: 'center',
-}));
 
 const ItemReview = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.hashtag.review,
@@ -51,77 +43,81 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-// TODO: 按新增按鈕，到活動頁面（透過活動ID）
-
 function PlanNew() {
+
     const navigate = useNavigate();
-    // read input
-    // useRef()讀值方法：XXXXXXX.current?.value
-    // current 後面接?，避免未輸入值時出現error
-    const ActivityName = useRef(); // 活動名稱
-    const ActivityIntro = useRef(); // 活動簡介
-    const ApplyQues = useRef(); // 審核題目
-    const ActivityTime = useRef(); // 活動時間
-    const ActivityPos = useRef(); // 活動地點
-    const AttendNum = useRef(); // 參加人數限制
+
     const SearchName = useRef(); // 輸入想邀請的人
-    const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
-    const [review, setReview] = useState(false); // 需審核: true, 不需審核：false
-    const [type, setType] = useState('運動'); // 活動類型
-    const [actDate, setActDate] = useState(dayjs('2024-04-17')); 
+    const [need_reviewed, setReview] = useState('false'); // 需審核: true, 不需審核：false
+    const [tags, setTags] = useState(['Exercise']); // 活動類型
+    const [startDate, setStartDate] = useState(null); 
+    const [endDate, setEndDate] = useState(null); 
+    const [userToken, setUserToken] = useState(getAuthToken());
 
-    const [activityData, setActivityData] = useState({
-        activityName: '',
-        activityIntro: '',
-        applyQues: '',
-        activityTime: '',
-        activityPos: '',
-        AttendNum: '',
-        inviteName: '',
-        oneTime: '',
-        type: '',
-        review: ''
 
-      })
+    const [planData, setPlanData] = useState({
+        name: '',
+        goal: '',
+        tags: ['Exercise'],
+        introduction: '',
+        // create_user: '', // ?
+        progression: '', // ?
+        start_date: '',
+        end_date: '',
+        need_reviewed: 'false',
+        application_problem: '',
+        invitees: [],
+        // discussion: '', // ?
+    });
+
     const handleChange = e => {
         const { name, value } = e.target;
-        // console.log("handleChange")
 
-        // console.log(name);
-        // console.log(value);
-
-        // console.log(activityData)
-
-        setActivityData(prevState => ({
+        setPlanData(prevState => ({
             ...prevState,
             [name]: value
         }));
-
-        console.log(activityData)
-    };  
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        // console.log(ActivityTime.current?.value);
-        // console.log("是否為一次性活動" + oneTime);
-        // console.log("是否需要審核" + review);
-        // console.log("活動類型: " + type);
-        console.log(activityData);
+        console.log(planData);
 
-        axios.post(API_CREATE_ACTIVITY, activityData)
-          .then(function (response) {
-            console.log(response);
-            alert('新增成功(*´∀`)~♥');
-            navigate('/activitylist');
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-    };
+        if (!startDate || !endDate) {
+            alert('請選擇開始日期和結束日期！');
+            return; 
+        }
+        
+        const startDateObj = new Date(startDate);
+        const endDateObj = new Date(endDate);
+        
+        if (startDateObj > endDateObj) {
+            alert('開始日期必須早於結束日期！');
+            return;
+        }
 
-    const handleOneTimeChange = (event) => {
-        setOneTime(event.target.value);
-        handleChange(event);
+        const token = userToken;
+
+        //設定authorization
+        const bodyParameters = {
+            key: "value",
+            planData
+        };
+        const config = {bodyParameters,
+            headers: { "authorization": `Bearer ${token}`}
+        };
+
+        //建立計畫
+        axios.post(API_CREATE_PLAN, bodyParameters.planData, config)
+        .then(function (res) {
+            console.log(res);
+            alert('成功(*´∀`)~♥');
+            navigate('/planList');
+        })
+        .catch(function (err) {
+            alert("新增失敗");
+            console.log(err);
+        });
     };
 
     const handleChangeReview = (event) => {
@@ -129,147 +125,205 @@ function PlanNew() {
         handleChange(event);
     };
 
-    const handleChangeType = (event) => {
-        setType(event.target.value);
-        handleChange(event);
+    const handleChangeTags = (event) => {
+        const tagValue = event.target.value;
+    
+        const tagMapping = {
+            "運動": "Exercise",
+            "學習": "Learning",
+            "考試": "Exam"
+        };
+    
+        const englishTag = tagMapping[tagValue] || tagValue;
+    
+        setTags([englishTag]);
+        setPlanData(prevState => ({
+            ...prevState,
+            tags: [englishTag]
+        }));
     };
+    
 
-    const handleChangeDate = (dateData) => {
+    const handleChangeStartDate = (dateData) => {
         console.log(dateData);
-        setActDate(dateData);
+        setStartDate(dateData);
         let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
         const event = { 
             "target": {
                 "value": finaldate,
-                "name": "activityTime"
+                "name": "start_date"
             }
         };
         handleChange(event);
 
     };
 
-  return (
-    <ThemeProvider theme={theme}>
-     <HeaderBar />
-        <div className='Main'>
+    const handleChangeEndDate = (dateData) => {
+        console.log(dateData);
+        setEndDate(dateData);
+        let finaldate = dateData.year() + '/'  + (dateData.month() + 1)+ '/' + dateData.date();
+        const event = { 
+            "target": {
+                "value": finaldate,
+                "name": "end_date"
+            }
+        };
+        handleChange(event);
 
-            <Stack direction="row" spacing={2}>
-                <Typography variant="h4">新增進度計畫</Typography>
-            </Stack>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
-            <Grid container spacing={10}>
-                <Grid item xs={12} md={6}>
-                <Typography variant="h6">計畫名稱</Typography>
-                    <TextField
-                        variant="outlined"
-                        value={activityData.name}
-                        onChange={handleChange}
-                        name="activityName"
-                        autoFocus
-                        fullWidth
-                        label="輸入計畫名稱"
-                    />
-                    <Typography variant="h6"> 計畫目標 </Typography>
-                    <TextField
-                        variant="outlined"
-                        value={activityData.activityIntro}
-                        onChange={handleChange}
-                        name="activityIntro"
-                        autoFocus
-                        fullWidth
-                        label="輸入計畫目標"
-                    />
-                    <Typography variant="h6"> 計畫簡介 </Typography>
-                    <TextField
-                        variant="outlined"
-                        value={activityData.activityIntro}
-                        onChange={handleChange}
-                        name="activityIntro"
-                        autoFocus
-                        fullWidth
-                        label="輸入計畫簡介"
-                    />
-                    <Typography variant="h6"> 計畫日期 </Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                        <DatePicker
-                        value={actDate}
-                        onChange={handleChangeDate}
-                        name="activityTime"
-                        required
-                        fullWidth
-                        label="輸入計畫日期"
-                        id="activityTime"
-                        />
-                    </LocalizationProvider>
-                </Grid>
+    };
 
-                <Grid item xs={12} md={6}>
-                    <Typography variant="h6"> 加入審核 </Typography>
-                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
-                        {['需審核', '不需審核'].map((value) => (
-                        <Grid item>
-                            <ItemReview> 
-                                <FormControlLabel
-                                    value={value === "需審核"}
-                                    control={<Radio />}
-                                    label={`${value}`}
-                                    labelPlacement="end"
-                                />
-                            </ItemReview>
-                        </Grid>
-                        ))}
-                    </RadioGroup>
-                    <Typography variant="h6"> </Typography>
-                    <TextField
-                        value={activityData.applyQues}
-                        onChange={handleChange}
-                        name="applyQues"
-                        fullWidth
-                        variant="outlined"
-                        autoFocus
-                        label="輸入審核題目"
-                    />
-                    <Typography variant="h6"> 計畫類型 </Typography>
-                    <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue="運動">
-                        {['運動', '讀書會', "出遊"].map((value) => (
-                        <Grid item>
-                            <ItemTag> 
-                                <FormControlLabel
-                                    value={value}
-                                    control={<Radio />}
-                                    label={`${value}`}
-                                    labelPlacement="end"
-                                />
-                            </ItemTag>
-                        </Grid>
-                        ))}
-                    </RadioGroup>
-                    <Typography variant="h6"> 邀請加入 </Typography>
-                    <TextField
-                        fullWidth
-                        inputRef={SearchName}
-                        variant="outlined"
-                        autoFocus
-                        label="邀請..."
-                    />
-                </Grid>
-            </Grid>
-            <Divider sx={{my: 4,}}/>
-            <Typography variant="h6"> 進度項目 </Typography>
-            <AddProgress />
-            <Divider sx={{my: 4,}}/>
-            <Grid container justifyContent="center">
-              <Grid item>
+    const handleProgressChange = (items) => {
+        const progressEvent = { 
+            "target": {
+                "value": items,
+                "name": "progression"
+            }
+        };
+        handleChange(progressEvent);
+    };
+
+    return (
+        <ThemeProvider theme={theme}>
+        <HeaderBar />
+            <div className='Main'>
+
                 <Stack direction="row" spacing={2}>
-                    <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}> 新增 </Button>
-                    <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> 取消 </Button>
+                    <Typography variant="h4"> 新增進度計畫 </Typography>
                 </Stack>
-              </Grid>
-            </Grid>
-            </Box>
-        </div>
-    </ThemeProvider>
-  );
+                <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <Grid container spacing={10}>
+                    <Grid item xs={12} md={6}>
+                    <Typography variant="h6">計畫名稱</Typography>
+                        <TextField
+                            variant="outlined"
+                            value={planData.name}
+                            onChange={handleChange}
+                            name="name"
+                            autoFocus
+                            fullWidth
+                            label="輸入計畫名稱"
+                            required
+                        />
+                        <Typography variant="h6"> 計畫目標 </Typography>
+                        <TextField
+                            variant="outlined"
+                            value={planData.goal}
+                            onChange={handleChange}
+                            name="goal"
+                            autoFocus
+                            fullWidth
+                            label="輸入計畫目標"
+                            required
+                        />
+                        <Typography variant="h6"> 計畫簡介 </Typography>
+                        <TextField
+                            variant="outlined"
+                            value={planData.introduction}
+                            onChange={handleChange}
+                            name="introduction"
+                            autoFocus
+                            fullWidth
+                            label="輸入計畫簡介"
+                            required
+                        />
+                        <Typography variant="h6"> 計畫日期 </Typography>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                            value={startDate}
+                            onChange={handleChangeStartDate}
+                            name="start_date"
+                            required
+                            fullWidth
+                            label="輸入計畫開始日期"
+                            id="start_date"
+                            sx={{ mb: '20px' }}
+                            />
+                        </LocalizationProvider>
+                        <span style={{ marginLeft: '20px', marginRight: '20px'}}> </span>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                            value={endDate}
+                            onChange={handleChangeEndDate}
+                            name="end_date"
+                            required
+                            fullWidth
+                            label="輸入計畫結束日期"
+                            id="end_date"
+                            />
+                        </LocalizationProvider>
+
+                    </Grid>
+
+                    <Grid item xs={12} md={6}>
+                        <Typography variant="h6"> 加入審核 </Typography>
+                        <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
+                            {['需審核', '不需審核'].map((value) => (
+                            <Grid item key={value}>
+                                <ItemReview> 
+                                    <FormControlLabel
+                                        value={value === "需審核"}
+                                        control={<Radio />}
+                                        label={`${value}`}
+                                        labelPlacement="end"
+                                    />
+                                </ItemReview>
+                            </Grid>
+                            ))}
+                        </RadioGroup>
+                        <Typography variant="h6"> </Typography>
+                        <TextField
+                            value={planData.application_problem}
+                            onChange={handleChange}
+                            name="application_problem"
+                            fullWidth
+                            variant="outlined"
+                            autoFocus
+                            label="輸入審核題目"
+                        />
+                        <Typography variant="h6"> 計畫類型 </Typography>
+                        <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue="運動">
+                            {['運動', '學習', "考試"].map((value) => (
+                            <Grid item key={value}>
+                                <ItemTag> 
+                                    <FormControlLabel
+                                        value={value}
+                                        control={<Radio />}
+                                        label={`${value}`}
+                                        labelPlacement="end"
+                                    />
+                                </ItemTag>
+                            </Grid>
+                            ))}
+                        </RadioGroup>
+                        <Typography variant="h6"> 邀請加入 </Typography>
+                        <TextField
+                            fullWidth
+                            inputRef={SearchName}
+                            variant="outlined"
+                            autoFocus
+                            label="邀請..."
+                        />
+                    </Grid>
+                </Grid>
+                <Divider sx={{my: 4,}}/>
+                <Typography variant="h6"> 進度項目</Typography>
+                <span >* 考慮到參與者們的個人安排與完成度計算，進度項目一經建立，就不能刪除和編輯，請謹慎考慮！ *</span>
+                <br/>
+                <br/>
+                <AddProgress onProgressChange={handleProgressChange} />
+                <Divider sx={{my: 4,}}/>
+                <Grid container justifyContent="center">
+                  <Grid item>
+                    <Stack direction="row" spacing={2}>
+                        <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}> 新增 </Button>
+                        <Button variant="contained" color="error" onClick={() => navigate('/planList')}> 取消 </Button>
+                    </Stack>
+                  </Grid>
+                </Grid>
+                </Box>
+            </div>
+        </ThemeProvider>
+    );
 }
 
 export default PlanNew;

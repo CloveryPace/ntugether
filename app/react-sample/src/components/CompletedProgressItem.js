@@ -4,8 +4,13 @@ import {useTheme} from '@mui/material';
 import Button from '@mui/material/Button';
 import { Box} from '@mui/material';
 
-export default function CompletedProgressItem({ item, index }) {
+export default function CompletedProgressItem({ item}) {
   const theme = useTheme();
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
     return (
       <Paper elevation={3} style={{ marginBottom: '10px', padding: '10px', backgroundColor: theme.palette.primary.light}}>
@@ -16,9 +21,9 @@ export default function CompletedProgressItem({ item, index }) {
                 <>  
                     {"進度名稱：" + item.name} 
                     <br/>
-                    {"完成時間：" + item.time}
+                    {"完成時間：" + formatDate(item.user_progress_date)}
                     <br/>
-                    {"進度細節：" + item.detail}
+                    {"進度細節：" + item.description}
                 </>
               } />
         </ListItem>

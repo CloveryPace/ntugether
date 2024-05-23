@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Typography, IconButton, Checkbox, FormControlLabel, TextField, Box, Button } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete'; // Import the delete icon
 import Stack from '@mui/material/Stack';
+import { useEffect} from "react";
 
-const AddProgress = () => {
+
+const AddProgress = ({ onProgressChange }) => {
   // Adjusted to match the data model
-  const [items, setItems] = useState([{ name: '', time_to_finished: '', need_activity: false }]);
+  const [items, setItems] = useState([{ name: '', times: '', need_activity: false }]);
 
   const handleChange = (index, field, value) => {
     const newItems = [...items];
@@ -14,7 +16,7 @@ const AddProgress = () => {
   };
 
   const handleAddClick = () => {
-    setItems([...items, { name: '', time_to_finished: '', need_activity: false }]);
+    setItems([...items, { name: '', times: '', need_activity: false }]);
   };
 
   const handleDeleteClick = (index) => {
@@ -32,6 +34,10 @@ const AddProgress = () => {
     newItems[index].need_activity = !newItems[index].need_activity;
     setItems(newItems);
   };
+
+  useEffect(() => {
+    onProgressChange(items);
+  }, [items, onProgressChange]);
 
   return (
     <div>
@@ -71,8 +77,8 @@ const AddProgress = () => {
                 sx={{ flex: 1 }}
                 label="次數"
                 variant="outlined"
-                value={item.time_to_finished}
-                onChange={(e) => handleChange(index, 'time_to_finished', handleNumberInput(e))}
+                value={item.times}
+                onChange={(e) => handleChange(index, 'times', handleNumberInput(e))}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
             <FormControlLabel
