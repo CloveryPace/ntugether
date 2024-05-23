@@ -1,8 +1,6 @@
 import * as React from 'react'; 
-
 import ActivityComponent from './ActivityComponent';
 import Button from '@mui/material/Button';
-
 import { Grid } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { API_CREATE_ACTIVITY } from '../global/constants';
@@ -36,7 +34,7 @@ export default function ActivityList() {
             console.log(err);
             alert("error");
           });
-    }, []);
+    }, [userToken]);
   
 
     return (

@@ -5,14 +5,10 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY, API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PeopleIcon from '@mui/icons-material/People';
-import axios from 'axios';
 import { Grid } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { getAuthToken } from '../utils';
 import dayjs from 'dayjs';
 import AvatarGroup from '@mui/material/AvatarGroup';
 
@@ -40,47 +36,11 @@ function stringAvatar(name) {
 }
 
 export default function ActivityComponent({data}) {
-    const [userToken, setUserToken] = useState(getAuthToken());
-    const [atendee, setAtendee] = useState([]);
     const navigate = useNavigate();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'
     };
-
-    useEffect(() => {
-        //儲存token
-        const token = userToken;
-        //設定authorization
-        const config = {
-            headers: { 
-              authorization: `Bearer ${token}`
-            }
-        };
-        //取得活動資訊
-        axios.get(API_CREATE_ACTIVITY, config, data.activity_id)
-          .then(function (res) {
-            console.log(res.data);
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("error");
-          });
-
-        //取得參加者
-        axios.get(API_GET_ACTIVITY_DETAIL + data.activity_id + '/participants', config)
-          .then(function (res) {
-            console.log("取得參加者成功");
-            setAtendee(res.data);
-            console.log(res.data);
-          })
-          .catch(function (err) {
-            console.log("取得參加者出現錯誤");
-            console.log(err);
-            alert("error");
-          });
-
-    }, []);
 
     return (
         <Grid item xs={12} md={4}>
@@ -105,13 +65,13 @@ export default function ActivityComponent({data}) {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  {atendee.length > 0 ?
+                  {data.Participants.length > 0 ?
                     <AvatarGroup
                     renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
-                    total={atendee.length}
+                    total={data.Participants.length}
                     >
                       <div style={{alignSelf: 'center'}}>
-                        <Chip avatar={<Avatar {...stringAvatar(atendee[0].User? atendee[0].User.name: "未知")}/>} label={atendee[0].User? atendee[0].User.name: "未知"} />
+                        <Chip avatar={<Avatar {...stringAvatar(data.Participants[0].name? data.Participants[0].name: "未知")}/>} label={data.Participants[0].name? data.Participants[0].name: "未知"} />
                       </div>
                     </AvatarGroup>
                     :

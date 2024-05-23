@@ -102,7 +102,7 @@ function ActivityPage() {
             alert("error");
           });
 
-      }, [id]);
+      }, [id, data.date]);
 
 
   const [editingShow, setEditingShow] = useState(false);
