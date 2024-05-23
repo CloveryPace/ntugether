@@ -1,4 +1,4 @@
-const { Op, where } = require('sequelize');
+const { Op, where, AccessDeniedError } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 const { parse } = require('yamljs');
@@ -19,12 +19,12 @@ async function returnActivity(activity_id) {
         {
             model: User,
             as: 'Creator',
-            attributes: ["name", "email", "phoneNum", "photo", "gender"]
+            attributes: ["user_id", "name", "email", "phoneNum", "photo", "gender"]
         },
         {
             model: User,
             as: 'Participants',
-            attributes: ["name", "photo", "gender"],
+            attributes: ["user_id", "name", "photo", "gender"],
             through: {
                 attributes: [],
             }
@@ -40,7 +40,6 @@ async function returnActivity(activity_id) {
 
     var activityJson = activity.toJSON();
 
-    console.log(activity.is_one_time);
     if (!activity.is_one_time) {
         activityJson.date = [];
         longTermInstances = await activityModel.LongTermActivities.findAll(
@@ -173,7 +172,7 @@ exports.getActivitiesList = async (req, res) => {
         // set search condition
         var condition = {};
 
-        if (is_long_term != null) condition.is_one_time = !is_long_term;
+        if (is_long_term != null) condition.is_one_time = !(is_long_term == "true" || is_long_term == "True");
         if (country) condition.country = country;
         if (location) condition.location = location;
         if (search) condition.name = { [Op.like]: '%' + search + '%' };
@@ -217,9 +216,14 @@ exports.getActivitiesList = async (req, res) => {
 
 
         var parsedActivities = [];
-        for (var activity in activities) {
-            var activityData = await returnActivity(activity);
-            if (activityData != null) parsedActivities.push(activityData);
+
+
+        for (var i = 0; i < activities.length; i++) {
+            activity = activities[i];
+            if (activity) {
+                var activityData = await returnActivity(activity.activity_id);
+                parsedActivities.push(activityData);
+            }
         }
 
         res.status(200).json(parsedActivities);
@@ -359,7 +363,6 @@ exports.deleteActivity = async (req, res) => {
     try {
         const user_id = req.user_id;
         const activity_id = req.params.activity_id;
-        console.log(activity_id);
 
         // Find the activity by ID
         var activity = await activityModel.Activities.findByPk(activity_id);

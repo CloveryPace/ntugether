@@ -98,7 +98,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity/",
+        url=f"{host}/activity?mode=owned&is_long_term=false",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -145,7 +145,7 @@ def update_activity():
 @api_test
 def delete_activity():
     res = requests.delete(
-        url=f"{host}/activity/17",
+        url=f"{host}/activity/20",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
