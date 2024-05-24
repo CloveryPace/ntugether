@@ -72,13 +72,35 @@ export default function PendingReview({id}) {
       });
     };
 
+    //刪除申請
+    const handleDeny = (apply_id) => { 
+      const token = userToken;
+      const config = {
+          headers: { 
+            authorization: `Bearer ${token}`
+          }
+      }
+      axios.patch(API_GET_APPLICATION + apply_id + '/approve',{ 
+        "is_approved": true
+      }, config)
+        .then(function (res) {
+            console.log(res);
+            alert('刪除成功');
+            window.location.reload(false);
+        })
+        .catch(function (err) {
+            alert("刪除失敗");
+            console.log(err);
+      });
+    };
+
     return (
       <Stack direction="column" spacing={1}>
         {data.length > 0 ?
         (data.map((comment) => {
           return (
             <div style = {component}>
-              <Chip avatar={<Avatar> {comment.applicant_id? comment.applicant_id: "未知"} </Avatar>} label={comment.applicant_id? comment.applicant_id: "未知"} />
+              <Chip avatar={<Avatar> {comment.Applicant? comment.Applicant.name[0]: "未知"} </Avatar>} label={comment.Applicant.name? comment.Applicant.name: "未知"} />
               <p> {comment.application_response? comment.application_response: "未回答"} </p>
               <Button variant="contained" color="primary" onClick={() =>handleApprove(comment.application_id)}> 加入 </Button> 
               <p></p>

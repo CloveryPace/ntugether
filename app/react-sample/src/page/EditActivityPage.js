@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import { useRef } from "react";
-import { Stack, speedDialActionClasses } from '@mui/material';
+import { Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import TextField from "@mui/material/TextField";
 import Button from '@mui/material/Button';
@@ -91,15 +91,10 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const [review, setReview] = useState(need_reviewed); // 需審核: true, 不需審核：false
   const [Type, setType] = useState(type); // 活動類型
   const [actDate, setActDate] = useState(dayjs(date)); 
-  const [ID, serID] = useState(id);
+  const [ID, setID] = useState(id);
   const [userToken, setUserToken] = useState(getAuthToken());
-
-  console.log("參加者有這些")
-  console.log(ActivityAtendee);
-  
   const defaultreview = review ? "需審核" : "不需審核";
   const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
-
   const inputRefName = useRef();
   const inputRefIntro = useRef();
   const inputRefLocation = useRef();
@@ -107,6 +102,21 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const inputRefreviewquestion = useRef();
 
   const navigate = useNavigate();
+
+  // 初始化從ActivityPage傳進的值
+  const [data, setData] = useState({
+    name: name,
+    introduction: introduction,
+    date: date,
+    inviteName: '',
+    is_one_time: oneTime,
+    type: type,
+    need_reviewed: need_reviewed,
+    country: "Taiwan",
+    max_participants: max_participants,
+    location: location,
+    application_problem: application_problem
+  })
 
   const handleUpdate = (event) => {
     event.preventDefault();
@@ -142,47 +152,46 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
 
     if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_reviewed || newReviewQuestion !== application_problem) {
       try { 
-            //儲存token
-            const token = userToken;
+        const token = userToken;
+        const bodyParameters = {
+          key: "value",
+        };
+        const config = {bodyParameters,
+            headers: { "authorization": `Bearer ${token}`}
+        };
 
-            //設定authorization
-            const bodyParameters = {
-              key: "value",
-            };
-            const config = {bodyParameters,
-                headers: { "authorization": `Bearer ${token}`}
-            };
+        console.log("新時間：");
+        console.log(newTime);
 
-            console.log(id);
-            //更新活動
-            axios.patch(API_GET_ACTIVITY_DETAIL + id, { 
-              "id": id,         
-              "name": newName,
-              "introduction": newIntro,
-              "date": newTime,
-              "is_one_time": OneTime,
-              "type": Type,
-              "need_reviewed": review,
-              "max_participants": newLimitPerson,
-              "location": newLocation,
-              "application_problem": newReviewQuestion
-            },
-              config
-            )
-            .then(function (res) {
-                console.log(res);
-                alert('更新成功(*´∀`)~♥');
-                window.location.reload(false);
-                onHide();
-            })
-            .catch(function (err) {
-              if (err.message === "Request failed with status code 403"){
-                alert("非活動建立者無權限更新活動");
-              }
-              else{
-                alert("更新失敗");
-              }
-          });
+        //更新活動
+        axios.patch(API_GET_ACTIVITY_DETAIL + id, { 
+          "id": id,         
+          "name": newName,
+          "introduction": newIntro,
+          "date": newTime,
+          "is_one_time": OneTime,
+          "type": Type,
+          "need_reviewed": review,
+          "max_participants": newLimitPerson,
+          "location": newLocation,
+          "application_problem": newReviewQuestion
+        },
+          config
+        )
+        .then(function (res) {
+            console.log(res);
+            alert('更新成功(*´∀`)~♥');
+            window.location.reload(false);
+            onHide();
+        })
+        .catch(function (err) {
+          if (err.message === "Request failed with status code 403"){
+            alert("非活動建立者無權限更新活動");
+          }
+          else{
+            alert("更新失敗");
+          }
+      });
       } catch (error) {
         //更新出錯
         alert("Error: Failed to update activity name");
@@ -205,6 +214,48 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const handleChangeDate = (dateData) => {
       setActDate(dateData);
   };
+
+  // 長期性活動多個時間
+  const [dateitems, setDateitems] = useState([dayjs(date)]);
+  const handleAddClick = () => {
+      setDateitems([...dateitems, dayjs()]);
+  };
+  const handleDeleteClick = (index) => {
+      var newdateItems = [...dateitems];
+      console.log("After delete");
+      var edited = newdateItems.splice(index, 1); //被刪除的元素
+      setDateitems(newdateItems);
+      const event = { 
+          "target": {
+              "value": newdateItems,
+              "name": "date"
+          }
+      };
+      handleChange(event);
+  };
+  const handleChangeDateMul = (index, value) => {
+      const newdateItems = [...dateitems];
+      newdateItems[index] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
+      console.log(newdateItems);
+      setDateitems(newdateItems);
+      const event = { 
+          "target": {
+              "value": dateitems,
+              "name": "date"
+          }
+      };
+      handleChange(event);
+    };
+  const handleChange = e => {
+    const { name, value } = e.target;
+    setData(prevState => ({
+        ...prevState,
+        [name]: value
+    }));
+    console.log(data);
+    console.log(data.date);
+  };  
+
 
   const handleDelete = (id) => {
     //儲存token
@@ -281,8 +332,9 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
               <Typography variant="h6">活動名稱</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={name}
+                      defaultValue={data.name}
                       inputRef={inputRefName}
+                      onChange={handleChange}
                       autoFocus
                       fullWidth
                       name="name"
@@ -291,30 +343,66 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 <Typography variant="h6">活動簡介</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={introduction}
+                      defaultValue={data.introduction}
                       inputRef={inputRefIntro}
+                      onChange={handleChange}
                       autoFocus
                       fullWidth
                       name="introduction"
                       label="輸入活動簡介"
                   />
-                <Typography variant="h6"> 活動時間 </Typography>
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                        <DesktopDateTimePicker
-                        required
-                        fullWidth
-                        onChange={handleChangeDate}
-                        defaultValue={actDate}
-                        label="輸入活動時間"
-                        name="time"
-                        id="activityTime"
-                        />
-                    </LocalizationProvider>
+                  <Typography variant="h6"></Typography>
+                  <Stack direction="row" spacing={2}>
+                      <Typography variant="h6"> 活動時間 </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                          <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
+                      </Box>
+                  </Stack>
+                    {dateitems.map((item, index) => (
+                        <Box
+                        key={index}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mb: 2
+                        }}
+                        >
+                        <Stack direction="row" spacing={2} justifyContent="space-between">
+                            <Typography variant="h6" sx={{ minWidth: '30px' }}>{index + 1}.</Typography>
+                            {dateitems.length > 1 && (
+                                <IconButton onClick={() => handleDeleteClick(index)}>
+                                <DeleteIcon />
+                                </IconButton>
+                            )}
+                        </Stack>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
+                                <DesktopDateTimePicker
+                                value={item}
+                                onChange={(e) => handleChangeDateMul(index, e)}
+                                name="date"
+                                required
+                                fullWidth
+                                label="輸入活動時間"
+                                id="date"
+                                />
+                            </LocalizationProvider>
+                        </Box>
+                        </Box>
+                    ))}
                 <Typography variant="h6">活動地點</Typography>
                   <TextField
                       variant="outlined"
                       defaultValue={location}
                       inputRef={inputRefLocation}
+                      onChange={handleChange}
                       autoFocus
                       fullWidth
                       name="location"
@@ -325,6 +413,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                       variant="outlined"
                       defaultValue={max_participants}
                       inputRef={inputRefLimitPerson}
+                      onChange={handleChange}
                       autoFocus
                       fullWidth
                       name="limitnumber"
@@ -339,7 +428,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                             <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.participants)}>
                               <DeleteIcon/>
                             </IconButton>
-                            <Chip avatar={<Avatar {...stringAvatar(person.User? person.User.name: "未知")}/>} label={person.User? person.User.name: "未知"}></Chip>
+                            <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"}></Chip>
                           </div>
                       );
                     }))
@@ -401,6 +490,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                         variant="outlined"
                         defaultValue={application_problem}
                         inputRef={inputRefreviewquestion}
+                        onChange={handleChange}
                         autoFocus
                         fullWidth
                         name="application_problem"

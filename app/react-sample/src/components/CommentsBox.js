@@ -5,7 +5,7 @@ import Box from '@mui/material/Box';
 import { Divider, Grid, Paper } from "@material-ui/core";
 import TextField from "@mui/material/TextField";
 import { Typography } from '@mui/material';
-import { API_LOGIN, API_GET_ACTIVITY_DETAIL, API_GET_USER } from '../global/constants';
+import { API_GET_ACTIVITY_DETAIL, API_GET_USER } from '../global/constants';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import SendIcon from '@mui/icons-material/Send';
@@ -63,74 +63,57 @@ export default function CommentsBox({ id }) {
             headers: { "authorization": `Bearer ${token}`}
         };
 
-        //取得活動留言資訊
-        axios.get(API_GET_ACTIVITY_DETAIL + id + '/discussion', config)
-          .then(function (res) {
-            console.log(res.data);
-            setData(res.data);
-          })
-          .catch(function (err) {
-            console.log(err);
-            console.log("取得留言出現錯誤");
-          });
+      //取得活動留言資訊
+      axios.get(API_GET_ACTIVITY_DETAIL + id + '/discussion', config)
+        .then(function (res) {
+          setData(res.data);
+        })
+        .catch(function (err) {
+          console.log(err);
+          console.log("取得留言出現錯誤");
+        });
 
-        //取得使用者id
-        axios.get(API_GET_USER, config)
-          .then(function (res) {
-            setUsername(res.data.members['name']);
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("error");
-          });
-
-    }, [id]);
+      //取得使用者id
+      axios.get(API_GET_USER, config)
+      .then(function (res) {
+        setUsername(res.data.members['name']);
+      })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+      });
+    }, [id, userToken]);
 
     // 留言
     const handleComment = (event) => {
       event.preventDefault();
-
       // 若為空值，無法留言
       if (inputRef.current.value === "") {
         alert("請輸入留言");
         return;
       };
+      const token = userToken;
+      const bodyParameters = {
+        key: "value",
+      };
+      const config = {bodyParameters,
+          headers: { "authorization": `Bearer ${token}`}
+      };
 
-      axios.post(API_LOGIN, {
-        "email": "r12725066@ntu.edu.tw",
-        "password": "a"
+      //留言api
+      axios.post(API_GET_ACTIVITY_DETAIL + id + '/discussion', { 
+        "content": inputRef.current.value
+      },
+      config)
+      .then(function (res) {
+          console.log(res);
+          //alert('留言成功');
+          window.location.reload(false);
       })
-      .then(function (response) {
-          console.log(response.status, response.data);
-          //儲存token
-          const token = response.data.jwtToken;
-          //設定authorization
-          const bodyParameters = {
-            key: "value",
-          };
-          const config = {bodyParameters,
-              headers: { "authorization": `Bearer ${token}`}
-          };
-  
-          //留言api
-          axios.post(API_GET_ACTIVITY_DETAIL + id + '/discussion', { 
-            "content": inputRef.current.value
-          },
-          config)
-            .then(function (res) {
-                console.log(res);
-                //alert('留言成功');
-                window.location.reload(false);
-            })
-            .catch(function (err) {
-                alert("留言失敗");
-                console.log(err);
-          });
-      })
-      .catch(function (error) {
-        // 登入中間出錯
-        console.log(error);
-      });
+      .catch(function (err) {
+          alert("留言失敗");
+          console.log(err);
+    });
     };
 
     return (
