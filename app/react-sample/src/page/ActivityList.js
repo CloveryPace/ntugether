@@ -1,6 +1,5 @@
 // 顯示多活動資訊方塊（ActivityComponent）
 
-
 import ActivityListComponent from "../components/ActivityListComponent.js";
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
@@ -10,13 +9,11 @@ import { useNavigate } from 'react-router-dom';
 
 import theme from '../components/Theme'; 
 import HeaderBar from '../components/HeaderBar';
-
 import './Common.css';
 
 
 function ActivityList() {
   const navigate = useNavigate();
-
   return (
     <ThemeProvider theme={theme}>
       <HeaderBar />
