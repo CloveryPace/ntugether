@@ -21,7 +21,6 @@ export default function PlanComponent({data, key}) {
 
   const { t, i18n } = useTranslation();
 
-
   const [userToken, setUserToken] = useState(getAuthToken());
   const navigate = useNavigate();
     const style = { 
@@ -86,8 +85,24 @@ useEffect(() => {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  <Avatar alt="Remy Sharp"/>
-                </div>
+                  {data.Participants.length > 0 ? (
+                    data.Participants.slice(0, 3).map((person) => {
+                      return (
+                        <div style={{alignSelf: 'center'}} key={person.name}>
+                          <Chip avatar={<Avatar>{person.name ? person.name[0] : "未知"}</Avatar>} label={person.name ? person.name : "未知"} />
+                        </div>
+                      );
+                    }).concat(data.Participants.length > 3 ? (
+                      <div style={{alignSelf: 'center'}} key="extra">
+                        和其他 {data.Participants.length - 3} 人
+                      </div>
+                    ) : [])
+                  ) : (
+                    <div style={{alignSelf: 'center'}}>
+                      尚無參加者
+                    </div>
+                  )}
+              </div>
               </Stack>
 
             </div>
@@ -96,3 +111,23 @@ useEffect(() => {
         </Grid>
     );
 }
+
+/*
+                  {atendee.length > 0 ? (
+                    atendee.slice(0, 3).map((person) => {
+                      return (
+                        <div style={{alignSelf: 'center'}} key={person.participants}>
+                          <Chip avatar={<Avatar>{person.participants ? person.participants[0] : "未知"}</Avatar>} label={person.participants ? person.participants : "未知"} />
+                        </div>
+                      );
+                    }).concat(atendee.length > 3 ? (
+                      <div style={{alignSelf: 'center'}} key="extra">
+                        和其他 {atendee.length - 3} 人
+                      </div>
+                    ) : [])
+                  ) : (
+                    <div style={{alignSelf: 'center'}}>
+                      尚無參加者
+                    </div>
+                  )}
+                  */
