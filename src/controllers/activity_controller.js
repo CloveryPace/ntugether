@@ -1,4 +1,4 @@
-const { Op } = require('sequelize');
+const { Op, ValidationError } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
 User.sync();
@@ -129,6 +129,42 @@ async function noReviewApply(req, res, activity_id, user_id) {
     );
     return res.status(200).send("joined!");
 
+}
+
+/**
+ * Add invitation to a activity
+ * @param {*} invitees A list of user_id of the users being invited
+ * @param {*} activity_id The id of the activity
+ * @returns 
+ */
+async function addInvitee(invitees, activity_id) {
+    // TODO: respond with 400 if trying to invite creator
+
+    for (let inv_id of invitees) {
+        inv_id = parseInt(inv_id);
+        var inv = await User.findByPk(inv_id);
+        if (!inv) {
+            throw new ValidationError(`invitee not found ${inv_id}`);
+        }
+
+        await activityModel.Invitation.findOne({
+            where: {
+                activity_id: activity_id,
+                invitee_id: inv_id
+            }
+        }).then((invitation) => {
+            if (invitation) {
+                throw new ValidationError("invitation existed");
+            }
+        });
+
+        await activityModel.Invitation.create(
+            {
+                activity_id: activity_id,
+                invitee_id: inv_id,
+            }
+        );
+    }
 }
 
 /**
@@ -680,3 +716,94 @@ exports.makeDiscussion = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+exports.invite = async (req, res) => {
+    /**
+     * url: hostanme/activity/12345/invite
+     * method: POST
+     * Input format
+     * ```
+     * {
+     *  "invitees": [1, 3, 5]
+     * }
+     * ```
+     */
+
+    try {
+        const user_id = req.user_id;
+        const activity_id = req.params.activity_id;
+        const invitees = req.body.invitees;
+        console.log("invitees", typeof invitees);
+
+        const activity = await activityModel.Activities.findByPk(activity_id);
+
+        if (!activity) return res.status(404).send("Activity not found");
+        if (activity.created_user_id != user_id) return res.status(403).send("authorization failed");
+
+        await addInvitee(invitees, activity_id);
+        res.status(200).json({ message: "invitations created" });
+
+    } catch (error) {
+        if (error instanceof ValidationError) {
+            console.error('Validation error occurs', error);
+            return res.status(400).json({ error: error.message });
+        }
+
+        console.error('Error making invitations:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+/**
+ * Accept/Decline Invitation for joining activity
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+exports.respondToInvitation = async (req, res) => {
+    try {
+        const user_id = req.user_id;
+        const activity_id = req.params.activity_id;
+        const accepted = req.body.accepted;
+
+        // Todo: Can selected from followers
+        invitation = await activityModel.Invitation.findOne({
+            where: {
+                "activity_id": activity_id,
+                "invitee_id": user_id,
+            }
+        });
+
+        if (!invitation) return res.status(400).json({ message: "not invited" });
+
+        await activityModel.Activities.findByPk(activity_id).then(
+            (activity) => {
+                if (!activity) return res.status(404).json({ message: "activity not found" });
+            }
+        );
+
+        // join the activity
+        await activityModel.ActivityParticipantStatus.findOne({
+            where: {
+                joined_activities: activity_id,
+                participants: user_id,
+            }
+        }).then((activityParti) => {
+            if (activityParti) return res.status(400).json({ message: "already in the activity" });
+        });
+
+        if (accepted)
+            await activityModel.ActivityParticipantStatus.create({
+                joined_activities: activity_id,
+                participants: user_id,
+            });
+
+        await invitation.destroy();
+
+        res.status(200).json({ message: "response sent" });
+    } catch (error) {
+        console.error('Error making invitations:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+

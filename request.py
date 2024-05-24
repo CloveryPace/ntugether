@@ -3,7 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-activity_id = 39
+activity_id = 44
 plan_id = 39
 
 
@@ -266,6 +266,25 @@ def get_disccussion():
 
 
 @api_test
+def send_act_invitation():
+    payload = json.dumps(
+        {
+            "invitees": [1, 6, 7],
+        }
+    )
+    res = requests.post(
+        url=f"{host}/activity/{activity_id}/invitation",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
+        data=payload,
+    )
+
+    return res
+
+
+@api_test
 def create_plan():
     payload = json.dumps({
         "name": "Learning Plan",
@@ -476,6 +495,26 @@ def respond_to_invitation():
 
 
 @api_test
+def respond_to_activity_invitations():
+
+    payload = json.dumps(
+        {
+            "accepted": True
+        }
+    )
+    res = requests.put(
+        url=f"{host}/activity/{activity_id}/invitation",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
+        data=payload,
+    )
+
+    return res
+
+
+@api_test
 def get_notifications():
 
     res = requests.get(
@@ -493,6 +532,7 @@ if __name__ == '__main__':
 
     # signup()
     # create_activity()
+    # send_act_invitation()
     # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
@@ -504,6 +544,7 @@ if __name__ == '__main__':
     # get_disccussion()
     # get_application_detail()
     # remove_user()
+    # respond_to_activity_invitations()
 
     # create_plan()
     # update_plan()

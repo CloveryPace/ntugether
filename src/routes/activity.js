@@ -490,5 +490,53 @@ router.post(
   // #swagger.description = '該功能尚未完成QQ'
   authMiddleware.authentication, activityController.leaveActivity);
 
+router.post(
+  "/:activity_id/invitation",
+  // #swagger.tags = ['Activity']
+  // #swagger.summary = 'Send invitation'
+  // #swagger.description = 'Send invitation'
+  /* #swagger.parameters['invitees'] = {
+    in: 'body',
+    description: 'list of invitees user_id',
+    schema: 
+    {
+      "invitees": [ "list of invitees uesr_id" ],
+    }
+  } */
 
+  /* #swagger.responses[200] = { 
+    description: "invitations sent",
+  } */
+  /* #swagger.responses[403] = { 
+    description: "用戶通過驗證，但用戶未參加該活動",
+    schema: "User hasn't joined the activity"
+  } */
+  /* #swagger.responses[404] = { 
+    description: "活動不存在",
+    schema: "Activity not found"
+  } */
+  /* #swagger.responses[400] = { 
+    description: "invitee already exist",
+  } */
+  authMiddleware.authentication, activityController.invite);
+
+router.put(
+  "/:activity_id/invitation",
+  // #swagger.tags = ['Activity']
+  // #swagger.summary = 'Respond to invitation'
+  // #swagger.description = 'Respond to invitation'
+  /* #swagger.parameters['accepted'] = {
+    in: 'body',
+    description: 'accept the invitation or not',
+    schema: 
+    {
+      "accepted": "Bool",
+    }
+  } */
+
+  /* #swagger.responses[200] = { 
+    description: "invitations sent",
+  } */
+
+  authMiddleware.authentication, activityController.respondToInvitation);
 module.exports = router;

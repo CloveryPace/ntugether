@@ -20,6 +20,21 @@ async function getPlanInvitations(invitee_id) {
     return invitations;
 }
 
+async function getActivityInvitations(invitee_id) {
+    invitations = await activityModel.Invitation.findAll({
+        include: {
+            model: activityModel.Activities,
+            as: "Activity",
+        },
+        where: {
+            "invitee_id": invitee_id,
+        }
+    });
+
+    return invitations;
+}
+
+
 async function getActivityApplications(user_id) {
     applications = await activityModel.Applications.findAll({
         include: {
@@ -103,7 +118,7 @@ exports.getNotifications = async (req, res) => {
             if (types.includes("plan"))
                 retNotifications.invitation.plan = await getPlanInvitations(user_id);
             if (types.includes("activity"))
-                retNotifications.invitation.activity = []; // TODO: implement getActivityInvitation later
+                retNotifications.invitation.activity = await getActivityInvitations(user_id); // TODO: implement getActivityInvitation later
         }
 
         if (contents.includes("application")) {

@@ -5,13 +5,13 @@ const { DataTypes } = require('sequelize');
 
 
 // const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus')
-const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus', 
-// {
-//     participant_name: {
-//         type: Sequelize.STRING, // Assuming the status is a string, adjust the data type as needed
-//         allowNull: true // Adjust this as per your requirement
-//     }
-// }
+const ActivityParticipantStatus = sequelize.define('ActivityParticipantStatus',
+    // {
+    //     participant_name: {
+    //         type: Sequelize.STRING, // Assuming the status is a string, adjust the data type as needed
+    //         allowNull: true // Adjust this as per your requirement
+    //     }
+    // }
 );
 /* =========================== Activities Table =================================== */
 
