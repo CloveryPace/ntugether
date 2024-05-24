@@ -188,10 +188,6 @@ router.patch(
         "end_date": "2024-09-07",
         "tags": ["Exam", "Exercise", "Learning"],
         "invitees": [],
-        "progression": {
-          "english": 10,
-          "chinese": 5,
-        },
         "need_reviewed": "0",
         "application_problem": "審查問題",
 

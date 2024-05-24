@@ -121,92 +121,93 @@ router.get("/:progress_id/alluserprocess",
 
 // PUT routes
 
-router.put("/:progress_id", 
-    // #swagger.tags = ['Progress']
-    // #swagger.summary = '修改進度'
-    // #swagger.description = '修改該progress內容，僅計畫建立者可以修改'
-    /* #swagger.parameters['body'] = {
-      in: 'body',
-      description: '進度修改細項',
-      schema: 
-        {
-                "name": "progress名稱",
-                "times": "progress次數",
-                "need_activity": "false/true"
-        }
-    } */
+// router.put("/:progress_id", 
+//     // #swagger.tags = ['Progress']
+//     // #swagger.summary = '修改進度'
+//     // #swagger.description = '修改該progress內容，僅計畫建立者可以修改'
+//     /* #swagger.parameters['body'] = {
+//       in: 'body',
+//       description: '進度修改細項',
+//       schema: 
+//         {
+//                 "name": "progress名稱",
+//                 "times": "progress次數",
+//                 "need_activity": "false/true"
+//         }
+//     } */
 
-    /* #swagger.responses[200] = { 
-      description: "進度修改成功",
-      schema: {
-        "message": "Progress updated successfully.",
-        "data": "updateProgress詳細資料"
-      }
-    } */
+//     /* #swagger.responses[200] = { 
+//       description: "進度修改成功",
+//       schema: {
+//         "message": "Progress updated successfully.",
+//         "data": "updateProgress詳細資料"
+//       }
+//     } */
 
-    /* #swagger.responses[403] = { 
-      description: "用戶通過驗證，但用戶不是計劃創立者，沒有修改該進度的權限",
-      schema: {
-        "error": "You are not authorized to update this progress."
-      }
-    } */
+//     /* #swagger.responses[403] = { 
+//       description: "用戶通過驗證，但用戶不是計劃創立者，沒有修改該進度的權限",
+//       schema: {
+//         "error": "You are not authorized to update this progress."
+//       }
+//     } */
 
-    /* #swagger.responses[404] = { 
-      description: "該進度不存在",
-      schema: {
-        "error": "Progress not found."
-      }
-    } */
+//     /* #swagger.responses[404] = { 
+//       description: "該進度不存在",
+//       schema: {
+//         "error": "Progress not found."
+//       }
+//     } */
 
-    /* #swagger.responses[500] = { 
-      description: "其他錯誤",
-      schema: {
-        "error": "error.message"
-      }
-    } */
+//     /* #swagger.responses[500] = { 
+//       description: "其他錯誤",
+//       schema: {
+//         "error": "error.message"
+//       }
+//     } */
 
-    authMiddleware.authentication, progressController.updateProgress);
+//     authMiddleware.authentication, progressController.updateProgress);
 
 // PUT routes
-router.put("/:userprogress_id/userprocess", 
-    // #swagger.tags = ['Progress']
-    // #swagger.summary = '修改用戶進度'
-    // #swagger.description = '修改該用戶進度內容，僅該用戶可以修改'
+
+// router.put("/:userprogress_id/userprocess", 
+//     // #swagger.tags = ['Progress']
+//     // #swagger.summary = '修改用戶進度'
+//     // #swagger.description = '修改該用戶進度內容，僅該用戶可以修改'
     
 
-    /* #swagger.responses[200] = { 
-      description: "進度修改成功",
-      schema: {
-        "message": "User Progress updated successfully.",
-        "data": "updateUserProgress詳細資料"
-      }
-    } */
+//     /* #swagger.responses[200] = { 
+//       description: "進度修改成功",
+//       schema: {
+//         "message": "User Progress updated successfully.",
+//         "data": "updateUserProgress詳細資料"
+//       }
+//     } */
 
-    /* #swagger.responses[403] = { 
-      description: "用戶通過驗證，但用戶不是進度創立者，沒有修改該用戶進度的權限",
-      schema: {
-        "error": "You are not authorized to update this user progress."
-      }
-    } */
+//     /* #swagger.responses[403] = { 
+//       description: "用戶通過驗證，但用戶不是進度創立者，沒有修改該用戶進度的權限",
+//       schema: {
+//         "error": "You are not authorized to update this user progress."
+//       }
+//     } */
 
-    /* #swagger.responses[404] = { 
-      description: "用戶進度不存在",
-      schema: {
-        "error": "User Progress not found."
-      }
-    } */
+//     /* #swagger.responses[404] = { 
+//       description: "用戶進度不存在",
+//       schema: {
+//         "error": "User Progress not found."
+//       }
+//     } */
 
-    /* #swagger.responses[500] = { 
-      description: "其他錯誤",
-      schema: {
-        "error": "error.message"
-      }
-    } */
+//     /* #swagger.responses[500] = { 
+//       description: "其他錯誤",
+//       schema: {
+//         "error": "error.message"
+//       }
+//     } */
     
     
     
     
-    authMiddleware.authentication, progressController.updateUserProgress);
+//     authMiddleware.authentication, progressController.updateUserProgress);
 
 // router.post("/createuserprocess", progressController.createUserProgress)
 
