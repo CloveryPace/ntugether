@@ -147,6 +147,8 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
             name="description"
             onChange={handleChange}
           />
+          <br/>
+          <br/>
           {item.need_activity && (
             <TextField
               margin="dense"

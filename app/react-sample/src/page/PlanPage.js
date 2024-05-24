@@ -20,7 +20,33 @@ import { useTranslation } from 'react-i18next';
 import ReviewBoxForPlan from '../components/ReviewBoxForPlan';
 import CommentsBoxForPlan from '../components/CommentsBoxForPlan';
 import EditPlanPage from './EditPlanPage';
+import PendingReview from '../components/PendingReviewForPlan';
+
 import './Common.css';
+
+
+// 頭像顏色根據名字變化
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name[0]}`,
+  };
+}
 
 function PlanPage() {
   window.scrollTo(0, 0); //讓進入畫面在上方
@@ -251,7 +277,30 @@ function PlanPage() {
             ))) :
             <div style={{ alignSelf: 'center' }}>尚無參加者</div>
           }
+          
         </div>
+
+        <br/>
+        <br/>
+
+
+        {(data.need_reviewed && (userId === creatorId))?
+          <Box
+          sx={{
+            display: 'flex',
+            mb: '20px',
+            mt: '20px',
+            '@media (max-width: 600px)': {
+              display: 'block', 
+            },
+          }}
+          >
+            <div style={subtitle}><Typography variant="h6"> {t("加入審核")} </Typography></div>
+            <div><PendingReview id={id}/></div>
+            </Box>
+          :
+          <></>
+        }
 
         {isAttendee && (
           <Box
@@ -293,10 +342,10 @@ function PlanPage() {
 
         <Grid container justifyContent="center">
           <Grid item>
-            {canAttend ?
-            <ReviewBoxForPlan id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
-            :
+            {isAttendee ?
             <></>
+            :
+            <ReviewBoxForPlan id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
             }
           </Grid>
         </Grid>
@@ -307,6 +356,8 @@ function PlanPage() {
 }
 
 export default PlanPage;
+
+//                 <Chip avatar={<Avatar {...stringAvatar (person.name ? person.name[0] : "未知")} />} label={person.name ? person.name : "未知"} />
 
 
 // <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出計畫")} </Button>
