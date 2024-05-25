@@ -74,9 +74,9 @@ token = signin()
 def create_activity():
     payload = json.dumps(
         {
-            "name": "Example Activity",
+            "name": "NEWWWW Activity",
             "introduction": "Introduction of Activity",
-            "date": ["2024-04-27T11:56:53.727Z", "2024-04-30"],
+            "date": ["2024-04-27T06:10:00", "2024-04-28T06:10:00"],
             "need_reviewed": True,
             "country": "Taiwan",
             "max_participants": 10,
@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?mode=owned&is_long_term=false&search=example",
+        url=f"{host}/activity?mode=owned&search=NEWW",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -531,7 +531,7 @@ def get_notifications():
 if __name__ == '__main__':
 
     # signup()
-    # create_activity()
+    create_activity()
     # send_act_invitation()
     # get_acitvity_list()
     # get_acitvity_detail()
@@ -559,6 +559,6 @@ if __name__ == '__main__':
     # get_plan_discussion()
     # respond_to_invitation()
 
-    get_notifications()
+    # get_notifications()
 
     pass

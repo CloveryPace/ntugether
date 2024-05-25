@@ -348,8 +348,8 @@ exports.createActivity = async (req, res) => {
     }
     catch (error) {
         if (newActivity) newActivity.destroy();
-        console.error("Error creating activity", error);
-        res.status(500).json({ error: error });
+        console.error("Error creating activity", error.message);
+        res.status(500).json({ error: error.message });
     }
 
 };
