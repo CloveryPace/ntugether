@@ -396,7 +396,7 @@ exports.deletePlan = async (req, res) => {
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error deleting plan:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -589,7 +589,8 @@ exports.getApplicationDetail = async (req, res) => {
                 {
                     model: User,
                     as: "Applicant",
-                    // attributes
+                    attributes: ["user_id", "name", "photo", "gender"],
+                    
                 },
                 {
                     model: planModel.Plan,
@@ -608,7 +609,7 @@ exports.getApplicationDetail = async (req, res) => {
         res.status(200).json(application);
     } catch (error) {
         console.error('Error fetching application:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -635,7 +636,13 @@ exports.getAllApplications = async (req, res) => {
             where: {
                 plan_id: plan_id,
                 is_approved: false
-            }
+            },
+            include: 
+                [{
+                    model: User,
+                    as: "Applicant",
+                    attributes: ["user_id", "name", "photo", "gender"],
+                }]
         });
         if (applications.length === 0) {
             return res.status(404).json({ error: 'Application not found or already approved' });
@@ -645,7 +652,7 @@ exports.getAllApplications = async (req, res) => {
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
         console.error('Error getting all applications:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
 
@@ -702,6 +709,13 @@ exports.approve = async (req, res) => {
 
         // get applicant
         const applicant_id = application.applicant_id;
+        
+        // update is_approves
+        application.update(
+            {
+                is_approved: true,
+            }
+        );
 
 
         // deleteApplication
@@ -733,9 +747,36 @@ exports.approve = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving application:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };
+
+exports.deleteApplication = async (req, res) => {
+    try {
+        const user_id = req.user_id;
+        const application_id = req.params.application_id;
+        const application = await planModel.Applications.findByPk(application_id);
+
+        // validation
+        if (!application) return res.status(404).send("application not found");
+        if (application.is_approved == true) return res.status(400).send("application has been approved");
+
+        // get plan
+        const plan_id = application.plan_id;
+        const plan = await planModel.Plan.findByPk(plan_id);
+
+        // if (!plan) return res.status(400).send("plan not found");
+        if (plan.created_user_id != user_id) return res.status(403).send("not plan creator");
+
+        await application.destroy();
+        return res.status(204).send("sucessfully delete");
+
+    } catch (error) {
+        console.error('Error deleting application:', error);
+        return res.status(500).json({ error: error.message });
+    }
+
+}
 
 /**
  * join specific plan, except the user has joined it already
@@ -774,7 +815,7 @@ exports.applyPlan = async (req, res) => {
         return noReviewApply(req, res, plan_id, user_id); //add , participant_name
     } catch (error) {
         console.error('Error applying for plan:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -882,7 +923,7 @@ exports.getDiscussion = async (req, res) => {
         return res.status(200).json(discussions);
     } catch (error) {
         console.error('Error getting discussion:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: error.message });
     }
 };
 
@@ -934,6 +975,6 @@ exports.makeDiscussion = async (req, res) => {
 
     } catch (error) {
         console.error('Error making discussion:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
     }
 };

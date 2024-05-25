@@ -325,6 +325,35 @@ router.patch(
 
   authMiddleware.authentication, planController.approve);
 
+
+router.delete(
+  "/application/:application_id/deleteApplication",
+  // #swagger.tags = ['Plan']
+  // #swagger.summary = '刪除計畫審核申請'
+  // #swagger.description = '計畫創建者可以刪除審核申請'
+  /* #swagger.responses[204] = { 
+    description: "成功刪除審核",
+    schema: "sucessfully delete"
+    } */
+  /* #swagger.responses[400] = { 
+  description: "申請已被通過",
+  schema: "application has been approved"
+  } */
+
+  /* #swagger.responses[403] = { 
+  description: "用戶通過驗證，但不是計畫創立者，無權限",
+  schema: "not plan creator"
+  } */
+
+  /* #swagger.responses[404] = { 
+  description: "未找到申請",
+  schema: 
+    "application not found"
+  } */
+
+  authMiddleware.authentication, planController.deleteApplication);
+
+
 /**
  * FUNCTION: get all applications for a plan
  */
@@ -360,7 +389,7 @@ router.get(
   authMiddleware.authentication, planController.getAllApplications);
 
 
-  router.get(
+router.get(
     "/:plan_id/participants",
     // #swagger.tags = ['Plan']
     // #swagger.summary = 取得計畫參與者
@@ -388,6 +417,8 @@ router.get(
   
   
     authMiddleware.authentication, planController.getAllParticipants);
+
+
 
 /**
  * FUNCTION: apply for a plan

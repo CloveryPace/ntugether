@@ -252,6 +252,40 @@ router.post(
 
 userController.signIn);
 
+router.put(
+  "/oauthLink",  
+  // #swagger.description = "綁定Google Oauth會員"
+  // #swagger.summary = "綁定Oauth會員"
+  // #swagger.tags = ['User']
+  
+  /* #swagger.responses[200] = { 
+      description: "會員綁定成功",
+      schema: {
+            "message": "Member link to an account successfully.",
+          }
+      } */
+  
+   /* #swagger.responses[400] = { 
+      description: "會員已綁定過",
+      schema: {
+            "message": "User already link to an account.",
+          }
+      } */
+  
+  /* #swagger.responses[404] = { 
+      description: "會員未找到",
+      schema: {
+            "message": "User not found.",
+          }
+      } */
+
+
+  /* #swagger.responses[500] = { 
+      description: "網路或其他不明原因錯誤"
+      } */
+
+  authMiddleware.authentication, userController.oauthLinking);
+
 router.post(
   "/resetPassword",
   // #swagger.description = "重設密碼，請確定已從/user/forgetPassword取得驗證碼"

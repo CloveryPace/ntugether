@@ -7,21 +7,7 @@ const User = require('../model/userModel');
  * @param {*} res 
  */
 exports.getApplicationDetail = async (req, res) => {
-    /* NOTE: repsonse format
-    {
-        "id": 1,
-        "applicant": {
-            "id": 10,
-            "username": "theUser",
-            "email": "john@email.com",
-            "user_photo": "https://s3.ntugether.com/photos/1.pdf"
-        },
-        "activity_id": 1,
-        "is_approved": false,
-        "application_response": "This is a response for the applicant"
-    }
-    */
-
+    
     try {
         const user_id = req.user_id;
         const application_id = req.params.application_id;
@@ -113,6 +99,32 @@ exports.approve = async (req, res) => {
 
     } catch (error) {
         console.error('Error approving application:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+exports.deleteApplication = async (req, res) => {
+    try {
+        const user_id = req.user_id;
+        const application_id = req.params.application_id;
+        const application = await activityModel.Applications.findByPk(application_id);
+
+        // validation
+        if (!application) return res.status(404).send("Application not found");
+        if (application.is_approved == true) return res.status(400).send("application has been approved");
+
+        // get activity
+        const activity_id = application.activity_id;
+        const activity = await activityModel.Activities.findByPk(activity_id);
+
+        // if (!activity) return res.status(404).send("Activity not found");
+        if (activity.created_user_id != user_id) return res.status(403).send("not activity creator");
+
+        await application.destroy();
+        return res.status(204).send("sucessfully delete");        
+
+    } catch (error) {
+        console.error('Error deleting application:', error);
         res.status(500).json({ error: error.message });
     }
 };

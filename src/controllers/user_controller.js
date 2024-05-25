@@ -211,34 +211,34 @@ async function oauthSingup (req, res) {
   }
 }
 
-async function oauthSingin (req, res) {
-  try {
-    const { oauthId} = req.body;
+// async function oauthSingin (req, res) {
+//   try {
+//     const { oauthId } = req.body;
 
-    const user = await User.findOne({
-      // email: email,
-      oauthId: oauthId
-    });
-    if (!user) return res.status(404).json({"message": "User not found."})
+//     const user = await User.findOne({
+//       // email: email,
+//       oauthId: oauthId
+//     });
+//     if (!user) return res.status(404).json({"message": "User not found."})
 
-    console.log(user.user_id); 
+//     console.log(user.user_id); 
 
-    // Create json web token
-    const token = jwt.sign(
-      { userId: user.user_id },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
-    );
+//     // Create json web token
+//     const token = jwt.sign(
+//       { userId: user.user_id },
+//       process.env.JWT_SECRET,
+//       { expiresIn: process.env.JWT_EXPIRES_IN } // JWT_EXPIRES_IN is the duration of the token
+//     );
 
-    return res.status(201).json({
-      message: 'Member sign in successfully.',
-      token: token, // JWT token
-    });
+//     return res.status(201).json({
+//       message: 'Member sign in successfully.',
+//       token: token, // JWT token
+//     });
 
-  } catch (error) {
-    return res.status(500).json({ error: error.messages });
-  }
-}
+//   } catch (error) {
+//     return res.status(500).json({ error: error.messages });
+//   }
+// }
 
 async function signIn(req, res) {
   try {
@@ -284,6 +284,39 @@ async function signIn(req, res) {
   } catch (error) {
     console.log(error);
     return res.status(500).json({ error: "Internal server error during authentication" });
+  }
+}
+
+
+async function oauthLinking (req, res) {
+  try {
+    const { oauthId, oauthProvider } = req.body;
+    const user_id = req.user_id;
+
+    const user = await User.findOne({
+      where: {
+      user_id: user_id
+      }
+    });
+
+    if (!user) return res.status(404).json({"message": "User not found."})
+
+    if (user.oauthId) { 
+      return res.status(400).json({"message": "User already link to an account."})
+    }
+
+    const Oauthuser = await user.update({
+      oauthId: oauthId,
+      oauthProvider: oauthProvider || Google
+      
+    });
+
+    return res.status(200).json({
+      message: 'Member link to an account successfully.',
+    });
+
+  } catch (error) {
+    return res.status(500).json({ error: error.messages });
   }
 }
 
@@ -376,7 +409,7 @@ async function getMember(req, res) {
 
   
 
-  await User.findOne({
+await User.findOne({
     where: {
      user_id: targetUserId,
     },
@@ -604,7 +637,7 @@ module.exports = {
     emailSend: emailSend,
     signUp: signUp,
     oauthSingup: oauthSingup,
-    oauthSingin: oauthSingin,
+    oauthLinking: oauthLinking,
     signIn: signIn,
     resetPassword: resetPassword,
     updateMember: updateMember,
