@@ -89,6 +89,8 @@ async function removeParticipants(removed_participants, plan_id) {
                 }
             }
         );
+        console.log(parInstance);
+
         if (parInstance) parInstance.destroy();
     }
 }
@@ -248,7 +250,7 @@ exports.createPlan = async (req, res) => {
             status: () => ({ json: (json) => json }),
         };
 
-        // return progressController.createProgress(progressReq, progressRes);
+        
         const progressResponse = await progressController.createProgress(progressReq, progressRes);
         // console.log(progressResponse);
 
@@ -324,22 +326,23 @@ exports.updatePlan = async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to update this plan' });
         }
 
-        const { removed_participants, invitees, tags, progression, ...updateParams } = req.body;
-
+        const { removed_participants, invitees, tags, ...updateParams } = req.body;
+        console.log(updateParams);
         await plan.update(updateParams);
 
         // create invitations for the plan
         await addInvitee(invitees, plan_id);
 
         // remove participants
-        if (removed_participants)
+        if (removed_participants){
+            console.log("removed_participants", removed_participants);
             await removeParticipants(removed_participants, plan_id);
-
+        }
 
         // check tag
-        await planModel.PlanParticipantsStatus.findAll({
+        await planModel.PlanTypeAssociation.findAll({
             where: {
-                joined_plan_id: plan_id
+                plan_id: plan_id
             }
         }).then(async (tagInstances) => {
             for (let tagInstance of tagInstances) {
@@ -356,7 +359,9 @@ exports.updatePlan = async (req, res) => {
             return res.status(400).json({ message: "invalid tag" });
         }
 
-        return res.status(200).send("plan updated");
+        return res.status(200).send({
+            "message": "plan updated"
+        });
 
     } catch (error) {
         console.error("Error updating plan", error);
@@ -465,12 +470,46 @@ exports.getPlanDetail = async (req, res) => {
         if (accessRight == 0) {
             return res.status(200).json(plan);
         } else if (accessRight == 1) {
+            
+            // request for userprogress information
+            const progressReq = {
+                body: {
+                    plan_id: plan_id,
+                    user_id: user_id
+                }
+            };
+            const progressRes = {
+                status: () => ({ json: (json) => json }),
+            };
+    
+            const progressResponse = await progressController.getAllUserProgress(progressReq, progressRes);
+            console.log("res", progressResponse.progressSummary);
 
-            return res.status(200).json(plan);
+            return res.status(200).json({
+                "plan": plan,
+                'allUserProgress': progressResponse.progressSummary
+            });
 
         } else if (accessRight == 2) {
 
-            return res.status(200).json(plan);
+            // request for userprogress information
+            const progressReq = {
+                body: {
+                    plan_id: plan_id,
+                    user_id: user_id
+                }
+            };
+            const progressRes = {
+                status: () => ({ json: (json) => json }),
+            };
+
+            const progressResponse = await progressController.getAllUserProgress(progressReq, progressRes);
+            console.log("res", progressResponse);
+
+            return res.status(200).json({
+                "plan": plan,
+                'allUserProgress': progressResponse.progressSummary
+            });
 
         }
 
@@ -564,8 +603,15 @@ exports.getPlanList = async (req, res) => {
             limit: limit,
             offset: offset,
         });
-
-        res.status(200).json(plans);
+        
+        
+        // if (mode == "joined" || mode == "owned")
+        //     return res.status(200).json({
+        //         "plan": plans,
+        //         'OwnUserProgress': progressResponse.progressSummary
+        //     });
+            
+        return res.status(200).json(plans);
     } catch (error) {
         console.error("Error getting plan detail", error);
         res.status(500).json({ error: error.message });

@@ -18,13 +18,98 @@ exports.sync = async () => {
 
 exports.getAllUserProgress = async (req, res) => {
     try {
-        const { progress_id } = req.params; 
-        const user_id = req.user_id; 
+        const { plan_id, user_id } = req.body;      
 
-        const targetProgress = await progressModel.Progress.findByPk(progress_id);
+        // \Find targetPlan for progresses
         const targetPlan = await progressModel.Progress.findAll({
-            where: { plan_id: targetProgress.plan_id},
+            where: { plan_id: plan_id},
         });
+        
+        
+        const progressIds = targetPlan.map(plan => plan.progress_id);
+        console.log("progressIds", progressIds);
+
+        let queryOptions = {
+                where: {
+                    progress_id: progressIds
+                },
+                include:[
+                    {
+                        model: User,
+                        as: 'Users',
+                        // where: {
+                        //     user_id: user_id
+                        // },
+                        attributes: ['name']
+                    },
+                    {
+                        model: progressModel.Progress,
+                        as: 'progress',
+                        where: {
+                            progress_id: progressIds
+                        },
+                        attributes: ['name']
+                    },
+                ]
+
+        };
+
+        const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);
+              
+        if (AlluserProgress.length === 0) {
+            return res.status(404).json({ error: 'No progress found for the given plan.' });
+        }  
+        // console.log(AlluserProgress);
+
+        // Filter the data to only include entries where is_finished is true
+        const progressSummary = AlluserProgress.reduce((acc, cur) => {
+            const key = `${cur.user_id}-${cur.progress_id}`; // Create a unique key for each user_id and progress_id pair
+            
+            
+            if (!acc[key]) {
+              acc[key] = {
+                user_id: cur.user_id,
+                progress_id: cur.progress_id,
+                user_name: cur.Users.name,
+                progress_name: cur.progress.name,
+                finished_count: 0,
+                total_count: 0
+              };
+            }
+            if (cur.is_finished) {
+              acc[key].finished_count++;
+            }
+            acc[key].total_count++;
+            return acc;
+          }, {});
+          
+        // console.log(progressSummary);
+
+        
+
+        return res.status(200).json({ progressSummary });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+exports.getOwnUserProgress = async (req, res) => {
+    try {
+        const { plan_id }  = req.params;
+        const user_id = req.user_id;
+
+        // console.log("plan_id", plan_id);
+        // console.log("user_id", user_id);
+        // const user_id = req.user_id; 
+        
+
+        // const targetProgress = await progressModel.Progress.findByPk(progress_id);
+        const targetPlan = await progressModel.Progress.findAll({
+            where: { plan_id: plan_id},
+        });
+        // console.log(targetPlan);
 
         
         const progressIds = targetPlan.map(plan => plan.progress_id);
@@ -55,19 +140,23 @@ exports.getAllUserProgress = async (req, res) => {
 
         };
 
-        const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);      
+        const AlluserProgress = await progressModel.UserProgress.findAll(queryOptions);
+              
         if (AlluserProgress.length === 0) {
-            return res.status(404).json({ error: 'No progress found for the given progress_id.' });
+            return res.status(404).json({ error: 'No progress found for the given plan.' });
         }  
-        
+        // console.log(AlluserProgress);
+
         // Filter the data to only include entries where is_finished is true
         const progressSummary = AlluserProgress.reduce((acc, cur) => {
             const key = `${cur.user_id}-${cur.progress_id}`; // Create a unique key for each user_id and progress_id pair
+            
+            
             if (!acc[key]) {
               acc[key] = {
                 user_id: cur.user_id,
                 progress_id: cur.progress_id,
-                user_name: cur.user.name,
+                user_name: cur.Users.name,
                 progress_name: cur.progress.name,
                 finished_count: 0,
                 total_count: 0
@@ -80,18 +169,17 @@ exports.getAllUserProgress = async (req, res) => {
             return acc;
           }, {});
           
-        console.log(progressSummary);
+        // console.log(progressSummary);
 
         
 
-        return res.status(200).json({ message: 'Progress fetched successfully.', data: progressSummary });
+        return res.status(200).json({ progressSummary });
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({ error: error.message });
     }
 };
-  
 
 exports.getUserProgress = async (req, res) => {
     try {
@@ -190,39 +278,39 @@ exports.createUserProgress = async (req, res) => {
 }
 
 
-exports.updateProgress = async (req, res) => {
-    try {
-        const user_id = req.user_id;
-        const { progress_id } = req.params;
-        const { name, times, need_activity } = req.body;
+// exports.updateProgress = async (req, res) => {
+//     try {
+//         const user_id = req.user_id;
+//         const { progress_id } = req.params;
+//         const { name, times, need_activity } = req.body;
 
-        // authorization
+//         // authorization
         
-        const progressToUpdate = await progressModel.Progress.findByPk(progress_id);
-        if (!progressToUpdate) {
-            return res.status(404).json({ error: 'Progress not found.' });
-        }
+//         const progressToUpdate = await progressModel.Progress.findByPk(progress_id);
+//         if (!progressToUpdate) {
+//             return res.status(404).json({ error: 'Progress not found.' });
+//         }
 
-        const plan = await planModel.Plan.findByPk(progressToUpdate.plan_id);
-        if (plan.created_user_id != user_id) {
-            return res.status(403).json({ error: 'You are not authorized to update this progress.' });
-        }
+//         const plan = await planModel.Plan.findByPk(progressToUpdate.plan_id);
+//         if (plan.created_user_id != user_id) {
+//             return res.status(403).json({ error: 'You are not authorized to update this progress.' });
+//         }
 
         
 
-        progressToUpdate.name = name || progressToUpdate.name;
-        progressToUpdate.times = times || progressToUpdate.times;
-        progressToUpdate.need_activity = need_activity || progressToUpdate.need_activity;
+//         progressToUpdate.name = name || progressToUpdate.name;
+//         progressToUpdate.times = times || progressToUpdate.times;
+//         progressToUpdate.need_activity = need_activity || progressToUpdate.need_activity;
 
-        const updatedProgress = await progressToUpdate.save();
-        // console.log("Updated Progress:", updatedProgress);
+//         const updatedProgress = await progressToUpdate.save();
+//         // console.log("Updated Progress:", updatedProgress);
 
-        return res.status(200).json({ message: 'Progress updated successfully.', data: updatedProgress });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ error: error.message });
-    }
-};
+//         return res.status(200).json({ message: 'Progress updated successfully.', data: updatedProgress });
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).json({ error: error.message });
+//     }
+// };
 
 
 

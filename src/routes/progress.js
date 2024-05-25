@@ -55,42 +55,80 @@ router.get("/:progress_id/userprocess",
     authMiddleware.authentication, progressController.getUserProgress);
 
 // GET routes
-router.get("/:progress_id/alluserprocess",
-    // #swagger.tags = ['Progress']
-    // #swagger.summary = '取得該計畫所有用戶進度完成度'
-    // #swagger.description = '輸入進度id，會取得該計畫的進度內所有用戶進度的完成情況，可以用於點進去計畫的頁面'
-    /* #swagger.responses[200] = { 
-      description: "取得計畫所有用戶進度",
-      schema: {
-        "message": "User progress fetched successfully.",
-        "user_id-progress_id":
-                 {
-                    "user_id": "用戶id",
-                    "progress_id": "進度id",
-                    "user_name": "用戶名稱",
-                    "progress_name": "進度名稱",
-                    "finished_count": "完成次數",
-                    "total_count": "總共次數"
-                }
-        }
-    } */
+// router.get("/:progress_id/alluserprocess",
+//     // #swagger.tags = ['Progress']
+//     // #swagger.summary = '取得該計畫所有用戶進度完成度'
+//     // #swagger.description = '輸入進度id，會取得該計畫的進度內所有用戶進度的完成情況，可以用於點進去計畫的頁面'
+//     /* #swagger.responses[200] = { 
+//       description: "取得計畫所有用戶進度",
+//       schema: {
+//         "message": "User progress fetched successfully.",
+//         "user_id-progress_id":
+//                  {
+//                     "user_id": "用戶id",
+//                     "progress_id": "進度id",
+//                     "user_name": "用戶名稱",
+//                     "progress_name": "進度名稱",
+//                     "finished_count": "完成次數",
+//                     "total_count": "總共次數"
+//                 }
+//         }
+//     } */
 
-    /* #swagger.responses[404] = { 
-      description: "該計畫進度不存在",
-      schema: {
-        "error": "No progress found for the given process_id."
-      }
-    } */
+//     /* #swagger.responses[404] = { 
+//       description: "該計畫進度不存在",
+//       schema: {
+//         "error": "No progress found for the given process_id."
+//       }
+//     } */
 
-    /* #swagger.responses[500] = { 
-      description: "其他錯誤",
-      schema: {
-        "error": "error.message"
-      }
-    } */
+//     /* #swagger.responses[500] = { 
+//       description: "其他錯誤",
+//       schema: {
+//         "error": "error.message"
+//       }
+//     } */
 
 
-    authMiddleware.authentication, progressController.getAllUserProgress);
+//     authMiddleware.authentication, progressController.getAllUserProgress);
+
+// router.get("/:plan_id/ownuserprocess",
+//     // #swagger.tags = ['Plan']
+//     // #swagger.summary = '取得該計畫自己的進度完成度'
+//     // #swagger.description = '輸入進度id，會取得該計畫的進度內自己進度的完成情況'
+//     /* #swagger.responses[200] = { 
+//       description: "取得計畫自己進度",
+//       schema: {
+//         "message": "User progress fetched successfully.",
+//         "user_id-progress_id":
+//                  {
+//                     "user_id": "用戶id",
+//                     "progress_id": "進度id",
+//                     "user_name": "用戶名稱",
+//                     "progress_name": "進度名稱",
+//                     "finished_count": "完成次數",
+//                     "total_count": "總共次數"
+//                 }
+//         }
+//     } */
+
+//     /* #swagger.responses[404] = { 
+//       description: "該計畫進度不存在",
+//       schema: {
+//         "error": "No progress found for the given plan."
+//       }
+//     } */
+
+//     /* #swagger.responses[500] = { 
+//       description: "其他錯誤",
+//       schema: {
+//         "error": "error.message"
+//       }
+//     } */
+
+
+//     authMiddleware.authentication, progressController.getOwnUserProgress);
+
 
 // router.get("/:progress_id/oneuserprocess",
 //   // #swagger.tags = ['Progress']
@@ -169,45 +207,45 @@ router.get("/:progress_id/alluserprocess",
 
 // PUT routes
 
-// router.put("/:userprogress_id/userprocess", 
-//     // #swagger.tags = ['Progress']
-//     // #swagger.summary = '修改用戶進度'
-//     // #swagger.description = '修改該用戶進度內容，僅該用戶可以修改'
+router.put("/:userprogress_id/userprocess", 
+    // #swagger.tags = ['Progress']
+    // #swagger.summary = '修改用戶進度'
+    // #swagger.description = '修改該用戶進度內容，僅該用戶可以修改'
     
 
-//     /* #swagger.responses[200] = { 
-//       description: "進度修改成功",
-//       schema: {
-//         "message": "User Progress updated successfully.",
-//         "data": "updateUserProgress詳細資料"
-//       }
-//     } */
+    /* #swagger.responses[200] = { 
+      description: "進度修改成功",
+      schema: {
+        "message": "User Progress updated successfully.",
+        "data": "updateUserProgress詳細資料"
+      }
+    } */
 
-//     /* #swagger.responses[403] = { 
-//       description: "用戶通過驗證，但用戶不是進度創立者，沒有修改該用戶進度的權限",
-//       schema: {
-//         "error": "You are not authorized to update this user progress."
-//       }
-//     } */
+    /* #swagger.responses[403] = { 
+      description: "用戶通過驗證，但用戶不是進度創立者，沒有修改該用戶進度的權限",
+      schema: {
+        "error": "You are not authorized to update this user progress."
+      }
+    } */
 
-//     /* #swagger.responses[404] = { 
-//       description: "用戶進度不存在",
-//       schema: {
-//         "error": "User Progress not found."
-//       }
-//     } */
+    /* #swagger.responses[404] = { 
+      description: "用戶進度不存在",
+      schema: {
+        "error": "User Progress not found."
+      }
+    } */
 
-//     /* #swagger.responses[500] = { 
-//       description: "其他錯誤",
-//       schema: {
-//         "error": "error.message"
-//       }
-//     } */
+    /* #swagger.responses[500] = { 
+      description: "其他錯誤",
+      schema: {
+        "error": "error.message"
+      }
+    } */
     
     
     
     
-//     authMiddleware.authentication, progressController.updateUserProgress);
+    authMiddleware.authentication, progressController.updateUserProgress);
 
 // router.post("/createuserprocess", progressController.createUserProgress)
 

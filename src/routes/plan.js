@@ -85,8 +85,19 @@ router.get(
           "createdAt": "2024-05-02T05:57:58.000Z",
           "updatedAt": "2024-05-02T07:02:17.000Z",
           "created_user_id": "ID of the creator",
-          "Creator": {
-            "User fields": "Creator information",
+          "Creator/Participants": {
+            "User fields": "User information",
+          },
+          "OwnUserProgress": {
+            "user_id-progress_id":
+                 {
+                    "user_id": "用戶id",
+                    "progress_id": "進度id",
+                    "user_name": "用戶名稱",
+                    "progress_name": "進度名稱",
+                    "finished_count": "完成次數",
+                    "total_count": "總共次數"
+                }
           }
         },
       ],
@@ -102,10 +113,49 @@ router.get(
 
   authMiddleware.authentication, planController.getPlanList); // TODO: implement
 
+
+router.get("/:plan_id/ownuserprocess",
+    // #swagger.tags = ['Plan']
+    // #swagger.summary = '取得該計畫自己的進度完成度'
+    // #swagger.description = '輸入進度id，會取得該計畫的進度內自己進度的完成情況'
+    /* #swagger.responses[200] = { 
+      description: "取得計畫自己進度",
+      schema: {
+         "progressSummary": {
+          "user_id-progress_id":
+                  {
+                      "user_id": "用戶id",
+                      "progress_id": "進度id",
+                      "user_name": "用戶名稱",
+                      "progress_name": "進度名稱",
+                      "finished_count": "完成次數",
+                      "total_count": "總共次數"
+                  }
+          }
+        }
+    } */
+
+    /* #swagger.responses[404] = { 
+      description: "該計畫進度不存在",
+      schema: {
+        "error": "No progress found for the given plan."
+      }
+    } */
+
+    /* #swagger.responses[500] = { 
+      description: "其他錯誤",
+      schema: {
+        "error": "error.message"
+      }
+    } */
+
+
+    authMiddleware.authentication, progressController.getOwnUserProgress);
+
 /**
  * FUNCTION: get detail of a plan
  */
-//待修改
+
 router.get(
   "/:plan_id",
   // #swagger.tags = ['Plan']
@@ -154,7 +204,18 @@ router.get(
         {
           "typeName": "Name of type",
         },
-      ]
+      ],
+      "AllUserProgress": {
+            "user_id-progress_id":
+                 {
+                    "user_id": "用戶id",
+                    "progress_id": "進度id",
+                    "user_name": "用戶名稱",
+                    "progress_name": "進度名稱",
+                    "finished_count": "完成次數",
+                    "total_count": "總共次數"
+                }
+          }
     }
   }
   #swagger.responses[400] = { 
@@ -188,6 +249,7 @@ router.patch(
         "end_date": "2024-09-07",
         "tags": ["Exam", "Exercise", "Learning"],
         "invitees": [],
+        "removed_participants": [],
         "need_reviewed": "0",
         "application_problem": "審查問題",
 
@@ -259,19 +321,19 @@ router.get(
   /* #swagger.responses[200] = { 
   description: "回傳申請細節",
   schema: 
-  {
-    "application_id": "審核id",
-    "application_response": "審核回覆",
-    "is_approved": false,
-    "applicant_id": "審核者id",
-    "plan_id": "計畫id",
-    "Applicant": {
-      "申請者資料欄位": "申請者資料"
-  },
-    "Plan": {
-      "plan_id": "計畫id"
+    {
+      "application_id": "審核id",
+      "application_response": "審核回覆",
+      "is_approved": false,
+      "applicant_id": "審核者id",
+      "plan_id": "計畫id",
+      "Applicant": {
+        "申請者資料欄位": "申請者資料"
+    },
+      "Plan": {
+        "plan_id": "計畫id"
+      }
     }
-  }
   } 
   
   

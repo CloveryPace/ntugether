@@ -242,7 +242,7 @@ async function oauthSingup (req, res) {
 
 async function signIn(req, res) {
   try {
-    const { email, password } = req.body; // Extracting email and password from request query
+    const { email, password } = req.body;
     console.log("email", email);
     console.log("password", password);
 
