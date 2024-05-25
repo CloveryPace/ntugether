@@ -54,7 +54,7 @@ function ActivityPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
-  const [datelen, setDatelen] = useState([]);
+  const [attend, setAttend] = useState(false); // 是否已參加活動
 
   useEffect(() => {
     //儲存token
@@ -75,30 +75,33 @@ function ActivityPage() {
         setData(res.data);
         setCreatorId(res.data.created_user_id);
         setAtendee(res.data.Participants);
-      })
+        //取得使用者id
+        axios.get(API_GET_USER, config)
+          .then(function (response) {
+            setUserId(response.data.members.user_id);
+            for (var i = 0; i < res.data.Participants.length; i++){
+              if( response.data.members.user_id === res.data.Participants[i].user_id ){
+                // 是否已經在參加者名單
+                setAttend(true);
+              }
+            }
+          })
+          .catch(function (err) {
+            console.log(err);
+            alert("error");
+          });
+        })
       .catch(function (err) {
         console.log(err);
         alert("error");
-    });
-
-    //取得使用者id
-    axios.get(API_GET_USER, config)
-    .then(function (res) {
-      setUserId(res.data.members.user_id);
-    })
-    .catch(function (err) {
-      console.log(err);
-      alert("error");
     });
 
     }, [id]);
 
 
   const [editingShow, setEditingShow] = useState(false);
-  const [attend, setAttend] = useState(false); // 參加活動
 
   const handleQuit = () => {
-    setAttend(false);
     alert("退出成功");
   };
 
@@ -271,8 +274,13 @@ function ActivityPage() {
       
       <Grid container justifyContent="center">
         <Grid item>
-          {(userId !== creatorId)?
+          {((userId !== creatorId) && (!attend))?
             <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed}/>
+            :
+            <></>
+          }
+          {((userId !== creatorId) && attend)?
+            <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")} </Button>
             :
             <></>
           }

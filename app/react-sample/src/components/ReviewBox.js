@@ -6,17 +6,11 @@ import { useRef } from "react";
 import { API_GET_ACTIVITY_DETAIL } from '../global/constants';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export default function ReviewBox({id, question, need_reviewed}) {
     const { t, i18n } = useTranslation();
     const Answer = useRef();
-    const [userToken, setUserToken] = useState(getAuthToken());
-    const handleSubmit = e => {
-        console.log(Answer.current?.value);
-    };  
-
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'
@@ -24,7 +18,7 @@ export default function ReviewBox({id, question, need_reviewed}) {
 
     // 參加api
     const handleAttend = () => {
-      const token = userToken;
+      const token = getAuthToken();
       console.log(token);
       if(need_reviewed){
         if (Answer.current?.value === ""){
