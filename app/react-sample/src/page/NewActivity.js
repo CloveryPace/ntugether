@@ -48,7 +48,6 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-
 function NewActivity() {
     const navigate = useNavigate();
 
@@ -56,16 +55,21 @@ function NewActivity() {
     // useRef()讀值方法：XXXXXXX.current?.value
     // current 後面接?，避免未輸入值時出現error
     const SearchName = useRef(); // 輸入想邀請的人
-    const [oneTime, setOneTime] = useState(true); // 一次性活動: true, 長期性活動：false
-    const [need_review, setReview] = useState(false); // 需審核: true, 不需審核：false
-    const [type, setType] = useState('運動'); // 活動類型
-    const [actDate, setActDate] = useState(dayjs()); 
     const [userToken, setUserToken] = useState(getAuthToken());
 
     // 長期性活動多個時間
     const [dateitems, setDateitems] = useState([""]);
     const handleAddClick = () => {
-        setDateitems([...dateitems, dayjs()]);
+        var newdateItems = [...dateitems];
+        newdateItems[newdateItems.length] = "";
+        setDateitems(newdateItems);
+        const event = { 
+            "target": {
+                "value": newdateItems,
+                "name": "date"
+            }
+        };
+        handleChange(event);
     };
     const handleDeleteClick = (index) => {
         var newdateItems = [...dateitems];
@@ -82,12 +86,11 @@ function NewActivity() {
     };
     const handleChangeDateMul = (index, value) => {
         const newdateItems = [...dateitems];
-        newdateItems[index] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
-        console.log(newdateItems);
+        newdateItems[index] = value;
         setDateitems(newdateItems);
         const event = { 
             "target": {
-                "value": dateitems,
+                "value": newdateItems,
                 "name": "date"
             }
         };
@@ -97,7 +100,7 @@ function NewActivity() {
     const [activityData, setActivityData] = useState({
         name: '',
         introduction: '',
-        date: dayjs(),
+        date: [""],
         inviteName: '',
         is_one_time: '',
         type: '',
@@ -114,25 +117,82 @@ function NewActivity() {
             ...prevState,
             [name]: value
         }));
+        console.log("活動");
         console.log(activityData);
+        console.log("時間array");
         console.log(activityData.date);
         console.log(userToken);
     };  
 
+    const createActivity = (event) =>{
+        event.preventDefault();
+        const data = {
+            "name": activityData.name,
+            "introduction": activityData.introduction,
+            "date": activityData.date,
+            "need_reviewed": activityData.need_reviewed,
+            "country": "Taiwan",
+            "max_participants": activityData.max_participants,
+            "location": activityData.location,
+            "application_problem": activityData.application_problem,
+            "is_one_time": activityData.is_one_time,
+            "type": activityData.type,
+        };
+        console.log(data);
+
+        const token = userToken;
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "authorization": `bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+        };
+        fetch(API_CREATE_ACTIVITY, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    console.log(response.status);
+                    throw new Error('response was not ok');
+                }
+                alert('成功(*´∀`)~♥');
+                navigate('/activitylist');
+                return response.json();
+            })
+            .then(data => {
+                var data = JSON.stringify(data, null, 2);
+                console.log(data);
+            })
+            .catch(error => {
+                console.error
+                    ('Error:', error);
+            });
+    } 
+
+    /*
     const handleSubmit = (event) => {
         event.preventDefault();
         console.log(activityData);
-    
-        //儲存token
         const token = userToken;
-
-        //設定authorization
+        /*
         const bodyParameters = {
             key: "value",
-            activityData
+            'Content-Type': 'application/json',
         };
         const config = {bodyParameters,
-            headers: { "authorization": `Bearer ${token}`}
+            headers: { 
+                'Content-Type': 'application/json',
+                "authorization": `Bearer ${token}`
+            }
+        };
+       
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "authorization": `bearer ${token}`,
+            },
+            body: JSON.stringify(activityData),
         };
 
         //建立活動
@@ -147,20 +207,15 @@ function NewActivity() {
                 console.log(err);
         });
     };
-
+ */
 
     const handleOneTimeChange = (event) => {
-        setOneTime(event.target.value);
         handleChange(event);
     };
-
     const handleChangeReview = (event) => {
-        setReview(event.target.value);
         handleChange(event);
     };
-
     const handleChangeType = (event) => {
-        setType(event.target.value);
         handleChange(event);
     };
 
@@ -172,7 +227,7 @@ function NewActivity() {
             <Stack direction="row" spacing={2}>
                 <Typography variant="h4">新增活動</Typography>
             </Stack>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box component="form" noValidate onSubmit={createActivity} sx={{ mt: 1 }}>
             <Grid container spacing={10}>
                 <Grid item xs={12} md={6}>
                 <Typography variant="h6">活動名稱</Typography>
@@ -236,7 +291,7 @@ function NewActivity() {
                         label="輸入審核題目"
                     />
                     <Typography variant="h6"> 活動類型 </Typography>
-                    <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue="運動">
+                    <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType}>
                         {['運動', '讀書會', "出遊"].map((value) => (
                         <Grid item>
                             <ItemTag> 
@@ -286,7 +341,6 @@ function NewActivity() {
                         >
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                                 <DesktopDateTimePicker
-                                value={actDate}
                                 onChange={(e) => handleChangeDateMul(index, e)}
                                 name="date"
                                 required
@@ -332,7 +386,7 @@ function NewActivity() {
             <Grid container justifyContent="center">
               <Grid item>
                 <Stack direction="row" spacing={2}>
-                    <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}> 新增 </Button>
+                    <Button variant="contained" type="submit" color="primary" onClick={createActivity}> 新增 </Button>
                     <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> 取消 </Button>
                 </Stack>
               </Grid>
