@@ -28,6 +28,7 @@ import dayjs from 'dayjs';
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography} from '@mui/material';
 import { Divider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const ItemReview = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.hashtag.review,
@@ -44,6 +45,7 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 }));
 
 function PlanNew() {
+    const { t, i18n } = useTranslation();
 
     const navigate = useNavigate();
 
@@ -84,7 +86,7 @@ function PlanNew() {
         console.log(planData);
 
         if (!startDate || !endDate) {
-            alert('請選擇開始日期和結束日期！');
+            alert(t('請選擇開始日期和結束日期！'));
             return; 
         }
         
@@ -92,7 +94,7 @@ function PlanNew() {
         const endDateObj = new Date(endDate);
         
         if (startDateObj > endDateObj) {
-            alert('開始日期必須早於結束日期！');
+            alert(t('開始日期必須早於結束日期！'));
             return;
         }
 
@@ -111,11 +113,11 @@ function PlanNew() {
         axios.post(API_CREATE_PLAN, bodyParameters.planData, config)
         .then(function (res) {
             console.log(res);
-            alert('成功(*´∀`)~♥');
+            alert(t('成功(*´∀`)~♥'));
             navigate('/planList');
         })
         .catch(function (err) {
-            alert("新增失敗");
+            alert(t("新增失敗"));
             console.log(err);
         });
     };
@@ -186,14 +188,13 @@ function PlanNew() {
         <ThemeProvider theme={theme}>
         <HeaderBar />
             <div className='Main'>
-
                 <Stack direction="row" spacing={2}>
-                    <Typography variant="h4"> 新增進度計畫 </Typography>
+                    <Typography variant="h4">{t('新增進度計畫')}</Typography>
                 </Stack>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
                 <Grid container spacing={10}>
                     <Grid item xs={12} md={6}>
-                    <Typography variant="h6">計畫名稱</Typography>
+                        <Typography variant="h6">{t('計畫名稱')}</Typography>
                         <TextField
                             variant="outlined"
                             value={planData.name}
@@ -201,10 +202,10 @@ function PlanNew() {
                             name="name"
                             autoFocus
                             fullWidth
-                            label="輸入計畫名稱"
+                            label={t('輸入計畫名稱')}
                             required
                         />
-                        <Typography variant="h6"> 計畫目標 </Typography>
+                        <Typography variant="h6">{t('計畫目標')}</Typography>
                         <TextField
                             variant="outlined"
                             value={planData.goal}
@@ -212,10 +213,10 @@ function PlanNew() {
                             name="goal"
                             autoFocus
                             fullWidth
-                            label="輸入計畫目標"
+                            label={t('輸入計畫目標')}
                             required
                         />
-                        <Typography variant="h6"> 計畫簡介 </Typography>
+                        <Typography variant="h6">{t('計畫簡介')}</Typography>
                         <TextField
                             variant="outlined"
                             value={planData.introduction}
@@ -223,54 +224,52 @@ function PlanNew() {
                             name="introduction"
                             autoFocus
                             fullWidth
-                            label="輸入計畫簡介"
+                            label={t('輸入計畫簡介')}
                             required
                         />
-                        <Typography variant="h6"> 計畫日期 </Typography>
+                        <Typography variant="h6">{t('計畫日期')}</Typography>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                            value={startDate}
-                            onChange={handleChangeStartDate}
-                            name="start_date"
-                            required
-                            fullWidth
-                            label="輸入計畫開始日期"
-                            id="start_date"
-                            sx={{ mb: '20px' }}
+                                value={startDate}
+                                onChange={handleChangeStartDate}
+                                name="start_date"
+                                required
+                                fullWidth
+                                label={t('輸入計畫開始日期')}
+                                id="start_date"
+                                sx={{ mb: '20px' }}
                             />
                         </LocalizationProvider>
-                        <span style={{ marginLeft: '20px', marginRight: '20px'}}> </span>
+                        <span style={{ marginLeft: '20px', marginRight: '20px'}}></span>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DatePicker
-                            value={endDate}
-                            onChange={handleChangeEndDate}
-                            name="end_date"
-                            required
-                            fullWidth
-                            label="輸入計畫結束日期"
-                            id="end_date"
+                                value={endDate}
+                                onChange={handleChangeEndDate}
+                                name="end_date"
+                                required
+                                fullWidth
+                                label={t('輸入計畫結束日期')}
+                                id="end_date"
                             />
                         </LocalizationProvider>
-
                     </Grid>
-
                     <Grid item xs={12} md={6}>
-                        <Typography variant="h6"> 加入審核 </Typography>
+                        <Typography variant="h6">{t('加入審核')}</Typography>
                         <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                             {['需審核', '不需審核'].map((value) => (
-                            <Grid item key={value}>
-                                <ItemReview> 
-                                    <FormControlLabel
-                                        value={value === "需審核"}
-                                        control={<Radio />}
-                                        label={`${value}`}
-                                        labelPlacement="end"
-                                    />
-                                </ItemReview>
-                            </Grid>
+                                <Grid item key={value}>
+                                    <ItemReview> 
+                                        <FormControlLabel
+                                            value={value === "需審核"}
+                                            control={<Radio />}
+                                            label={t(value)}
+                                            labelPlacement="end"
+                                        />
+                                    </ItemReview>
+                                </Grid>
                             ))}
                         </RadioGroup>
-                        <Typography variant="h6"> </Typography>
+                        <Typography variant="h6"></Typography>
                         <TextField
                             value={planData.application_problem}
                             onChange={handleChange}
@@ -278,45 +277,45 @@ function PlanNew() {
                             fullWidth
                             variant="outlined"
                             autoFocus
-                            label="輸入審核題目"
+                            label={t('輸入審核題目')}
                         />
-                        <Typography variant="h6"> 計畫類型 </Typography>
+                        <Typography variant="h6">{t('計畫類型')}</Typography>
                         <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue="運動">
-                            {['運動', '學習', "考試"].map((value) => (
-                            <Grid item key={value}>
-                                <ItemTag> 
-                                    <FormControlLabel
-                                        value={value}
-                                        control={<Radio />}
-                                        label={`${value}`}
-                                        labelPlacement="end"
-                                    />
-                                </ItemTag>
-                            </Grid>
+                            {['運動', '學習', '考試'].map((value) => (
+                                <Grid item key={value}>
+                                    <ItemTag> 
+                                        <FormControlLabel
+                                            value={value}
+                                            control={<Radio />}
+                                            label={t(value)}
+                                            labelPlacement="end"
+                                        />
+                                    </ItemTag>
+                                </Grid>
                             ))}
                         </RadioGroup>
-                        <Typography variant="h6"> 邀請加入 </Typography>
+                        <Typography variant="h6">{t('邀請加入')}</Typography>
                         <TextField
                             fullWidth
                             inputRef={SearchName}
                             variant="outlined"
                             autoFocus
-                            label="邀請..."
+                            label={t('邀請...')}
                         />
                     </Grid>
                 </Grid>
-                <Divider sx={{my: 4,}}/>
-                <Typography variant="h6"> 進度項目</Typography>
-                <span >* 考慮到參與者們的個人安排與完成度計算，進度項目一經建立，就不能刪除和編輯，請謹慎考慮！ *</span>
+                <Divider sx={{my: 4}}/>
+                <Typography variant="h6">{t('進度項目')}</Typography>
+                <span>* {t('考慮到參與者們的個人安排與完成度計算，進度項目一經建立，就不能刪除和編輯，請謹慎考慮！')} *</span>
                 <br/>
                 <br/>
                 <AddProgress onProgressChange={handleProgressChange} />
-                <Divider sx={{my: 4,}}/>
+                <Divider sx={{my: 4}}/>
                 <Grid container justifyContent="center">
                   <Grid item>
                     <Stack direction="row" spacing={2}>
-                        <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}> 新增 </Button>
-                        <Button variant="contained" color="error" onClick={() => navigate('/planList')}> 取消 </Button>
+                        <Button variant="contained" type="submit" color="primary" onClick={handleSubmit}>{t('新增')}</Button>
+                        <Button variant="contained" color="error" onClick={() => navigate('/planList')}>{t('取消')}</Button>
                     </Stack>
                   </Grid>
                 </Grid>

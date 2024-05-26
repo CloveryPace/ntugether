@@ -58,7 +58,8 @@ function PlanPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
-  const [canAttend, setCanAttend] = useState(false);
+  const [alreadyApply, setAlreadyApply] = useState(false);
+  const [allUserProgress, setAllUserProgress] = useState([]);
 
   useEffect(() => {
     // 儲存 token
@@ -76,24 +77,19 @@ function PlanPage() {
 
         console.log(res.data);
         const formattedData = {
-          ...res.data,
-          start_date: res.data.start_date ? new Date(res.data.start_date).toISOString().split('T')[0] : '',
-          end_date: res.data.end_date ? new Date(res.data.end_date).toISOString().split('T')[0] : ''
+          ...res.data.plan,
+          start_date: res.data.plan.start_date ? new Date(res.data.plan.start_date).toISOString().split('T')[0] : '',
+          end_date: res.data.plan.end_date ? new Date(res.data.plan.end_date).toISOString().split('T')[0] : ''
         };
         setData(formattedData);
-        setCreatorId(res.data.created_user_id);
-        setAtendee(res.data.Participants);
+        setCreatorId(res.data.plan.created_user_id);
+        setAtendee(res.data.plan.Participants);
+        setAllUserProgress(res.data.allUserProgress);
 
         //取得使用者id
         axios.get(API_GET_USER, config)
         .then(function (res) {
           setUserId(res.data.members['user_id']);
-          console.log("userId");
-          console.log(res.data.members['user_id']);
-          // 建立活動者不能參加活動（參加活動按鈕隱藏）
-          setCanAttend(userId === creatorId);
-          console.log("能否參加");
-          console.log(userId === creatorId);
         })
         .catch(function (err) {
           console.log(err);
@@ -170,6 +166,32 @@ function PlanPage() {
   // 檢查當前使用者是否為參加者
   const isAttendee = atendee.some(participant => participant.user_id === userId);
 
+
+  // 檢查當前使用者是否為已申請者
+  useEffect(() => {
+    //儲存token
+    const token = userToken;
+    //設定authorization
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    };
+    //取得申請
+    axios.get(API_GET_PLAN_DETAIL + id + '/applications', config)
+      .then(function (res) {
+        console.log(res.data);
+        console.log("取得申請成功");
+        const userHasApplied = res.data.some(application => application.applicant_id === userId);
+        setAlreadyApply(userHasApplied);
+      })
+      .catch(function (err) {
+        console.log(err);
+        console.log("取得申請錯誤");
+      });
+
+  }, [id]);
+
   window.scrollTo(0, 0); //讓進入畫面在上方
   const subtitle = { 
     width: "150px" 
@@ -177,6 +199,7 @@ function PlanPage() {
   const container = { 
     display: "flex" 
   };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -243,6 +266,7 @@ function PlanPage() {
             need_reviewed={data.need_reviewed ? data.need_reviewed : ""}
             tags={data.PlanTypes ? [data.PlanTypes[0].typeName] : "未指定"}
             application_problem={data.application_problem ? data.application_problem : ""}
+            atendee={atendee}
           />
         }
 
@@ -329,7 +353,7 @@ function PlanPage() {
           }}
         >
           <div style={subtitle}><Typography variant="h6"> {t('參加者進度')} </Typography></div>
-          <ProgressAttendee progresses={data.progresses}/>
+          <ProgressAttendee progresses={allUserProgress} userId={userId}/>
         </Box>
 
         <br />
@@ -342,11 +366,14 @@ function PlanPage() {
 
         <Grid container justifyContent="center">
           <Grid item>
-            {isAttendee ?
-            <></>
-            :
-            <ReviewBoxForPlan id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend}/>
-            }
+          {data.need_reviewed && !isAttendee && !alreadyApply && (
+          <ReviewBoxForPlan id={id} question={data.application_problem ? data.application_problem : ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend} />
+          )}
+
+          {data.need_reviewed && !isAttendee && alreadyApply && (
+            <Typography variant="h6" color="secondary">加入申請正在審核中，請稍候</Typography>
+          )}
+
           </Grid>
         </Grid>
 

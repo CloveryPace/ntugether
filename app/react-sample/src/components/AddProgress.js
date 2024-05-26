@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, IconButton, Checkbox, FormControlLabel, TextField, Box, Button } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import the delete icon
+import DeleteIcon from '@mui/icons-material/Delete';
 import Stack from '@mui/material/Stack';
-import { useEffect} from "react";
-
+import { useTranslation } from 'react-i18next';
 
 const AddProgress = ({ onProgressChange }) => {
-  // Adjusted to match the data model
+  const { t } = useTranslation();
   const [items, setItems] = useState([{ name: '', times: '', need_activity: false }]);
 
   const handleChange = (index, field, value) => {
@@ -51,56 +50,56 @@ const AddProgress = ({ onProgressChange }) => {
             mb: 2
           }}
         >
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+          <Stack direction="row" spacing={2} justifyContent="space-between">
             <Typography variant="h6" sx={{ minWidth: '30px' }}>{index + 1}.</Typography>
             {items.length > 1 && (
-                <IconButton onClick={() => handleDeleteClick(index)}>
+              <IconButton onClick={() => handleDeleteClick(index)}>
                 <DeleteIcon />
-                </IconButton>
+              </IconButton>
             )}
-        </Stack>
+          </Stack>
           <Box
             sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
             }}
           >
             <TextField
-                sx={{ flex: 4 }}
-                label="進度名稱"
-                variant="outlined"
-                value={item.name}
-                onChange={(e) => handleChange(index, 'name', e.target.value)}
+              sx={{ flex: 4 }}
+              label={t('進度名稱')}
+              variant="outlined"
+              value={item.name}
+              onChange={(e) => handleChange(index, 'name', e.target.value)}
             />
             <TextField
-                sx={{ flex: 1 }}
-                label="次數"
-                variant="outlined"
-                value={item.times}
-                onChange={(e) => handleChange(index, 'times', handleNumberInput(e))}
-                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+              sx={{ flex: 1 }}
+              label={t('次數')}
+              variant="outlined"
+              value={item.times}
+              onChange={(e) => handleChange(index, 'times', handleNumberInput(e))}
+              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
             <FormControlLabel
-                control={
+              control={
                 <Checkbox
-                    checked={item.need_activity}
-                    onChange={() => handleNeedActivityChange(index)}
-                    name="need_activity"
+                  checked={item.need_activity}
+                  onChange={() => handleNeedActivityChange(index)}
+                  name="need_activity"
                 />
-                }
-                label="需要揪團"
+              }
+              label={t('需要揪團')}
             />
           </Box>
         </Box>
       ))}
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
         <Button variant="contained" color="primary" onClick={handleAddClick}>
-          新增進度項目
+          {t('新增進度項目')}
         </Button>
       </Box>
     </div>
   );
 };
 
-export default AddProgress; 
+export default AddProgress;

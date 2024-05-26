@@ -12,8 +12,10 @@ import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import CompletedProgressItemList from './CompletedProgressItemList';
 import UpcomingProgressItemList from './UpcomingProgressItemList';
+import { useTranslation } from 'react-i18next';
 
 export default function MyProgress({ progresses }) {
+  const { t } = useTranslation();
   const [userToken, setUserToken] = useState(getAuthToken());
   const [userProgressData, setUserProgressData] = useState([]);
   const [username, setUsername] = useState('');
@@ -40,11 +42,9 @@ export default function MyProgress({ progresses }) {
     };
 
     try {
-      // 取得使用者id
       const userResponse = await axios.get(API_GET_USER, config);
       setUsername(userResponse.data.members['name']);
 
-      // 取得所有進度資料
       const dataPromises = progresses.map(progress => fetchProgressData(progress.progress_id));
       const allData = await Promise.all(dataPromises);
       setUserProgressData(allData);
@@ -78,7 +78,6 @@ export default function MyProgress({ progresses }) {
         }
       });
 
-      console.log('Subjects:', subjects);
       return subjects;
     };
 
@@ -91,22 +90,23 @@ export default function MyProgress({ progresses }) {
 
   const completedProgress = userProgressData.flat().filter(group => group.data.some(item => item.is_finished)).map(group => group.data.filter(item => item.is_finished).map(item => ({ ...item, name: progresses.find(p => p.progress_id === item.progress_id).name, need_activity: progresses.find(p => p.progress_id === item.progress_id).need_activity }))).flat();
   const upcomingProgress = userProgressData.flat().filter(group => group.data.some(item => !item.is_finished)).map(group => group.data.filter(item => !item.is_finished).map(item => ({ ...item, name: progresses.find(p => p.progress_id === item.progress_id).name, need_activity: progresses.find(p => p.progress_id === item.progress_id).need_activity }))).flat();
+
   return (
     <Box sx={{ width: '100%' }}>
       <Card variant="outlined">
         <CardContent>
           <div style={{ padding: 20 }}>
-            <Chip avatar={<Avatar>{username ? username[0] : "未知建立者"}</Avatar>} label={username ? username : "未知建立者"} />
+            <Chip avatar={<Avatar>{username ? username[0] : t("未知")}</Avatar>} label={username ? username : t("未知")} />
             <Typography variant="body1" sx={{ mb: 1.5, mt: 1.5 }}>
               {
                 userProgressData.flat().length === 0 ? 
-                "0%" :
+                t("0%") :
                 `${Math.round((Object.values(progressDetails).reduce((acc, val) => acc + val.finished, 0) / userProgressData.flat().reduce((acc, val) => acc + val.data.length, 0)) * 100)}%`
-              }，已完成{
+              }，{t("已完成")} {
                 Object.values(progressDetails).reduce((acc, val) => acc + val.finished, 0)
-              }個進度，待完成{
+              } {t("個進度")}，{t("待完成")} {
                 userProgressData.flat().reduce((acc, val) => acc + val.data.length, 0) - Object.values(progressDetails).reduce((acc, val) => acc + val.finished, 0)
-              }個進度
+              } {t("個進度")}
             </Typography>
             <LinearProgress 
               variant="determinate" 
@@ -124,13 +124,13 @@ export default function MyProgress({ progresses }) {
                 <li key={index}>
                   {subject} {
                     progressDetails[subject].total === 0 ? 
-                    "0%" : 
+                    t("0%") : 
                     `${Math.round((progressDetails[subject].finished / progressDetails[subject].total) * 100)}%`
-                  }，已完成{
+                  }，{t("已完成")} {
                     progressDetails[subject].finished
-                  }個進度，待完成{
+                  } {t("個進度")}，{t("待完成")} {
                     progressDetails[subject].total - progressDetails[subject].finished
-                  }個進度
+                  } {t("個進度")}
                 </li>
               ))}
             </ul>
