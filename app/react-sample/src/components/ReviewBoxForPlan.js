@@ -42,17 +42,21 @@ export default function ReviewBox({id, question, need_reviewed, attendfuction}) 
           {
             application_response: Answer.current?.value
           }
-  
+          
           //送加入申請
           axios.post(API_GET_PLAN_DETAIL + id + '/apply', response_ans, config)
-            .then(function (res) {
-                console.log(res);
-                alert('已送出申請');
-                window.location.reload(false);
-            })
-            .catch(function (err) {
-                alert("送出失敗");
-                console.log(err);
+          .then(function (res) {
+            console.log(res);
+            alert('已送出申請');
+            window.location.reload(false);
+          })
+          .catch(function (err) {
+            if (err.response && err.response.status === 409) {
+              alert('您已送出過申請，無法再次送出');
+            } else {
+              alert('送出失敗');
+            }
+            console.log(err);
           });
         }
       }
