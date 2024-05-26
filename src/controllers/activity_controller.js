@@ -197,6 +197,7 @@ exports.getActivitiesList = async (req, res) => {
         const country = req.query.country;
         const location = req.query.location;
         const is_long_term = req.query.is_long_term;
+        const target_user = req.query.target_user || user_id;
         const mode = req.query.mode || "all";
 
         allowModes = ["owned", "joined", "all"];
@@ -224,30 +225,13 @@ exports.getActivitiesList = async (req, res) => {
             };
         }
 
-        // set include condition
-        var includeConditions = new Array;
-        if (mode == "owned") includeConditions.push({
-            model: User,
-            as: 'Creator',
-            where: {
-                user_id: user_id,
-            }
-        });
-        else if (mode == "joined") includeConditions.push({
-            model: User,
-            as: 'Participants',
-            where: {
-                user_id: user_id,
-            }
-        });
-
         const activities = await activityModel.Activities.findAll({
             include: [
                 {
                     model: User,
                     as: 'Creator',
                     attributes: ["user_id", "name", "email", "phoneNum", "photo", "gender"],
-                    where: mode == "owned" ? { user_id: user_id } : null,
+                    where: mode == "owned" ? { user_id: target_user } : null,
                 },
                 {
                     model: User,
@@ -256,7 +240,7 @@ exports.getActivitiesList = async (req, res) => {
                     through: {
                         attributes: [],
                     },
-                    where: mode == "joined" ? { user_id: user_id } : null,
+                    where: mode == "joined" ? { user_id: target_user } : null,
 
                 },
             ],

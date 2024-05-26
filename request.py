@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?is_long_term=True",
+        url=f"{host}/activity?is_long_term=True&target_user=6&mode=owned",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -547,8 +547,8 @@ if __name__ == '__main__':
     # signup()
     # create_activity()
     # send_act_invitation()
-    # get_acitvity_list()
-    get_acitvity_detail()
+    get_acitvity_list()
+    # get_acitvity_detail()
     # update_activity()
     # delete_activity()
     # apply()
