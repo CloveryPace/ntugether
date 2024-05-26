@@ -250,7 +250,7 @@ exports.createPlan = async (req, res) => {
             status: () => ({ json: (json) => json }),
         };
 
-        
+
         const progressResponse = await progressController.createProgress(progressReq, progressRes);
         // console.log(progressResponse);
 
@@ -334,7 +334,7 @@ exports.updatePlan = async (req, res) => {
         await addInvitee(invitees, plan_id);
 
         // remove participants
-        if (removed_participants){
+        if (removed_participants) {
             console.log("removed_participants", removed_participants);
             await removeParticipants(removed_participants, plan_id);
         }
@@ -470,7 +470,7 @@ exports.getPlanDetail = async (req, res) => {
         if (accessRight == 0) {
             return res.status(200).json(plan);
         } else if (accessRight == 1) {
-            
+
             // request for userprogress information
             const progressReq = {
                 body: {
@@ -481,7 +481,7 @@ exports.getPlanDetail = async (req, res) => {
             const progressRes = {
                 status: () => ({ json: (json) => json }),
             };
-    
+
             const progressResponse = await progressController.getAllUserProgress(progressReq, progressRes);
             console.log("res", progressResponse.progressSummary);
 
@@ -535,6 +535,7 @@ exports.getPlanList = async (req, res) => {
         const end_date = req.query.end_date;
         const search = req.query.search;
         const mode = req.query.mode || "all";
+        const target_user = req.query.target_user || user_id;
 
 
         allowModes = ["owned", "joined", "all"];
@@ -566,7 +567,7 @@ exports.getPlanList = async (req, res) => {
             as: 'Creator',
             attributes: ["name", "email", "phoneNum", "photo", "gender"],
             where: {
-                user_id: user_id,
+                user_id: target_user,
             }
         });
         else if (mode == "joined") includeConditions.push({
@@ -574,7 +575,7 @@ exports.getPlanList = async (req, res) => {
             as: 'Participants',
             attributes: ["name", "photo", "gender"],
             where: {
-                user_id: user_id,
+                user_id: target_user,
             },
         });
         else if (mode == "all") includeConditions.push({
@@ -603,14 +604,14 @@ exports.getPlanList = async (req, res) => {
             limit: limit,
             offset: offset,
         });
-        
-        
+
+
         // if (mode == "joined" || mode == "owned")
         //     return res.status(200).json({
         //         "plan": plans,
         //         'OwnUserProgress': progressResponse.progressSummary
         //     });
-            
+
         return res.status(200).json(plans);
     } catch (error) {
         console.error("Error getting plan detail", error);
@@ -636,7 +637,7 @@ exports.getApplicationDetail = async (req, res) => {
                     model: User,
                     as: "Applicant",
                     attributes: ["user_id", "name", "photo", "gender"],
-                    
+
                 },
                 {
                     model: planModel.Plan,
@@ -683,7 +684,7 @@ exports.getAllApplications = async (req, res) => {
                 plan_id: plan_id,
                 is_approved: false
             },
-            include: 
+            include:
                 [{
                     model: User,
                     as: "Applicant",
@@ -755,7 +756,7 @@ exports.approve = async (req, res) => {
 
         // get applicant
         const applicant_id = application.applicant_id;
-        
+
         // update is_approves
         application.update(
             {
@@ -822,7 +823,7 @@ exports.deleteApplication = async (req, res) => {
         return res.status(500).json({ error: error.message });
     }
 
-}
+};
 
 /**
  * join specific plan, except the user has joined it already

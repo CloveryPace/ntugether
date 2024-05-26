@@ -115,42 +115,42 @@ router.get(
 
 
 router.get("/:plan_id/ownuserprocess",
-    // #swagger.tags = ['Plan']
-    // #swagger.summary = '取得該計畫自己的進度完成度'
-    // #swagger.description = '輸入進度id，會取得該計畫的進度內自己進度的完成情況'
-    /* #swagger.responses[200] = { 
-      description: "取得計畫自己進度",
-      schema: {
-         "progressSummary": {
-          "user_id-progress_id":
-                  {
-                      "user_id": "用戶id",
-                      "progress_id": "進度id",
-                      "user_name": "用戶名稱",
-                      "progress_name": "進度名稱",
-                      "finished_count": "完成次數",
-                      "total_count": "總共次數"
-                  }
-          }
+  // #swagger.tags = ['Plan']
+  // #swagger.summary = '取得該計畫自己的進度完成度'
+  // #swagger.description = '輸入進度id，會取得該計畫的進度內自己進度的完成情況'
+  /* #swagger.responses[200] = { 
+    description: "取得計畫自己進度",
+    schema: {
+       "progressSummary": {
+        "user_id-progress_id":
+                {
+                    "user_id": "用戶id",
+                    "progress_id": "進度id",
+                    "user_name": "用戶名稱",
+                    "progress_name": "進度名稱",
+                    "finished_count": "完成次數",
+                    "total_count": "總共次數"
+                }
         }
-    } */
-
-    /* #swagger.responses[404] = { 
-      description: "該計畫進度不存在",
-      schema: {
-        "error": "No progress found for the given plan."
       }
-    } */
+  } */
 
-    /* #swagger.responses[500] = { 
-      description: "其他錯誤",
-      schema: {
-        "error": "error.message"
-      }
-    } */
+  /* #swagger.responses[404] = { 
+    description: "該計畫進度不存在",
+    schema: {
+      "error": "No progress found for the given plan."
+    }
+  } */
+
+  /* #swagger.responses[500] = { 
+    description: "其他錯誤",
+    schema: {
+      "error": "error.message"
+    }
+  } */
 
 
-    authMiddleware.authentication, progressController.getOwnUserProgress);
+  authMiddleware.authentication, progressController.getOwnUserProgress);
 
 /**
  * FUNCTION: get detail of a plan
@@ -425,6 +425,19 @@ router.get(
   // #swagger.tags = ['Plan']
   // #swagger.summary = '檢視審核列表'
   // #swagger.description = '計畫創建者可以檢視特定計畫的所有待審核列表'
+  /* #swagger.parameters['mode'] = {
+    in: 'query',
+    description: "Decide to get all plans or only the plans owned/joined by the target_user. Allow modes: [all, joined, owned]",
+    type: "integer",
+    schema: "10"
+  } */
+
+  /* #swagger.parameters['target_user'] = {
+    in: 'query',
+    description: "The user_id for the user you want to query. Default your owned user_id",
+    type: "int",
+    schema: "0"
+  } */
   /* #swagger.responses[200] = { 
     description: "回傳待審核名單",
     schema: 
@@ -452,33 +465,33 @@ router.get(
 
 
 router.get(
-    "/:plan_id/participants",
-    // #swagger.tags = ['Plan']
-    // #swagger.summary = 取得計畫參與者
-    // #swagger.description = '回傳計畫所有參與者'
-  
-    /* #swagger.responses[200] = { 
-    description: "回傳該計畫參與紀錄",
-    schema:
-        [{
-            "createdAt": "datetime",
-            "updatedAt": "datetime",
-            "joined_plan_id": "參與計畫id",
-            "participants": "參與者id",
-            "User": {
-              "name": "參與者姓名"
-            }
-        }]
-    } */
-  
-    /* #swagger.responses[404] = { 
-      description: "該計畫不存在",
-      schema: "Plan not found"
-    } */
-  
-  
-  
-    authMiddleware.authentication, planController.getAllParticipants);
+  "/:plan_id/participants",
+  // #swagger.tags = ['Plan']
+  // #swagger.summary = 取得計畫參與者
+  // #swagger.description = '回傳計畫所有參與者'
+
+  /* #swagger.responses[200] = { 
+  description: "回傳該計畫參與紀錄",
+  schema:
+      [{
+          "createdAt": "datetime",
+          "updatedAt": "datetime",
+          "joined_plan_id": "參與計畫id",
+          "participants": "參與者id",
+          "User": {
+            "name": "參與者姓名"
+          }
+      }]
+  } */
+
+  /* #swagger.responses[404] = { 
+    description: "該計畫不存在",
+    schema: "Plan not found"
+  } */
+
+
+
+  authMiddleware.authentication, planController.getAllParticipants);
 
 
 
@@ -562,7 +575,7 @@ router.post(
     schema: "plan not found"
   } */
 
-  
+
 
 
 

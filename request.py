@@ -390,7 +390,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan",
+        url=f"{host}/plan?mode=owned&target_user=7",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -547,7 +547,7 @@ if __name__ == '__main__':
     # signup()
     # create_activity()
     # send_act_invitation()
-    get_acitvity_list()
+    # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
@@ -565,7 +565,7 @@ if __name__ == '__main__':
     # update_plan()
     # delete_plan()
     # get_plan_detail()
-    # get_plan_list()
+    get_plan_list()
     # apply_plan()
     # approve_plan()
     # get_plan_application()

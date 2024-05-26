@@ -19,14 +19,21 @@ router.get(
   #swagger.tags = ['Activity']
   #swagger.summary = '取得活動列表'
   #swagger.description = '取得活動列表'
-  #swagger.parameters = [
-    {
-      name: "mode",
-      in: "query",
-      description: "allow modes: [all, joined, owned]",
-      type: "string",
-    },
-  ]
+  /* #swagger.parameters['mode'] = {
+    in: 'query',
+    description: "Decide to get all activities or only the activities owned/joined by the target_user. Allow modes: [all, joined, owned]",
+    type: "integer",
+    schema: "10"
+  } */
+
+  /* #swagger.parameters['target_user'] = {
+    in: 'query',
+    description: "The user_id for the user you want to query. Default your owned user_id",
+    type: "int",
+    schema: "0"
+  } */
+
+  /*
   #swagger.responses[200] = {
     description: "success",
     schema:   
