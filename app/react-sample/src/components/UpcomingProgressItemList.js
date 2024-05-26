@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { List, Typography, Button } from '@mui/material';
+import { List, Typography, Button, Box } from '@mui/material';
 import ProgressItemInList from './ProgressItemInList';
-import { Box} from '@mui/material';
-
+import { useTranslation } from 'react-i18next';
 
 export default function UpcomingProgressItemList({ progressItems, onUpdate }) {
+  const { t } = useTranslation();
   const initialDisplayCount = 3;
   const incrementCount = 3;
 
@@ -17,17 +17,17 @@ export default function UpcomingProgressItemList({ progressItems, onUpdate }) {
   return (
     <div>
       <Typography variant="h5" gutterBottom>
-        待完成列表
+        {t('待完成列表')}
       </Typography>
       <List>
         {progressItems.slice(0, displayCount).map((item, index) => (
-          <ProgressItemInList key={index} item={item} onUpdate={onUpdate}/>
+          <ProgressItemInList key={index} item={item} onUpdate={onUpdate} />
         ))}
       </List>
       {displayCount < progressItems.length && (
-        <Box sx={{ display: 'flex', justifyContent: 'center'}}>
+        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button onClick={handleShowMore}>
-            <Typography>查看更多</Typography>
+            <Typography>{t('查看更多')}</Typography>
           </Button>
         </Box>
       )}
