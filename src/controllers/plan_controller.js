@@ -793,7 +793,35 @@ exports.applyPlan = async (req, res) => {
  * @param {*} req 
  * @param {*} res 
  */
-exports.leavePlan = async (req, res) => { };
+exports.leavePlan = async (req, res) => {
+    try {
+        const user_id = req.user_id;
+        const plan_id = req.params.plan_id;
+
+        const plan = await planModel.Plan.findByPk(plan_id);
+
+        if (!plan) return res.status(404).send("plan not found");
+
+        const participantStatus = await planModel.PlanParticipantsStatus.findOne(
+            {
+                where: {
+                    joined_plan_id: plan_id,
+                    participant_id: user_id,
+                }
+            },
+        );
+
+        if (!participantStatus) {
+            return res.status(401).json({ error: "you are not in the plan" });
+        }
+
+        await participantStatus.destroy();
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error applying for plan:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 
 /**
@@ -946,3 +974,4 @@ exports.makeDiscussion = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+

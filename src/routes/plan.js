@@ -595,7 +595,7 @@ router.post(
 /**
  * ROUTES: /plan/{plan_id}/discussion
  * METHOD: GET
- * FUNCTION: get all discussion based on the order of timeline of specific activity, where the output is also controlled by offset and limit
+ * FUNCTION: get all discussion based on the order of timeline of specific plan, where the output is also controlled by offset and limit
  */
 router.get(
   "/:plan_id/discussion",
@@ -677,5 +677,26 @@ router.post(
 
   authMiddleware.authentication, planController.makeDiscussion);
 
+
+router.delete(
+  "/:plan_id/leave",
+  // #swagger.tags = ['Plan']
+  // #swagger.summary = '離開計畫'
+  // #swagger.description = '離開計畫，僅刪除參與狀態，參與的紀錄會留著'
+
+
+  /* #swagger.responses[204] = { 
+    schema: "successfully left the plan",
+  } */
+
+  /* #swagger.responses[404] = { 
+    schema: "plan not found",
+  } */
+
+  /* #swagger.responses[401] = { 
+    schema: "not in the plan",
+  } */
+
+  authMiddleware.authentication, planController.leavePlan);
 module.exports = router;
 
