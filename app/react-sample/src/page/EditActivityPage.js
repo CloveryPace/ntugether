@@ -378,7 +378,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                     (attendee.map((person) => {
                       return (
                           <div style={{alignSelf: 'center', margin: "0.5rem"}}>
-                            <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.participants)}>
+                            <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.user_id)}>
                               <DeleteIcon/>
                             </IconButton>
                             <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"}></Chip>

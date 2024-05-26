@@ -102,7 +102,22 @@ function ActivityPage() {
   const [editingShow, setEditingShow] = useState(false);
 
   const handleQuit = () => {
-    alert("退出成功");
+    const token = getAuthToken();
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    };
+    axios.delete(API_GET_ACTIVITY_DETAIL + id + '/leave', config)
+      .then(function (res) {
+          setAttend(false);
+          alert("退出成功");
+          window.location.reload(false);
+        })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+    });
   };
 
   window.scrollTo(0, 0); //讓進入畫面在上方
