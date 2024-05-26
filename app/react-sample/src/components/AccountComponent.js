@@ -14,6 +14,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useTranslation } from 'react-i18next';
+import Link from '@mui/material/Link';
 
 
 import { Grid } from '@mui/material';
@@ -30,7 +31,7 @@ export default function AccountComponent({data}) {
 
     return (
       <Grid item xs={10}>
-
+      <Link href={'/user?id='+data.followingId} underline="none">
       <Paper
         sx={{
           p: 2,
@@ -42,7 +43,7 @@ export default function AccountComponent({data}) {
           backgroundColor: (theme) =>
             theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
         }}
-        onClick={() => navigate('/user')}
+        // onClick={() => navigate('/user?id='+data.followingId)}
       >
       <Grid container spacing={2}>
         <Grid item>
@@ -52,13 +53,13 @@ export default function AccountComponent({data}) {
           <Grid item xs container direction="column" spacing={2}>
             <Grid item xs>
               <Typography gutterBottom variant="subtitle1" component="div">
-                User name
+                {data.Following.name}
               </Typography>
               <Typography variant="body2" gutterBottom>
-                簡介簡介簡介簡介簡介簡介簡介簡介簡介簡介
+              {data.Following.self_introduction}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                ID: 1030114
+                ID: {data.followingId}
               </Typography>
             </Grid>
             <Grid item>
@@ -73,6 +74,7 @@ export default function AccountComponent({data}) {
         </Grid>
       </Grid>
     </Paper>
+    </Link>
     </Grid>  
         
     );

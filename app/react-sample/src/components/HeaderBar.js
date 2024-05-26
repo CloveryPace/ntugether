@@ -26,7 +26,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import './Style.css';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterBar from './FilterBar';
-import {removeAuthToken} from '../utils';
+import {removeAuthToken, removeUserId} from '../utils';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -173,6 +173,7 @@ export default function HeaderBar() {
 
   const logout = () => {
     removeAuthToken();
+    removeUserId();
     navigate('/login');
   }
 
