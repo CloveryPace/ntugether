@@ -18,14 +18,13 @@ import { styled } from '@mui/material/styles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import axios from 'axios';
 import { API_CREATE_ACTIVITY } from '../global/constants';
-import dayjs from 'dayjs';
 import { ThemeProvider } from '@mui/material/styles';
 import { Typography, IconButton } from '@mui/material';
 import theme from '../components/Theme'; 
 import { getAuthToken } from '../utils';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect } from 'react';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -135,7 +134,7 @@ function NewActivity() {
             "max_participants": activityData.max_participants,
             "location": activityData.location,
             "application_problem": activityData.application_problem,
-            "is_one_time": activityData.is_one_time,
+            "is_one_time": (activityData.is_one_time === "true"),
             "type": activityData.type,
         };
         console.log(data);
@@ -153,6 +152,7 @@ function NewActivity() {
             .then(response => {
                 if (!response.ok) {
                     console.log(response.status);
+                    alert("新增失敗");
                     throw new Error('response was not ok');
                 }
                 alert('成功(*´∀`)~♥');
@@ -168,6 +168,24 @@ function NewActivity() {
                     ('Error:', error);
             });
     } 
+
+    useEffect(() => {
+    if (activityData.is_one_time === "true"){
+        if (Array.isArray(activityData.date)){
+            console.log("重置日期");
+            var newdateItems = [dateitems[0]];
+            setDateitems(newdateItems);
+            const event = { 
+                "target": {
+                    "value": newdateItems,
+                    "name": "date"
+                }
+            };
+            handleChange(event);
+        }
+    }
+    }, [activityData.is_one_time]);
+
 
     /*
     const handleSubmit = (event) => {

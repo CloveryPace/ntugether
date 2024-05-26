@@ -105,7 +105,6 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   const inputRefLocation = useRef();
   const inputRefLimitPerson = useRef();
   const inputRefreviewquestion = useRef();
-
   const navigate = useNavigate();
 
   // 初始化從ActivityPage傳進的值
