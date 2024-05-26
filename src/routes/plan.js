@@ -28,7 +28,7 @@ router.post(
         "introduction": "計畫介紹",
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
-        "tags": ["Exam", "Exercise", "Learning"],
+        "type": "Cool Type",
         "invitees": [],
         "progression": 
         [
@@ -72,12 +72,6 @@ router.get(
     type: "int",
     schema: "0"
   } */
-  /* #swagger.parameters['tags'] = {
-    in: 'query',
-    description: "Filter plan with list of tags seperated by camma",
-    type: "int",
-    schema: "0"
-  } */
   /*
   #swagger.responses[200] = { 
       description: "success",
@@ -94,6 +88,7 @@ router.get(
           "application_problem": "Application problem",
           "need_reviewed": false,
           "is_grouped": false,
+          "type": "Cool Type",
           "createdAt": "2024-05-02T05:57:58.000Z",
           "updatedAt": "2024-05-02T07:02:17.000Z",
           "created_user_id": "ID of the creator",
@@ -185,6 +180,7 @@ router.get(
       "end_date": "2024-09-07T00:00:00.000Z",
       "application_problem": "Application problem",
       "need_reviewed": false,
+      "type": "Cool Type",
       "is_grouped": false,
       "createdAt": "2024-05-02T05:57:58.000Z",
       "updatedAt": "2024-05-02T07:02:17.000Z",
@@ -208,14 +204,6 @@ router.get(
           "sender_id": 7,
           "plan_id": 29
         }
-      ],
-      "PlanTypes": [
-        {
-          "typeName": "Name of type",
-        },
-        {
-          "typeName": "Name of type",
-        },
       ],
       "AllUserProgress": {
             "user_id-progress_id":
@@ -259,7 +247,7 @@ router.patch(
         "introduction": "計畫介紹",
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
-        "tags": ["Exam", "Exercise", "Learning"],
+        "type": "Exam",
         "invitees": [],
         "removed_participants": [],
         "need_reviewed": "0",

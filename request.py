@@ -4,7 +4,7 @@ import json
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
 activity_id = 61
-plan_id = 39
+plan_id = 40
 
 
 def api_test(func):
@@ -314,7 +314,7 @@ def create_plan():
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
         "application_problem": "hello?",
-        "tags": ["Learning"],
+        "type": "Learning",
         "invitees": [1, 2, 5, 6],
         "need_reviewed": True,
     })
@@ -390,7 +390,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan?mode=owned&target_user=7&tags=Exam,Learning",
+        url=f"{host}/plan?mode=owned&type=Learning",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",

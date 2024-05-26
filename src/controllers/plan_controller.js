@@ -3,40 +3,11 @@ const planModel = require("../model/planModel");
 const User = require("../model/userModel");
 const progressController = require('./progress_controller');
 const progressModel = require("../model/progressModel");
-const { joinSQLFragments } = require("sequelize/lib/utils/join-sql-fragments");
 
 // define constants
 const allowedTags = ["Exam", "Exercise", "Learning"];
 
-/**
- * Add tag to a plan with plan_id
- * @param {*} tags List of tags to be added to the plan 
- * @param {*} plan_id The plan_id of the plan
- */
-async function addTag(tags, plan_id) {
-    for (let tag of tags) {
-        if (!allowedTags.includes(tag)) {
-            throw new ValidationError("invalid tag");
-        };
 
-        var tagInstance = await planModel.PlanTypes.findOrCreate({
-            where: {
-                typeName: tag
-            }
-        });
-
-        await planModel.PlanTypeAssociation.findOrCreate(
-            {
-                where: {
-                    plan_id: plan_id,
-                    plan_type_id: tagInstance[0].plan_type_id,
-                }
-            }
-        );
-
-
-    }
-}
 
 /**
  * Add invitation to a plan
@@ -182,13 +153,11 @@ async function noReviewApply(req, res, plan_id, user_id) {
  */
 exports.sync = async () => {
     await User.sync({ alter: false });
-    await planModel.Plan.sync({ alter: false });
-    await planModel.PlanTypes.sync({ alter: false });
-    await planModel.Invitations.sync({ alter: false });
+    await planModel.Plan.sync({ alter: true });
+    await planModel.Invitations.sync({ alter: true });
     await planModel.Discussion.sync({ alter: true });
     await planModel.Applications.sync({ alter: true });
     await planModel.PlanParticipantsStatus.sync({ alter: true });
-    await planModel.PlanTypeAssociation.sync({ alter: true });
 };
 
 /**
@@ -222,7 +191,7 @@ exports.createPlan = async (req, res) => {
     var newPlan = null;
     try {
         const user_id = req.user_id;
-        const { tags, invitees, progression, ...body } = req.body;
+        const { invitees, progression, ...body } = req.body;
         body.created_user_id = user_id;
 
         const newPlan = await planModel.Plan.create(body);
@@ -253,11 +222,6 @@ exports.createPlan = async (req, res) => {
 
         const progressResponse = await progressController.createProgress(progressReq, progressRes);
         // console.log(progressResponse);
-
-
-
-        // creaet tags for the plan
-        await addTag(tags, newPlan.plan_id);
 
         // create invitations for the plan
         await addInvitee(invitees, newPlan.plan_id);
@@ -326,7 +290,7 @@ exports.updatePlan = async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to update this plan' });
         }
 
-        const { removed_participants, invitees, tags, ...updateParams } = req.body;
+        const { removed_participants, invitees, ...updateParams } = req.body;
         console.log(updateParams);
         await plan.update(updateParams);
 
@@ -339,26 +303,6 @@ exports.updatePlan = async (req, res) => {
             await removeParticipants(removed_participants, plan_id);
         }
 
-        // check tag
-        await planModel.PlanTypeAssociation.findAll({
-            where: {
-                plan_id: plan_id
-            }
-        }).then(async (tagInstances) => {
-            for (let tagInstance of tagInstances) {
-                await tagInstance.destroy();
-            }
-        });
-
-        // create tags for the plan
-        await addTag(tags, plan_id);
-
-        try {
-        } catch (error) {
-            console.log(error.message);
-            return res.status(400).json({ message: "invalid tag" });
-        }
-
         return res.status(200).send({
             "message": "plan updated"
         });
@@ -366,7 +310,7 @@ exports.updatePlan = async (req, res) => {
     } catch (error) {
         console.error("Error updating plan", error);
 
-        if (error instanceof TypeError) res.status(400).json({ message: "invalid body format" });
+        if (error instanceof TypeError) res.status(400).json({ message: "invalid body format: " + error.message });
         if (error instanceof ValidationError) res.status(400).json({ message: error.message });
         else res.status(500).json({ error: error.message });
     }
@@ -435,17 +379,9 @@ exports.getPlanDetail = async (req, res) => {
                     as: "Discussions",
                 },
                 {
-                    model: planModel.PlanTypes,
-                    attributes: ["typeName"],
-                    through: {
-                        attributes: []
-                    }
-                },
-                {
                     model: progressModel.Progress,
                     as: 'progresses',
                     attributes: ["progress_id", "name", "times", "need_activity"]
-
                 }
             ],
         });
@@ -536,7 +472,7 @@ exports.getPlanList = async (req, res) => {
         const search = req.query.search;
         const mode = req.query.mode || "all";
         const target_user = req.query.target_user || user_id;
-        const tags = req.query.tags ? req.query.tags.split(",") : null;
+        const type = req.query.type;
 
 
         allowModes = ["owned", "joined", "all"];
@@ -546,6 +482,7 @@ exports.getPlanList = async (req, res) => {
         // set search condition
         var condition = {};
 
+        if (type) condition.type = type;
         if (search) condition.name = { [Op.like]: '%' + search + '%' };
         if (start_date & end_date) {
             condition.date = {
@@ -560,49 +497,6 @@ exports.getPlanList = async (req, res) => {
                 [Op.lt]: [end_date]
             };
         }
-
-        // set include condition
-        // var includeConditions = new Array();
-        // if (mode == "owned") includeConditions.push({
-        //     model: User,
-        //     as: 'Creator',
-        //     attributes: ["name", "email", "phoneNum", "photo", "gender"],
-        //     where: {
-        //         user_id: target_user,
-        //     },
-        //     through: {
-        //         attributes: [] // Exclude all attributes from the intermediate table
-        //     }
-        // });
-        // else if (mode == "joined") includeConditions.push({
-        //     model: User,
-        //     as: 'Participants',
-        //     attributes: ["name", "photo", "gender"],
-        //     where: {
-        //         user_id: target_user,
-        //     },
-        //     through: {
-        //         attributes: [] // Exclude all attributes from the intermediate table
-        //     }
-        // });
-        // else if (mode == "all") includeConditions.push({
-        //     model: User,
-        //     as: 'Participants',
-        //     attributes: ["name"],
-        //     through: {
-        //         attributes: [] // Exclude all attributes from the intermediate table
-        //     }
-
-        // });
-
-        // includeConditions.push({
-        //     model: planModel.PlanTypes,
-        //     through: planModel.PlanTypeAssociation,
-        //     attributes: ['typeName'],
-        //     through: {
-        //         attributes: [] // Exclude all attributes from the intermediate table
-        //     }
-        // });
 
 
         const plans = await planModel.Plan.findAll({
@@ -626,17 +520,6 @@ exports.getPlanList = async (req, res) => {
                         attributes: [] // Exclude all attributes from the intermediate table
                     }
                 },
-                {
-                    model: planModel.PlanTypes,
-                    through: planModel.PlanTypeAssociation,
-                    attributes: ['typeName'],
-                    where: tags ? {
-                        typeName: { [Op.in]: tags }
-                    } : null,
-                    through: {
-                        attributes: [] // Exclude all attributes from the intermediate table
-                    }
-                }
             ],
             where: condition,
             limit: limit,
