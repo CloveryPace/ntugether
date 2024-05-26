@@ -310,9 +310,14 @@ function NewActivity() {
                 <Grid item xs={12} md={6}>
                     <Stack direction="row" spacing={2}>
                         <Typography variant="h6"> 活動時間 </Typography>
+                        {(activityData.is_one_time === "true")?
+                        <></>
+                        :
                         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                            <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
+                        <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
                         </Box>
+                        }
+
                     </Stack>
                     {dateitems.map((item, index) => (
                         <Box
