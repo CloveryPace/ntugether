@@ -100,8 +100,8 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
       "name": newName,
       "goal": newGoal,
       "introduction": newIntro,
-      "start_date": startDate,
-      "end_date": endDate,
+      "start_date": startDate.format('YYYY-MM-DD'),
+      "end_date": endDate.format('YYYY-MM-DD'),
       "tags": Tags,
       "invitees": [],
       "need_reviewed": review,
@@ -139,13 +139,11 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
   };
 
   const handleChangeStartDate = (date) => {
-    let finaldate = date.year() + '/'  + (date.month() + 1)+ '/' + date.date();
-    setStartDate(finaldate);
+    setStartDate(date);
   };
 
   const handleChangeEndDate = (date) => {
-    let finaldate = date.year() + '/'  + (date.month() + 1)+ '/' + date.date();
-    setEndDate(finaldate);
+    setEndDate(date);
   };
 
   const handleDeleteAttendee = (participantId) => {
@@ -229,11 +227,12 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
               <DesktopDatePicker
                 required
                 fullWidth
+                value={startDate}
                 onChange={handleChangeStartDate}
-                defaultValue={startDate}
                 label={t("輸入開始日期")}
                 name="start_date"
                 id="start_date"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
             <Typography variant="h6">{t('結束日期')}</Typography>
@@ -241,11 +240,12 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
               <DesktopDatePicker
                 required
                 fullWidth
+                value={endDate}
                 onChange={handleChangeEndDate}
-                defaultValue={endDate}
                 label={t("輸入結束日期")}
                 name="end_date"
                 id="end_date"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
           </Grid>
