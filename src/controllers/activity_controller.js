@@ -331,12 +331,12 @@ exports.createActivity = async (req, res) => {
         // create long term activity
         if (!body.is_one_time) {
             console.log("is long term activity");
-            for (const date in dates) {
-                console.log("data is");
+            for (var i = 0; i < dates.length; i++) {
+                console.log("date is", dates[i]);
                 await activityModel.LongTermActivities.create(
                     {
                         activity_id: newActivity.activity_id,
-                        date: date,
+                        date: dates[i],
                     }
                 );
             }

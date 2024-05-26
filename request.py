@@ -3,7 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-activity_id = 59
+activity_id = 61
 plan_id = 39
 
 
@@ -74,7 +74,7 @@ token = signin()
 def create_activity():
     payload = json.dumps(
         {
-            "name": "NEWWWW Activity",
+            "name": "NEW Activity",
             "introduction": "Introduction of Activity",
             "date": ["2024-04-27T06:10:00", "2024-04-28T06:10:00"],
             "need_reviewed": False,
@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?mode=owned&search=JAVA",
+        url=f"{host}/activity?is_long_term=True",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -548,10 +548,10 @@ if __name__ == '__main__':
     # create_activity()
     # send_act_invitation()
     # get_acitvity_list()
-    # get_acitvity_detail()
+    get_acitvity_detail()
     # update_activity()
     # delete_activity()
-    apply()
+    # apply()
     # get_activity_applications()
     # approve()
     # make_discussion()
@@ -559,7 +559,7 @@ if __name__ == '__main__':
     # get_application_detail()
     # remove_user()
     # respond_to_activity_invitations()
-    leave_activity()
+    # leave_activity()
 
     # create_plan()
     # update_plan()
