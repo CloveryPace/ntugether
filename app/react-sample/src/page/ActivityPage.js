@@ -293,5 +293,3 @@ function ActivityPage() {
 }
 
 export default ActivityPage;
-
-// <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")}</Button>

@@ -63,6 +63,11 @@ const style = {
   border: '1px solid #000',
   boxShadow: 24,
   p: 4,
+  overflow: "hidden",
+  overflowY: "scroll",
+  display: "flex",
+  flexDirection: "column",
+  height: 700,
 };
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
