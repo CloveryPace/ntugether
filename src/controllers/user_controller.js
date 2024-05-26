@@ -242,7 +242,7 @@ async function oauthSingup (req, res) {
 
 async function signIn(req, res) {
   try {
-    const { email, password } = req.body;
+    const { email, password, oauthId } = req.body;
     console.log("email", email);
     console.log("password", password);
 
@@ -251,15 +251,40 @@ async function signIn(req, res) {
       where: {
         email: email,
       },
-      attributes: ['user_id', 'password'], // Select only the user_id and password fields
+      attributes: ['user_id', 'password', 'oauthId'], // Select only the user_id and password fields
     });
+    
 
     if (!user) {
       // If no user found with that email
       console.log("User does not exist");
       return res.status(404).json({ error: "User not found." });
     }
+
     const { user_id: userId, password: hashedPassword } = user;
+
+    if (!user.password){
+        if (user.oauthId === oauthId){
+          const token = jwt.sign(
+            { userId: user.user_id },
+            process.env.JWT_SECRET,
+            { expiresIn: process.env.JWT_EXPIRES_IN } // Use the same JWT expiry as in signUp
+          );
+          console.log('jwt token', token);
+
+          // if not given oauthId
+
+      
+          // Successfully authenticated
+          return res.status(200).json({
+            message: 'Sign in successfully.',
+            jwtToken: token,
+          });
+        } else {
+          return res.status(400).json({error: "Invalid OauthId or not given OauthId and password."})
+        }
+    }
+
 
     // Compare the provided password with the stored hashed password
     const isMatch = await bcrypt.compare(password, hashedPassword);
@@ -283,7 +308,7 @@ async function signIn(req, res) {
 
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ error: "Internal server error during authentication" });
+    return res.status(500).json({ error: error.message });
   }
 }
 

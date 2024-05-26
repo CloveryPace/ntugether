@@ -213,7 +213,7 @@ router.post(
 
 router.post(
   "/signin",
-  // #swagger.description = "登入，請先確定已註冊成功" 
+  // #swagger.description = "會員登入，請先確定已註冊成功。綁定的帳號有提供密碼就正常登入；沒有提供密碼而有提供oauthId會去檢查oauthId；都沒有提供或是oauthId錯誤會報錯" 
   // #swagger.summary = "會員登入"
   // #swagger.tags = ['User']
   /* 
@@ -224,7 +224,8 @@ router.post(
       schema: 
       {
         "email": "r12725066@ntu.edu.tw",
-        "password": "a"
+        "password": "a",
+        "oauthId": "oauthId"
       }
   } */
   /* #swagger.responses[201] = { 
@@ -232,6 +233,12 @@ router.post(
       schema: {
             "message": "Sign in successfully.",
             "token": "JWT_token"
+          }
+      } */
+   /* #swagger.responses[400] = { 
+      description: "OauthId錯誤或未提供",
+      schema: {
+            "error": "Invalid OauthId or not given OauthId and password."
           }
       } */
   /* #swagger.responses[401] = { 
