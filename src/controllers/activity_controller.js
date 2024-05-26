@@ -309,6 +309,8 @@ exports.createActivity = async (req, res) => {
     try {
         const user_id = req.user_id;
         const { id, ...body } = req.body;
+
+        console.log("body is", res.body);
         var dates = null;
 
         // get date list and make date field a single element
@@ -316,6 +318,8 @@ exports.createActivity = async (req, res) => {
 
         // process long term date
         if (!body.is_one_time) {
+            console.log("IS LONG TERM");
+            console.log("body.date is ", body.date);
             dates = body.date;
             body.date = dates[0];
         }
@@ -326,7 +330,9 @@ exports.createActivity = async (req, res) => {
 
         // create long term activity
         if (!body.is_one_time) {
+            console.log("is long term activity");
             for (const date in dates) {
+                console.log("data is");
                 await activityModel.LongTermActivities.create(
                     {
                         activity_id: newActivity.activity_id,
@@ -617,7 +623,35 @@ exports.applyActivity = async (req, res) => {
 
 // };
 
-exports.leaveActivity = async (req, res) => { }; // NOTE: not specified yet
+exports.leaveActivity = async (req, res) => {
+    try {
+        const user_id = req.user_id;
+        const activity_id = req.params.activity_id;
+
+        const activity = await activityModel.Activities.findByPk(activity_id);
+
+        if (!activity) return res.status(404).send("Activity not found");
+
+        const participantStatus = await activityModel.ActivityParticipantStatus.findOne(
+            {
+                where: {
+                    joined_activities: activity_id,
+                    participants: user_id,
+                }
+            },
+        );
+
+        if (!participantStatus) {
+            return res.status(401).json({ error: "you are not in the activity" });
+        }
+
+        await participantStatus.destroy();
+        res.status(204).send();
+    } catch (error) {
+        console.error('Error applying for activity:', error);
+        res.status(500).json({ error: error.message });
+    }
+};
 
 /**
  * get all discussion based on the order of timeline of specific activity, where the output is also controlled by offset and limit

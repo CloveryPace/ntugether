@@ -479,16 +479,6 @@ router.post(
 
   authMiddleware.authentication, activityController.makeDiscussion);
 
-/**
- * ROUTES: /activity/leave
- * FUNCTION: leave from an activity 
- */
-router.post(
-  "/:activity_id/leave",
-  // #swagger.tags = ['Activity']
-  // #swagger.summary = '離開活動'
-  // #swagger.description = '該功能尚未完成QQ'
-  authMiddleware.authentication, activityController.leaveActivity);
 
 router.post(
   "/:activity_id/invitation",
@@ -539,4 +529,26 @@ router.put(
   } */
 
   authMiddleware.authentication, activityController.respondToInvitation);
+
+
+router.delete(
+  "/:activity_id/leave",
+  // #swagger.tags = ['Activity']
+  // #swagger.summary = 'Leave activity'
+  // #swagger.description = 'Leave activity'
+
+
+  /* #swagger.responses[204] = { 
+    description: "successfully left the activity",
+  } */
+
+  /* #swagger.responses[404] = { 
+    description: "activity not found",
+  } */
+
+  /* #swagger.responses[401] = { 
+    description: "not in the activity",
+  } */
+
+  authMiddleware.authentication, activityController.leaveActivity);
 module.exports = router;

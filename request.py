@@ -3,7 +3,7 @@ import json
 
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
-activity_id = 44
+activity_id = 59
 plan_id = 39
 
 
@@ -43,8 +43,8 @@ def signup():
 
 def signin():
     payload = json.dumps({
-        # "email": "daniel.bb0321@gmail.com",
-        "email": "b09611028@ntu.edu.tw",
+        "email": "daniel.bb0321@gmail.com",
+        # "email": "b09611028@ntu.edu.tw",
         # "email": "r12725066@ntu.edu.tw",
         "password": "pwd"
         # "password": "a"
@@ -77,7 +77,7 @@ def create_activity():
             "name": "NEWWWW Activity",
             "introduction": "Introduction of Activity",
             "date": ["2024-04-27T06:10:00", "2024-04-28T06:10:00"],
-            "need_reviewed": True,
+            "need_reviewed": False,
             "country": "Taiwan",
             "max_participants": 10,
             "location": "Taipei",
@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?mode=owned&search=NEWW",
+        url=f"{host}/activity?mode=owned&search=JAVA",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -149,7 +149,7 @@ def update_activity():
 @api_test
 def delete_activity():
     res = requests.delete(
-        url=f"{host}/activity/20",
+        url=f"{host}/activity/40",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -172,6 +172,20 @@ def apply():
             "authorization": f"bearer {token}"
         },
         data=payload,
+    )
+
+    return res
+
+
+@api_test
+def leave_activity():
+
+    res = requests.delete(
+        url=f"{host}/activity/{activity_id}/leave",
+        headers={
+            "content-type": "application/json",
+            "authorization": f"bearer {token}"
+        },
     )
 
     return res
@@ -531,13 +545,13 @@ def get_notifications():
 if __name__ == '__main__':
 
     # signup()
-    create_activity()
+    # create_activity()
     # send_act_invitation()
     # get_acitvity_list()
     # get_acitvity_detail()
     # update_activity()
     # delete_activity()
-    # apply()
+    apply()
     # get_activity_applications()
     # approve()
     # make_discussion()
@@ -545,6 +559,7 @@ if __name__ == '__main__':
     # get_application_detail()
     # remove_user()
     # respond_to_activity_invitations()
+    leave_activity()
 
     # create_plan()
     # update_plan()
