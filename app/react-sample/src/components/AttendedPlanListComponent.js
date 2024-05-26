@@ -1,79 +1,37 @@
-import * as React from 'react'; 
-
+import React, { useState } from 'react';
+import { Grid, Button, Typography } from '@mui/material';
 import PlanComponent from './PlanComponent';
-import Button from '@mui/material/Button';
-
-import { Grid } from '@mui/material';
-import Typography from '@mui/material/Typography';
-import { API_CREATE_ACTIVITY } from '../global/constants';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-
 import Progress from './Progress';
+import { useTranslation } from 'react-i18next';
 
+const AttendedPlanListComponent = ({ plans }) => {
+  const { t } = useTranslation();
+  const [visiblePlans, setVisiblePlans] = useState(3);
 
-export default function AttendedPlanListComponent() {
+  const showMorePlans = () => {
+    setVisiblePlans(prevVisiblePlans => prevVisiblePlans + 3);
+  };
 
-  /*
-  const [data, setData] = useState([]);
-
-
-  useEffect(() => {
-    console.log('execute function in useEffect');
-    axios.get(API_CREATE_ACTIVITY)
-          .then(function (response) {
-            console.log(response);
-            setData(response.data.reverse())
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-    }
-  ,[]);
-  */
-
-    return (
-
+  return (
     <div>
       <Grid container spacing={2}>
-        <Progress />
-        <Progress />
-        <Progress />
-        <Progress />
-        <Progress />
-        <Progress />
-        
-            
-           {/* (data.map((activity) => {
-              return (
-                <ActivityComponent data={activity} key={activity.id} />
-              );
-            }))
-          */}
-
+        {plans.length === 0 ? (
+          <Grid item xs={12}><Typography>{t('沒有計畫')}</Typography></Grid>
+        ) : (
+          plans.slice(0, visiblePlans).map(plan => (
+              <Progress planId={plan.plan_id} planName={plan.name} />
+          ))
+        )}
       </Grid>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-      <Button sx={{ my: 2 }}><Typography>查看更多</Typography></Button> 
+      {visiblePlans < plans.length && (
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+          <Button onClick={showMorePlans} sx={{ my: 2 }}>
+            <Typography>{t('查看更多')}</Typography>
+          </Button>
+        </div>
+      )}
     </div>
-    </div>
-    );
-  }
-  
+  );
+};
 
-
-  // const chemists = people.filter(person =>
-  //   person.profession === 'chemist'
-  // );
-  // const listItems = chemists.map(person =>
-  //   <li>
-  //     <img
-  //       src={getImageUrl(person)}
-  //       alt={person.name}
-  //     />
-  //     <p>
-  //       <b>{person.name}:</b>
-  //       {' ' + person.profession + ' '}
-  //       known for {person.accomplishment}
-  //     </p>
-  //   </li>
-  // );
+export default AttendedPlanListComponent;

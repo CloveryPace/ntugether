@@ -78,26 +78,26 @@ export default function PendingReview({id}) {
       const token = userToken;
       //設定authorization
       const config = {
-          headers: { 
-            authorization: `Bearer ${token}`
-          }
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
       };
-  
-      //審核通過
-      axios.patch(API_GET_PLAN_DETAIL + 'application/' + apply_id + '/deleteApplication',{ 
-      }, config)
+    
+      //刪除
+      axios.delete(API_GET_PLAN_DETAIL + 'application/' + apply_id + '/deleteApplication', config)
         .then(function (res) {
-            console.log(res);
-            alert('刪除成功');
-            window.location.reload(false);
+          console.log(res);
+          alert('刪除成功');
+          window.location.reload(false);
         })
         .catch(function (err) {
-            alert("刪除失敗");
-            console.log("apply_id");
-            console.log(apply_id);
-            console.log(err);
-      });
+          alert("刪除失敗");
+          console.log("apply_id");
+          console.log(apply_id);
+          console.log(err);
+        });
     };
+    
 
     return (
       <Stack direction="column" spacing={1}>
