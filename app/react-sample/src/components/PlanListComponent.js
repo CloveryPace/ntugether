@@ -11,7 +11,7 @@ import { getAuthToken } from '../utils';
 export default function PlanListComponent() {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
-  const [visibleItems, setVisibleItems] = useState(3);
+  const [visibleItems, setVisibleItems] = useState(6);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function PlanListComponent() {
   }, [userToken]);
 
   const handleLoadMore = () => {
-    setVisibleItems(prevVisibleItems => prevVisibleItems + 3);
+    setVisibleItems(prevVisibleItems => prevVisibleItems + 6);
   };
 
   return (
