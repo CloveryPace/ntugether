@@ -536,6 +536,7 @@ exports.getPlanList = async (req, res) => {
         const search = req.query.search;
         const mode = req.query.mode || "all";
         const target_user = req.query.target_user || user_id;
+        const tags = req.query.tags ? req.query.tags.split(",") : null;
 
 
         allowModes = ["owned", "joined", "all"];
@@ -561,45 +562,82 @@ exports.getPlanList = async (req, res) => {
         }
 
         // set include condition
-        var includeConditions = new Array();
-        if (mode == "owned") includeConditions.push({
-            model: User,
-            as: 'Creator',
-            attributes: ["name", "email", "phoneNum", "photo", "gender"],
-            where: {
-                user_id: target_user,
-            }
-        });
-        else if (mode == "joined") includeConditions.push({
-            model: User,
-            as: 'Participants',
-            attributes: ["name", "photo", "gender"],
-            where: {
-                user_id: target_user,
-            },
-        });
-        else if (mode == "all") includeConditions.push({
-            model: User,
-            as: 'Participants',
-            attributes: ["name"],
-            through: {
-                attributes: [] // Exclude all attributes from the intermediate table
-            }
+        // var includeConditions = new Array();
+        // if (mode == "owned") includeConditions.push({
+        //     model: User,
+        //     as: 'Creator',
+        //     attributes: ["name", "email", "phoneNum", "photo", "gender"],
+        //     where: {
+        //         user_id: target_user,
+        //     },
+        //     through: {
+        //         attributes: [] // Exclude all attributes from the intermediate table
+        //     }
+        // });
+        // else if (mode == "joined") includeConditions.push({
+        //     model: User,
+        //     as: 'Participants',
+        //     attributes: ["name", "photo", "gender"],
+        //     where: {
+        //         user_id: target_user,
+        //     },
+        //     through: {
+        //         attributes: [] // Exclude all attributes from the intermediate table
+        //     }
+        // });
+        // else if (mode == "all") includeConditions.push({
+        //     model: User,
+        //     as: 'Participants',
+        //     attributes: ["name"],
+        //     through: {
+        //         attributes: [] // Exclude all attributes from the intermediate table
+        //     }
 
-        });
+        // });
 
-        includeConditions.push({
-            model: planModel.PlanTypes,
-            through: planModel.PlanTypeAssociation,
-            attributes: ['typeName'],
-            through: {
-                attributes: [] // Exclude all attributes from the intermediate table
-            }
-        });
+        // includeConditions.push({
+        //     model: planModel.PlanTypes,
+        //     through: planModel.PlanTypeAssociation,
+        //     attributes: ['typeName'],
+        //     through: {
+        //         attributes: [] // Exclude all attributes from the intermediate table
+        //     }
+        // });
 
 
         const plans = await planModel.Plan.findAll({
-            include: includeConditions,
+            include: [
+                {
+                    model: User,
+                    as: 'Creator',
+                    attributes: ["name", "email", "phoneNum", "photo", "gender"],
+                    where: mode == "owned" ? {
+                        user_id: target_user,
+                    } : null,
+                },
+                {
+                    model: User,
+                    as: 'Participants',
+                    attributes: (mode == "owned" || mode == "joined") ? ["name", "email", "phoneNum", "photo", "gender"] : ["name"],
+                    where: mode == "joined" ? {
+                        user_id: target_user,
+                    } : null,
+                    through: {
+                        attributes: [] // Exclude all attributes from the intermediate table
+                    }
+                },
+                {
+                    model: planModel.PlanTypes,
+                    through: planModel.PlanTypeAssociation,
+                    attributes: ['typeName'],
+                    where: tags ? {
+                        typeName: { [Op.in]: tags }
+                    } : null,
+                    through: {
+                        attributes: [] // Exclude all attributes from the intermediate table
+                    }
+                }
+            ],
             where: condition,
             limit: limit,
             offset: offset,

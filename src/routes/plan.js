@@ -59,14 +59,26 @@ router.get(
   // #swagger.tags = ['Plan']
   // #swagger.summary = '獲得計畫列表'
   /*
-  #swagger.parameters = [
-    {
-      name: "mode",
-      in: "query",
-      description: "allow modes: [all, joined, owned]",
-      type: "string",
-    },
-  ]
+  /* #swagger.parameters['mode'] = {
+    in: 'query',
+    description: "Decide to get all plans or only the plans owned/joined by the target_user. Allow modes: [all, joined, owned]",
+    type: "integer",
+    schema: "10"
+  } */
+
+  /* #swagger.parameters['target_user'] = {
+    in: 'query',
+    description: "The user_id for the user you want to query. Default your owned user_id",
+    type: "int",
+    schema: "0"
+  } */
+  /* #swagger.parameters['tags'] = {
+    in: 'query',
+    description: "Filter plan with list of tags seperated by camma",
+    type: "int",
+    schema: "0"
+  } */
+  /*
   #swagger.responses[200] = { 
       description: "success",
       schema: 

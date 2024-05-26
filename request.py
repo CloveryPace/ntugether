@@ -390,7 +390,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan?mode=owned&target_user=7",
+        url=f"{host}/plan?mode=owned&target_user=7&tags=Exam,Learning",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",

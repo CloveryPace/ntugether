@@ -199,6 +199,7 @@ exports.getActivitiesList = async (req, res) => {
         const is_long_term = req.query.is_long_term;
         const target_user = req.query.target_user || user_id;
         const mode = req.query.mode || "all";
+        const type = req.query.type;
 
         allowModes = ["owned", "joined", "all"];
 
@@ -207,6 +208,7 @@ exports.getActivitiesList = async (req, res) => {
         // set search condition
         var condition = {};
 
+        if (type) condition.type = type;
         if (is_long_term != null) condition.is_one_time = !(is_long_term == "true" || is_long_term == "True");
         if (country) condition.country = country;
         if (location) condition.location = location;
