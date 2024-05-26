@@ -199,6 +199,7 @@
     "{{percentage}}%，已完成{{finishedTasks}}個進度，待完成{{remainingTasks}}個進度": "{{percentage}}%, completed {{finishedTasks}} progresses, remaining {{remainingTasks}} progresses",
     "{{progressName}} {{progressPercentage}}%，已完成{{finishedCount}}個進度，待完成{{remainingCount}}個進度": "{{progressName}} {{progressPercentage}}%, completed {{finishedCount}} progresses, remaining {{remainingCount}} progresses",
     "進行中": "Ongoing",
-    "沒有計畫": "No plans"
+    "沒有計畫": "No plans",
+    "已經達成": "Already achieved "
 
  }
