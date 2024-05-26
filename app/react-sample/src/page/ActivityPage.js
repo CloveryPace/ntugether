@@ -148,17 +148,8 @@ function ActivityPage() {
           <EditActivityPage /** 編輯視窗 */
             show={editingShow}
             onHide={() => setEditingShow(false)}
-            name={data.name? data.name: ""}
-            introduction={data.introduction? data.introduction: ""}
-            date={data.date? data.date: ""}
-            location={data.location? data.location: ""}
-            max_participants={data.max_participants? data.max_participants: ""}
-            ActivityAtendee={atendee}
-            oneTime={data.is_one_time? data.is_one_time: ""}
-            need_reviewed={data.need_reviewed? data.need_reviewed: ""}
-            type={data.type? data.type: "未指定"}
+            data={data}
             id={id}
-            application_problem={data.application_problem? data.application_problem: ""}
           />
           }
       </Box>

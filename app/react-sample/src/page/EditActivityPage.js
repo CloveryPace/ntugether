@@ -2,7 +2,6 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { useRef } from "react";
 import { Stack } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import TextField from "@mui/material/TextField";
@@ -25,6 +24,7 @@ import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useEffect } from 'react';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -91,72 +91,31 @@ const ItemTag = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
 }));
 
-export default function EditActivityPage({ onHide, show, id, name, introduction, date, location, max_participants, ActivityAtendee, oneTime, need_reviewed, type, application_problem}) {
-  const [OneTime, setOneTime] = useState(oneTime); // 一次性活動: true, 長期性活動：false
-  const [review, setReview] = useState(need_reviewed); // 需審核: true, 不需審核：false
-  const [Type, setType] = useState(type); // 活動類型
-  const [actDate, setActDate] = useState(dayjs(date)); 
+export default function EditActivityPage({ onHide, show, id, data}) {
   const [ID, setID] = useState(id);
-  const [userToken, setUserToken] = useState(getAuthToken());
-  const defaultreview = review ? "需審核" : "不需審核";
-  const defaultonetime = oneTime ? "一次性活動" : "長期性活動";
-  const inputRefName = useRef();
-  const inputRefIntro = useRef();
-  const inputRefLocation = useRef();
-  const inputRefLimitPerson = useRef();
-  const inputRefreviewquestion = useRef();
+  const [attendee, setAttendee] = useState(data.Participants);
+  const [dateitems, setDateitems] = useState((Array.isArray(data.date)? data.date: [data.date]));
   const navigate = useNavigate();
 
   // 初始化從ActivityPage傳進的值
-  const [data, setData] = useState({
-    name: name,
-    introduction: introduction,
-    date: date,
+  const [newdata, setNewdata] = useState({
+    name: data.name,
+    introduction: data.introduction,
+    date: (Array.isArray(data.date)? data.date: [data.date]),
     inviteName: '',
-    is_one_time: oneTime,
-    type: type,
-    need_reviewed: need_reviewed,
+    is_one_time: data.is_one_time,
+    type: data.type,
+    need_reviewed: data.need_reviewed,
     country: "Taiwan",
-    max_participants: max_participants,
-    location: location,
-    application_problem: application_problem
+    max_participants: data.max_participants,
+    location: data.location,
+    application_problem: data.application_problem
   })
 
   const handleUpdate = (event) => {
     event.preventDefault();
-
-    // 若為空值，無法儲存
-    if (inputRefName.current.value === "") {
-      alert("請輸入活動名稱");
-      return;
-    };
-    if (inputRefIntro.current.value === ""){
-      alert("請輸入活動簡介");
-      return;
-    };
-    if (!actDate){
-      alert("請輸入活動時間");
-      return;
-    };
-    if (inputRefLocation.current.value === ""){
-      alert("請輸入活動地點");
-      return;
-    };
-    if (inputRefLimitPerson.current.value === ""){
-      alert("請輸入人數上限");
-      return;
-    };
-    
-    const newName = inputRefName.current.value;
-    const newIntro = inputRefIntro.current.value;
-    const newTime = actDate;
-    const newLocation = inputRefLocation.current.value;
-    const newLimitPerson = inputRefLimitPerson.current.value;
-    const newReviewQuestion = inputRefreviewquestion.current.value;
-
-    if (newName !== name || newIntro !== introduction || !newTime.isSame(dayjs(date)) || newLocation !== location || newLimitPerson !== max_participants || OneTime !== oneTime || Type !== type || review !== need_reviewed || newReviewQuestion !== application_problem) {
       try { 
-        const token = userToken;
+        const token = getAuthToken();
         const bodyParameters = {
           key: "value",
         };
@@ -164,22 +123,10 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
             headers: { "authorization": `Bearer ${token}`}
         };
 
-        console.log("新時間：");
-        console.log(newTime);
+        console.log(newdata);
 
         //更新活動
-        axios.patch(API_GET_ACTIVITY_DETAIL + id, { 
-          "id": id,         
-          "name": newName,
-          "introduction": newIntro,
-          "date": newTime,
-          "is_one_time": OneTime,
-          "type": Type,
-          "need_reviewed": review,
-          "max_participants": newLimitPerson,
-          "location": newLocation,
-          "application_problem": newReviewQuestion
-        },
+        axios.patch(API_GET_ACTIVITY_DETAIL + id, newdata,
           config
         )
         .then(function (res) {
@@ -200,27 +147,18 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
         //更新出錯
         alert("Error: Failed to update activity name");
       }
-    }
   };
 
+  //更新
   const handleOneTimeChange = (event) => {
-      setOneTime((event.target.value) === "一次性活動");
+      handleChange(event);
   };
-
   const handleChangeReview = (event) => {
-      setReview((event.target.value) === "需審核");
+      handleChange(event);
   };
-
   const handleChangeType = (event) => {
-      setType(event.target.value);
+      handleChange(event);
   };
-
-  const handleChangeDate = (dateData) => {
-      setActDate(dateData);
-  };
-
-  // 長期性活動多個時間
-  const [dateitems, setDateitems] = useState([dayjs(date)]);
   const handleAddClick = () => {
       setDateitems([...dateitems, dayjs()]);
   };
@@ -239,7 +177,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   };
   const handleChangeDateMul = (index, value) => {
       const newdateItems = [...dateitems];
-      newdateItems[index] = value.year() + '/'  + (value.month() + 1)+ '/' + value.date() + ' ' + (value.hour()) + ':' + (value.minute());
+      newdateItems[index] = value;
       console.log(newdateItems);
       setDateitems(newdateItems);
       const event = { 
@@ -249,22 +187,18 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
           }
       };
       handleChange(event);
-    };
+  };
   const handleChange = e => {
     const { name, value } = e.target;
-    setData(prevState => ({
+    setNewdata(prevState => ({
         ...prevState,
         [name]: value
     }));
-    console.log(data);
-    console.log(data.date);
+    console.log(newdata);
   };  
 
-
   const handleDelete = (id) => {
-    //儲存token
-    const token = userToken;
-    //設定authorization
+    const token = getAuthToken();
     const bodyParameters = {
       key: "value",
     };
@@ -290,9 +224,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
   };
 
   const handleDeleteAttendee = (user_id) => {
-    //儲存token
-    const token = userToken;
-    //設定authorization
+    const token = getAuthToken();
     const bodyParameters = {
       key: "value",
     };
@@ -320,6 +252,23 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
     });
   };
 
+  useEffect(() => {
+    if (newdata.is_one_time === "true"){
+        if (Array.isArray(data.date)){
+            console.log("重置日期");
+            var newdateItems = [dateitems[0]];
+            setDateitems(newdateItems);
+            const event = { 
+                "target": {
+                    "value": newdateItems,
+                    "name": "date"
+                }
+            };
+            handleChange(event);
+        }
+    }
+    }, [newdata.is_one_time]);
+
   return (
     <div>
       <Modal
@@ -336,8 +285,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
               <Typography variant="h6">活動名稱</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={data.name}
-                      inputRef={inputRefName}
+                      value={newdata.name}
                       onChange={handleChange}
                       autoFocus
                       fullWidth
@@ -347,8 +295,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 <Typography variant="h6">活動簡介</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={data.introduction}
-                      inputRef={inputRefIntro}
+                      value={newdata.introduction}
                       onChange={handleChange}
                       autoFocus
                       fullWidth
@@ -358,11 +305,15 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                   <Typography variant="h6"></Typography>
                   <Stack direction="row" spacing={2}>
                       <Typography variant="h6"> 活動時間 </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                          <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
-                      </Box>
+                      {(newdata.is_one_time === "true" || newdata.is_one_time === true)?
+                        <></>
+                        :
+                        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                        <Button variant="contained" color="primary" onClick={handleAddClick}> + </Button>
+                        </Box>
+                        }
                   </Stack>
-                    {dateitems.map((item, index) => (
+                    {newdata.date.map((item, index) => (
                         <Box
                         key={index}
                         sx={{
@@ -374,7 +325,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                         >
                         <Stack direction="row" spacing={2} justifyContent="space-between">
                             <Typography variant="h6" sx={{ minWidth: '30px' }}>{index + 1}.</Typography>
-                            {dateitems.length > 1 && (
+                            {newdata.date.length > 1 && (
                                 <IconButton onClick={() => handleDeleteClick(index)}>
                                 <DeleteIcon />
                                 </IconButton>
@@ -389,7 +340,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                         >
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
                                 <DesktopDateTimePicker
-                                value={item}
+                                value={dayjs(item)}
                                 onChange={(e) => handleChangeDateMul(index, e)}
                                 name="date"
                                 required
@@ -404,8 +355,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 <Typography variant="h6">活動地點</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={location}
-                      inputRef={inputRefLocation}
+                      defaultValue={newdata.location}
                       onChange={handleChange}
                       autoFocus
                       fullWidth
@@ -415,8 +365,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                 <Typography variant="h6">人數上限</Typography>
                   <TextField
                       variant="outlined"
-                      defaultValue={max_participants}
-                      inputRef={inputRefLimitPerson}
+                      defaultValue={newdata.max_participants}
                       onChange={handleChange}
                       autoFocus
                       fullWidth
@@ -425,8 +374,8 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                   />
                 <Typography variant="h6">參加者</Typography>
                 <div style={container}>
-                  {ActivityAtendee.length > 0 ?
-                    (ActivityAtendee.map((person) => {
+                  {attendee.length > 0 ?
+                    (attendee.map((person) => {
                       return (
                           <div style={{alignSelf: 'center', margin: "0.5rem"}}>
                             <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.participants)}>
@@ -445,7 +394,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
               </Grid>
               <Grid item xs={12} md={6}>
                 <Typography variant="h6"> 活動類型 </Typography>
-                  <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={type}>
+                  <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={newdata.type}>
                       {['運動', '讀書會', "出遊"].map((value) => (
                       <Grid item>
                           <ItemTag> 
@@ -460,12 +409,12 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                       ))}
                   </RadioGroup>
                   <Typography variant="h6"> 一次性活動 </Typography>
-                    <RadioGroup aria-label="onetime" name="oneTime" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue={defaultonetime}>
+                    <RadioGroup aria-label="is_one_time" name="is_one_time" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue={newdata.is_one_time}>
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
                             <ItemOneTime> 
                                 <FormControlLabel
-                                    value={value}
+                                    value={(value === '一次性活動')}
                                     control={<Radio />}
                                     label={`${value}`}
                                     labelPlacement="end"
@@ -475,12 +424,12 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                         ))}
                     </RadioGroup>
                     <Typography variant="h6"> 加入審核 </Typography>
-                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={defaultreview}>
+                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
                             <ItemReview> 
                                 <FormControlLabel
-                                    value={value}
+                                    value={value === "需審核"}
                                     control={<Radio />}
                                     label={`${value}`}
                                     labelPlacement="end"
@@ -492,8 +441,7 @@ export default function EditActivityPage({ onHide, show, id, name, introduction,
                     <Typography variant="h6"> </Typography>
                     <TextField
                         variant="outlined"
-                        defaultValue={application_problem}
-                        inputRef={inputRefreviewquestion}
+                        defaultValue={newdata.application_problem}
                         onChange={handleChange}
                         autoFocus
                         fullWidth

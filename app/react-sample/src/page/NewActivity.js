@@ -120,7 +120,6 @@ function NewActivity() {
         console.log(activityData);
         console.log("時間array");
         console.log(activityData.date);
-        console.log(userToken);
     };  
 
     const createActivity = (event) =>{
