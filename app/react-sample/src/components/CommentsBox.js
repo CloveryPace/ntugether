@@ -43,7 +43,6 @@ function stringAvatar(name) {
 
 export default function CommentsBox({ id }) {
     const [data, setData] = useState([]); //留言資料
-    const [userToken, setUserToken] = useState(getAuthToken());
     const inputRef = useRef();
     const { t, i18n } = useTranslation();
     const [username, setUsername] = useState('');
@@ -53,9 +52,7 @@ export default function CommentsBox({ id }) {
       };
 
     useEffect(() => {
-        //儲存token
-        const token = userToken;
-        //設定authorization
+        const token = getAuthToken();
         const bodyParameters = {
           key: "value",
         };
@@ -82,7 +79,7 @@ export default function CommentsBox({ id }) {
         console.log(err);
         alert("error");
       });
-    }, [id, userToken]);
+    }, [id]);
 
     // 留言
     const handleComment = (event) => {
@@ -92,7 +89,7 @@ export default function CommentsBox({ id }) {
         alert("請輸入留言");
         return;
       };
-      const token = userToken;
+      const token = getAuthToken();
       const bodyParameters = {
         key: "value",
       };

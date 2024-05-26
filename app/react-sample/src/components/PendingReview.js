@@ -12,7 +12,6 @@ import { getAuthToken } from '../utils';
 
 export default function PendingReview({id}) {
     const [data, setData] = useState([]);
-    const [userToken, setUserToken] = useState(getAuthToken());
     const component = { 
         width: "10rem",
         border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -25,9 +24,7 @@ export default function PendingReview({id}) {
   };
 
     useEffect(() => {
-      //儲存token
-      const token = userToken;
-      //設定authorization
+      const token = getAuthToken();
       const config = {
           headers: { 
             authorization: `Bearer ${token}`
@@ -47,17 +44,14 @@ export default function PendingReview({id}) {
 
     }, [id]);
 
+    //審核通過
     const handleApprove = (apply_id) => { 
-      //儲存token
-      const token = userToken;
-      //設定authorization
+      const token = getAuthToken();
       const config = {
           headers: { 
             authorization: `Bearer ${token}`
           }
       };
-  
-      //審核通過
       axios.patch(API_GET_APPLICATION + apply_id + '/approve',{ 
         "is_approved": true
       }, config)
@@ -74,15 +68,13 @@ export default function PendingReview({id}) {
 
     //刪除申請
     const handleDeny = (apply_id) => { 
-      const token = userToken;
+      const token = getAuthToken();
       const config = {
           headers: { 
             authorization: `Bearer ${token}`
           }
       }
-      axios.patch(API_GET_APPLICATION + apply_id + '/approve',{ 
-        "is_approved": true
-      }, config)
+      axios.delete(API_GET_APPLICATION + apply_id + '/deleteApplication', config)
         .then(function (res) {
             console.log(res);
             alert('刪除成功');
@@ -104,7 +96,7 @@ export default function PendingReview({id}) {
               <p> {comment.application_response? comment.application_response: "未回答"} </p>
               <Button variant="contained" color="primary" onClick={() =>handleApprove(comment.application_id)}> 加入 </Button> 
               <p></p>
-              <Button variant="contained" color="primary"> 刪除 </Button> 
+              <Button variant="contained" color="primary" onClick={() =>handleDeny(comment.application_id)}> 刪除 </Button> 
             </div>
           );
         })):
