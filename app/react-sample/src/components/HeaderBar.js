@@ -27,6 +27,7 @@ import './Style.css';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterBar from './FilterBar';
 import {removeAuthToken} from '../utils';
+import theme from './Theme';
 
 
 const Search = styled('div')(({ theme }) => ({

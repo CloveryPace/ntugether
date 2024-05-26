@@ -16,6 +16,8 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import theme from '../components/Theme';
 import { API_GET_USER, API_GET_PLAN_DETAIL } from '../global/constants'; // API 常數
+import { ThemeProvider } from '@mui/material/styles';
+
 
 export default function PlanComponent({data, key}) {
 
