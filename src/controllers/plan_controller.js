@@ -483,7 +483,12 @@ exports.getPlanList = async (req, res) => {
         var condition = {};
 
         if (type) condition.type = type;
-        if (search) condition.name = { [Op.like]: '%' + search + '%' };
+        if (search) {
+            searchCondition = {
+                [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }, { introduction: { [Op.like]: '%' + search + '%' } }]
+            };
+            condition = { ...condition, ...searchCondition };
+        }
         if (start_date & end_date) {
             condition.date = {
                 [Op.between]: [start_date, end_date]

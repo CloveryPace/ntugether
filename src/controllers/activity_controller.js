@@ -212,7 +212,12 @@ exports.getActivitiesList = async (req, res) => {
         if (is_long_term != null) condition.is_one_time = !(is_long_term == "true" || is_long_term == "True");
         if (country) condition.country = country;
         if (location) condition.location = location;
-        if (search) condition.name = { [Op.like]: '%' + search + '%' };
+        if (search) {
+            searchCondition = {
+                [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }, { introduction: { [Op.like]: '%' + search + '%' } }]
+            };
+            condition = { ...condition, ...searchCondition };
+        }
         if (start_date & end_date) {
             condition.date = {
                 [Op.between]: [start_date, end_date]

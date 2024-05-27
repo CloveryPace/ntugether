@@ -72,6 +72,13 @@ router.get(
     type: "int",
     schema: "0"
   } */
+
+  /* #swagger.parameters['search'] = {
+    in: 'query',
+    description: "If the search field is specified, only the plan with name / introduction including the search value would be returned",
+    type: "string",
+    schema: "0"
+  } */
   /*
   #swagger.responses[200] = { 
       description: "success",

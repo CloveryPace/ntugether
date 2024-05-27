@@ -4,7 +4,7 @@ import json
 # host = "http://ntugether.zapto.org:4000"
 host = "http://localhost:4000"
 activity_id = 61
-plan_id = 40
+plan_id = 41
 
 
 def api_test(func):
@@ -75,7 +75,7 @@ def create_activity():
     payload = json.dumps(
         {
             "name": "NEW Activity",
-            "introduction": "Introduction of Activity",
+            "introduction": "Super cool Activity",
             "date": ["2024-04-27T06:10:00", "2024-04-28T06:10:00"],
             "need_reviewed": False,
             "country": "Taiwan",
@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?is_long_term=True&target_user=6&mode=owned",
+        url=f"{host}/activity?search=cool",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -301,8 +301,8 @@ def send_act_invitation():
 @api_test
 def create_plan():
     payload = json.dumps({
-        "name": "Learning Plan",
-        "goal": "Learn how to become a cow",
+        "name": "Cow learning Plan",
+        "goal": "A serious mind growing plan",
         "introduction": "Let's do it!",
         "progression": [
             {
@@ -390,7 +390,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan?mode=owned&type=Learning",
+        url=f"{host}/plan?search=cow",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -561,7 +561,7 @@ if __name__ == '__main__':
     # respond_to_activity_invitations()
     # leave_activity()
 
-    # create_plan()
+    create_plan()
     # update_plan()
     # delete_plan()
     # get_plan_detail()
