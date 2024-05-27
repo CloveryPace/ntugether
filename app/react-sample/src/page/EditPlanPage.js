@@ -49,12 +49,12 @@ const ItemTag = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export default function EditPlanPage({ onHide, show, id, name, goal, introduction, start_date, end_date, need_reviewed, tags, application_problem, atendee }) {
+export default function EditPlanPage({ onHide, show, id, name, goal, introduction, start_date, end_date, need_reviewed, type, application_problem, atendee }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [review, setReview] = useState(need_reviewed);
-  const [Tags, setTags] = useState(tags);
+  const [Tags, setTags] = useState(type);
   const [startDate, setStartDate] = useState(dayjs(start_date));
   const [endDate, setEndDate] = useState(dayjs(end_date));
   const [userToken, setUserToken] = useState(getAuthToken());
@@ -102,7 +102,7 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
       "introduction": newIntro,
       "start_date": startDate.format('YYYY-MM-DD'),
       "end_date": endDate.format('YYYY-MM-DD'),
-      "tags": Tags,
+      "type": Tags,
       "invitees": [],
       "need_reviewed": review,
       "application_problem": newReviewQuestion,
@@ -127,6 +127,7 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
   const handleChangeTags = (event) => {
     const tagValue = event.target.value;
 
+    /*
     const tagMapping = {
         [t("運動")]: "Exercise",
         [t("學習")]: "Learning",
@@ -134,8 +135,9 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
     };
 
     const englishTag = tagMapping[tagValue] || tagValue;
+    */
 
-    setTags([englishTag]);
+    setTags(tagValue);
   };
 
   const handleChangeStartDate = (date) => {
@@ -251,8 +253,8 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="h6">{t('計畫類型')}</Typography>
-            <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue={tags}>
-              {[t('運動'), t("學習"), t("考試")].map((value) => (
+            <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue={type}>
+              {[t('運動'), t("學習"), t("考試"), t("其他")].map((value) => (
                 <Grid item key={value}>
                   <ItemTag>
                     <FormControlLabel
