@@ -293,15 +293,24 @@ function PlanPage() {
         
         <div style={container}>
           <div style={subtitle}><Typography variant="h6"> {t("參加者")} </Typography></div>
-          {atendee.length > 0 ?
-            (atendee.map((person) => (
-              <div style={{ alignSelf: 'center' }} key={person.id}>
-                <Chip avatar={<Avatar>{person.name ? person.name[0] : "未知"}</Avatar>} label={person.name ? person.name : "未知"} />
+          {atendee.length > 0 ? (
+              atendee.slice(0, 5).map((person, index) => (
+                <div style={{ alignSelf: 'center' }} key={person.id}>
+                  <Chip 
+                    avatar={<Avatar>{person.name ? person.name[0] : "未知"}</Avatar>} 
+                    label={person.name ? person.name : "未知"} 
+                  />
+                </div>
+              ))
+            ) : (
+              <div style={{ alignSelf: 'center' }}>尚無參加者</div>
+            )}
+
+            {atendee.length > 5 && (
+              <div style={{ alignSelf: 'center' }}>
+                和其他{atendee.length - 5}個人
               </div>
-            ))) :
-            <div style={{ alignSelf: 'center' }}>尚無參加者</div>
-          }
-          
+            )}
         </div>
 
         <br/>
@@ -366,7 +375,7 @@ function PlanPage() {
 
         <Grid container justifyContent="center">
           <Grid item>
-          {data.need_reviewed && !isAttendee && !alreadyApply && (
+          {!isAttendee && !alreadyApply && (
           <ReviewBoxForPlan id={id} question={data.application_problem ? data.application_problem : ""} need_reviewed={data.need_reviewed} attendfuction={handleAttend} />
           )}
 
