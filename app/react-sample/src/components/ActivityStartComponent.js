@@ -8,32 +8,34 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
-export default function ActivityList() {
+export default function ActivityStartComponent({mode_param}) {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
   const { t, i18n } = useTranslation();
 
-
   useEffect(() => {
-    console.log('execute function in useEffect');
-        //設定authorization
-        const config = {
-            headers: { 
-              authorization: `Bearer ${userToken}`
-            }
-        };
-        console.log(userToken);
-        //取得活動list
-        axios.get(API_CREATE_ACTIVITY, config)
-          .then(function (res) {
-            console.log(res.data);
-            setData(res.data);
-          })
-          .catch(function (err) {
-            console.log(err);
-            alert("error");
-          });
+    const config = {
+        headers: { 
+          authorization: `Bearer ${userToken}`,
+        },
+        params: { 
+          mode: mode_param,
+          start_date: dayjs().toJSON()
+        } 
+    };
+    //取得活動
+    axios.get(API_CREATE_ACTIVITY, config)
+      .then(function (res) {
+        console.log(mode_param);
+        console.log(res.data);
+        setData(res.data);
+      })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+      });
     }, []);
   
 
@@ -44,7 +46,9 @@ export default function ActivityList() {
                     
            { (data.map((activity) => {
               return (
+                <>
                 <ActivityComponent data={activity} key={activity.id} />
+                </>
               );
             }))
           }

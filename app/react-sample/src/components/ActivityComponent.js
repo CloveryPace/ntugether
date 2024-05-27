@@ -57,7 +57,11 @@ export default function ActivityComponent({data}) {
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
-                  <Typography variant="body1">{data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "未指定日期"}</Typography>
+                  {Array.isArray(data.date)?
+                      <Typography variant="body1"> {data.date[0]? dayjs(data.date[0]).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography>
+                      :
+                      <Typography variant="body1"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"}  </Typography>
+                  }
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>
