@@ -23,6 +23,7 @@ import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import Link from '@mui/material/Link';
+import InviteActivityComponent from '../components/InviteActivityComponent';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -274,6 +275,14 @@ function ActivityPage() {
         <></>
       }
  
+      {(userId === creatorId)? 
+          <div style={container}>
+            <div style={subtitle}><Typography variant="h6"> {t("邀請...")} </Typography></div>
+            <InviteActivityComponent activity_id={id}/>
+          </div>
+          :
+          <p></p>
+      }
       
       <br/>
       <br/>

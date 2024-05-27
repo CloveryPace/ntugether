@@ -200,6 +200,19 @@
     "{{progressName}} {{progressPercentage}}%，已完成{{finishedCount}}個進度，待完成{{remainingCount}}個進度": "{{progressName}} {{progressPercentage}}%, completed {{finishedCount}} progresses, remaining {{remainingCount}} progresses",
     "進行中": "Ongoing",
     "沒有計畫": "No plans",
-    "已經達成": "Already achieved "
-
+    "已經達成": "Already achieved ",
+    "邀請": "Invite",
+    "輸入活動時間": "Enter Activity Date",
+    "輸入活動地點": "Enter Activity Location",
+    "輸入活動名稱": "Enter Activity Name",
+    "輸入活動簡介": "Enter Activity Introduction",
+    "活動類型": "Activity Type",
+    "輸入人數上限": "Enter maximum people",
+    "新增簡介": "Enter Activity Introduction",
+    "一次性": "One-time",
+    "長期活動": "Long-term",
+    "未指定地點": "No location",
+    "尚無活動時間資料": "No activity date",
+    "未命名活動": "No name activity",
+    "尚無申請資料": "No application"
  }

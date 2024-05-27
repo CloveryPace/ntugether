@@ -9,9 +9,11 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import Chip from '@mui/material/Chip';
 import { getAuthToken } from '../utils';
+import { useTranslation } from 'react-i18next';
 
 export default function PendingReview({id}) {
     const [data, setData] = useState([]);
+    const { t, i18n } = useTranslation();
     const component = { 
         width: "10rem",
         border: '1.5px solid rgba(0, 0, 0, 0.1)',
@@ -92,16 +94,16 @@ export default function PendingReview({id}) {
         (data.map((comment) => {
           return (
             <div style = {component}>
-              <Chip avatar={<Avatar> {comment.Applicant? comment.Applicant.name[0]: "未知"} </Avatar>} label={comment.Applicant.name? comment.Applicant.name: "未知"} />
-              <p> {comment.application_response? comment.application_response: "未回答"} </p>
-              <Button variant="contained" color="primary" onClick={() =>handleApprove(comment.application_id)}> 加入 </Button> 
+              <Chip avatar={<Avatar> {comment.Applicant? comment.Applicant.name[0]: t("未知")} </Avatar>} label={comment.Applicant.name? comment.Applicant.name: "未知"} />
+              <p> {comment.application_response? comment.application_response: t("未回答")} </p>
+              <Button variant="contained" color="primary" onClick={() =>handleApprove(comment.application_id)}> {t("加入")} </Button> 
               <p></p>
-              <Button variant="contained" color="primary" onClick={() =>handleDeny(comment.application_id)}> 刪除 </Button> 
+              <Button variant="contained" color="primary" onClick={() =>handleDeny(comment.application_id)}> {t("刪除")} </Button> 
             </div>
           );
         })):
         <div style = {component_2}>
-            尚無申請資料
+            {t("尚無申請資料")}
         </div>
         }
       </Stack>
