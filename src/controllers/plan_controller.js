@@ -494,17 +494,17 @@ exports.getPlanList = async (req, res) => {
             };
             condition = { ...condition, ...searchCondition };
         }
-        if (start_date & end_date) {
+        if (start_date && end_date) {
             condition.date = {
                 [Op.between]: [start_date, end_date]
             };
         } else if (start_date) {
             condition.date = {
-                [Op.gt]: [start_date]
+                [Op.gt]: start_date
             };
         } else if (end_date) {
             condition.date = {
-                [Op.lt]: [end_date]
+                [Op.lt]: end_date
             };
         }
 
