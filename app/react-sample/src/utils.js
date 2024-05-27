@@ -22,11 +22,17 @@ export const removeAuthToken = () => {
 };
 
 
-// 暫時不用
-export const setUserInfo = (userinfo) => {
-  localStorage.setItem(USER_INFO, userinfo);
+export const setUserIdToCookie = (userinfo) => {
+  let d = new Date(Date.now());
+  let minutes = 60; //60 分鐘後過期
+  d.setTime(d.getTime() + (minutes*60*1000));
+  cookies.set(USER_INFO, userinfo, { path: '/', expires: d });
 };
 
-export const getUserInfo = () => {
-  return localStorage.getItem(USER_INFO);
+export const getUserId = () => {
+  return cookies.get(USER_INFO);
+};
+
+export const removeUserId = () => {
+  cookies.remove(USER_INFO);
 };

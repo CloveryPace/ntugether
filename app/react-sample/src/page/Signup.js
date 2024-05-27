@@ -18,13 +18,13 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import React from 'react';
-import { API_EMAIL_VERIFY, API_SIGN_UP, API_GOOGLE_SIGNUP } from '../global/constants';
+import { API_EMAIL_VERIFY, API_SIGN_UP, API_GOOGLE_SIGNUP, API_GET_USER } from '../global/constants';
 import axios from 'axios';
 import { MuiOtpInput } from 'mui-one-time-password-input'
 import theme from '../components/Theme'; 
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import {setAuthToken} from '../utils';
+import {setAuthToken, setUserIdToCookie} from '../utils';
 import Loading from '../components/Loading';
 import PasswordAndCheck from '../components/PasswordAndCheck';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
@@ -36,7 +36,7 @@ export default function Signup() {
   const { t, i18n } = useTranslation();
 
   const [signupStatus, setSignupStatus] = useState(1); // 1: signup form, 2: signup otp, 3: signup success
-  const [signupSuccess, setSignupSuccess] = useState(); 
+  const [signupErrorMsg, setSignupErrorMsg] = useState(); 
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -76,11 +76,7 @@ export default function Signup() {
     }else{
     
       axios.get(API_EMAIL_VERIFY, {params:{ 
-        // name: data.get('name'),
         email: data.get('email'),
-        // password: data.get('password'),
-        // gender: data.get('gender'),
-        // birthday: data.get('birthday')
       }}, {
         headers: {
           'Access-Control-Allow-Origin': true
@@ -90,11 +86,15 @@ export default function Signup() {
         console.log(response);
         setSignupStatus(2);
         setLoading(false);
-
+        setSignupErrorMsg('');
       })
       .catch(function (error) {
         console.log(error);
-        setSignupSuccess(false);
+        if(error.response.status == 409){
+          setSignupErrorMsg(t('此信箱已被註冊'));
+        }else{
+          setSignupErrorMsg(t('註冊失敗，請再試一次'));
+        }
         setLoading(false);
       });
     }
@@ -110,25 +110,43 @@ export default function Signup() {
 
     axios.post(API_SIGN_UP, { 
       name: username,
-      password: password,
-      gender: gender,
+      email: email,
       birthday: birthday,
-      code: value,
-      email: email
+      gender: gender,
+      password: password
     
     })
     .then(function (response) {
+      signupErrorMsg('');
       setLoading(false);
-      setSignupSuccess(true);
       setSignupStatus(3);
-      setAuthToken(response.data.token);
-      setTimeout(function() {
-        window.location.assign('/');
-      }, 5000);
+      setAuthToken(response.data.jwtToken);
+      getUserInfo(response.data.jwtToken);
     })
     .catch(function (error) {
-      setSignupSuccess(false);
       setLoading(false);
+      if(error.response.status == 409){
+        setSignupErrorMsg(t('此信箱已被註冊'));
+      }else if(error.response.status == 401){
+        setSignupErrorMsg(t('驗證碼錯誤，請再試一次'));
+      }else{
+        setSignupErrorMsg(t('註冊失敗，請再試一次'));
+      }
+    });
+  }
+
+  const getUserInfo = (token) => {
+    axios.get(API_GET_USER, { 
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(function (response) {
+      setUserIdToCookie(response.data.members.user_id.toString());
+      window.location.assign('/');
+    })
+    .catch(function (error) {
+      console.log(error);
     });
   }
 
@@ -200,11 +218,11 @@ export default function Signup() {
             {t('註冊')}
           </Typography>
           {
-                signupSuccess == false ?
+                signupErrorMsg ?
 
                 <Box>
                     <Typography component="body1" variant="body1">
-                    {t('註冊失敗，請再試一次')}</Typography>
+                    {signupErrorMsg}</Typography>
                     </Box>: null
               }
           {signupStatus == 1 ? 
@@ -310,7 +328,7 @@ export default function Signup() {
                 null
               }
               {
-                signupSuccess == true && signupStatus == 3? 
+                !signupErrorMsg  && signupStatus == 3? 
                 <Box>
                 <Typography component="body" variant="body1">
                   {t('註冊成功，將在 5 秒後跳轉至登入頁面')}</Typography>

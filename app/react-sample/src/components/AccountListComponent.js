@@ -3,9 +3,10 @@ import * as React from 'react';
 import AccountComponent from './AccountComponent';
 import ActivityComponent from './ActivityComponent';
 import { Grid } from '@mui/material';
-import { API_CREATE_ACTIVITY } from '../global/constants';
+import { API_GET_USER } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { getAuthToken, getUserId } from '../utils';
 
 
 export default function AccountListComponent() {
@@ -13,11 +14,17 @@ export default function AccountListComponent() {
 
 
   useEffect(() => {
-    console.log('execute function in useEffect');
-    axios.get(API_CREATE_ACTIVITY)
+    const userId = getUserId();
+    const token = getAuthToken();
+    const config = {
+      headers: { 
+        authorization: `Bearer ${token}`
+      }
+  };
+    axios.get(API_GET_USER + '/' + userId +'/following',config)
       .then(function (response) {
         console.log(response);
-        setData(response.data.reverse())
+        setData(response.data);
       })
       .catch(function (error) {
         console.log(error);
@@ -30,12 +37,10 @@ export default function AccountListComponent() {
 
     
       <Grid item container spacing={2} xs={12} md={12} justifyContent="center">
-        <AccountComponent />
-        <AccountComponent />
         
-           { (data.map((activity) => {
+           { (data.map((user) => {
               return (
-                <ActivityComponent data={activity} key={activity.id} />
+                <AccountComponent data={user}  />
               );
             }))
           }
@@ -44,21 +49,3 @@ export default function AccountListComponent() {
     );
   }
   
-
-
-  // const chemists = people.filter(person =>
-  //   person.profession === 'chemist'
-  // );
-  // const listItems = chemists.map(person =>
-  //   <li>
-  //     <img
-  //       src={getImageUrl(person)}
-  //       alt={person.name}
-  //     />
-  //     <p>
-  //       <b>{person.name}:</b>
-  //       {' ' + person.profession + ' '}
-  //       known for {person.accomplishment}
-  //     </p>
-  //   </li>
-  // );
