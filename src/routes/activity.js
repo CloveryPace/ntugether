@@ -22,7 +22,7 @@ router.get(
   /* #swagger.parameters['mode'] = {
     in: 'query',
     description: "Decide to get all activities or only the activities owned/joined by the target_user. Allow modes: [all, joined, owned]",
-    type: "integer",
+    type: "string",
     schema: "10"
   } */
 

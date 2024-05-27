@@ -62,7 +62,7 @@ router.get(
   /* #swagger.parameters['mode'] = {
     in: 'query',
     description: "Decide to get all plans or only the plans owned/joined by the target_user. Allow modes: [all, joined, owned]",
-    type: "integer",
+    type: "string",
     schema: "10"
   } */
 
