@@ -51,7 +51,7 @@ function PlanNew() {
 
     const SearchName = useRef(); // 輸入想邀請的人
     const [need_reviewed, setReview] = useState('false'); // 需審核: true, 不需審核：false
-    const [tags, setTags] = useState(['Exercise']); // 活動類型
+    const [tags, setTags] = useState('運動'); // 活動類型
     const [startDate, setStartDate] = useState(null); 
     const [endDate, setEndDate] = useState(null); 
     const [userToken, setUserToken] = useState(getAuthToken());
@@ -60,7 +60,7 @@ function PlanNew() {
     const [planData, setPlanData] = useState({
         name: '',
         goal: '',
-        tags: ['Exercise'],
+        type: '運動',
         introduction: '',
         // create_user: '', // ?
         progression: '', // ?
@@ -129,7 +129,8 @@ function PlanNew() {
 
     const handleChangeTags = (event) => {
         const tagValue = event.target.value;
-    
+        
+        /*
         const tagMapping = {
             "運動": "Exercise",
             "學習": "Learning",
@@ -137,11 +138,12 @@ function PlanNew() {
         };
     
         const englishTag = tagMapping[tagValue] || tagValue;
-    
-        setTags([englishTag]);
+        */
+       
+        setTags(tagValue);
         setPlanData(prevState => ({
             ...prevState,
-            tags: [englishTag]
+            tags: tagValue
         }));
     };
     
@@ -281,7 +283,7 @@ function PlanNew() {
                         />
                         <Typography variant="h6">{t('計畫類型')}</Typography>
                         <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue="運動">
-                            {['運動', '學習', '考試'].map((value) => (
+                            {['運動', '學習', '考試', '其他'].map((value) => (
                                 <Grid item key={value}>
                                     <ItemTag> 
                                         <FormControlLabel

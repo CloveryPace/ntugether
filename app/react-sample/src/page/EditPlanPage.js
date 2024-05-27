@@ -49,12 +49,12 @@ const ItemTag = styled(Paper)(({ theme }) => ({
   textAlign: 'center',
 }));
 
-export default function EditPlanPage({ onHide, show, id, name, goal, introduction, start_date, end_date, need_reviewed, tags, application_problem, atendee }) {
+export default function EditPlanPage({ onHide, show, id, name, goal, introduction, start_date, end_date, need_reviewed, type, application_problem, atendee }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [review, setReview] = useState(need_reviewed);
-  const [Tags, setTags] = useState(tags);
+  const [Tags, setTags] = useState(type);
   const [startDate, setStartDate] = useState(dayjs(start_date));
   const [endDate, setEndDate] = useState(dayjs(end_date));
   const [userToken, setUserToken] = useState(getAuthToken());
@@ -100,9 +100,9 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
       "name": newName,
       "goal": newGoal,
       "introduction": newIntro,
-      "start_date": startDate,
-      "end_date": endDate,
-      "tags": Tags,
+      "start_date": startDate.format('YYYY-MM-DD'),
+      "end_date": endDate.format('YYYY-MM-DD'),
+      "type": Tags,
       "invitees": [],
       "need_reviewed": review,
       "application_problem": newReviewQuestion,
@@ -127,6 +127,7 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
   const handleChangeTags = (event) => {
     const tagValue = event.target.value;
 
+    /*
     const tagMapping = {
         [t("運動")]: "Exercise",
         [t("學習")]: "Learning",
@@ -134,18 +135,17 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
     };
 
     const englishTag = tagMapping[tagValue] || tagValue;
+    */
 
-    setTags([englishTag]);
+    setTags(tagValue);
   };
 
   const handleChangeStartDate = (date) => {
-    let finaldate = date.year() + '/'  + (date.month() + 1)+ '/' + date.date();
-    setStartDate(finaldate);
+    setStartDate(date);
   };
 
   const handleChangeEndDate = (date) => {
-    let finaldate = date.year() + '/'  + (date.month() + 1)+ '/' + date.date();
-    setEndDate(finaldate);
+    setEndDate(date);
   };
 
   const handleDeleteAttendee = (participantId) => {
@@ -229,11 +229,12 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
               <DesktopDatePicker
                 required
                 fullWidth
+                value={startDate}
                 onChange={handleChangeStartDate}
-                defaultValue={startDate}
                 label={t("輸入開始日期")}
                 name="start_date"
                 id="start_date"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
             <Typography variant="h6">{t('結束日期')}</Typography>
@@ -241,18 +242,19 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
               <DesktopDatePicker
                 required
                 fullWidth
+                value={endDate}
                 onChange={handleChangeEndDate}
-                defaultValue={endDate}
                 label={t("輸入結束日期")}
                 name="end_date"
                 id="end_date"
+                format="YYYY-MM-DD"
               />
             </LocalizationProvider>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="h6">{t('計畫類型')}</Typography>
-            <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue={tags}>
-              {[t('運動'), t("學習"), t("考試")].map((value) => (
+            <RadioGroup aria-label="tags" name="tags" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeTags} defaultValue={type}>
+              {[t('運動'), t("學習"), t("考試"), t("其他")].map((value) => (
                 <Grid item key={value}>
                   <ItemTag>
                     <FormControlLabel

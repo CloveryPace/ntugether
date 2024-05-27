@@ -219,7 +219,7 @@ function PlanPage() {
               <Typography variant="h4">{data.name ? data.name : "計畫名稱"}</Typography>
               <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
               <Chip sx={{ bgcolor: theme.palette.hashtag.review }} label={t(data.need_reviewed ? "需審核" : "不需審核")} />
-              <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.PlanTypes ? data.PlanTypes[0].typeName : "未指定")} />
+              <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.type ? data.type : "未指定")} />
             </Stack>
             {(userId === creatorId)? 
             <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> {t("編輯活動")} </Button>
@@ -264,7 +264,7 @@ function PlanPage() {
             start_date={data.start_date ? data.start_date : ""}
             end_date={data.end_date ? data.end_date : ""}
             need_reviewed={data.need_reviewed ? data.need_reviewed : ""}
-            tags={data.PlanTypes ? [data.PlanTypes[0].typeName] : "未指定"}
+            tags={data.type ? [data.type] : "未指定"}
             application_problem={data.application_problem ? data.application_problem : ""}
             atendee={atendee}
           />
