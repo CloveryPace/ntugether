@@ -28,6 +28,11 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterBar from './FilterBar';
 import {removeAuthToken, removeUserId} from '../utils';
 import theme from './Theme';
+import { useEffect } from 'react';
+import axios from 'axios';
+import {API_GET_NOTIFICATION} from '../global/constants';
+import { useState } from 'react';
+import { getAuthToken } from '../utils';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -135,6 +140,11 @@ export default function HeaderBar() {
   const [showNotifiaction, setShowNotifiaction] = React.useState(false);
   const [filterData, setFilterData] = React.useState({});
 
+  const [searchValue, setSearchValue] = React.useState('');
+  const [notification, setNotification] = React.useState([]);
+  const [newnotification, setNewnotification] = React.useState([]);
+  const [userToken, setUserToken] = useState(getAuthToken());
+
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
@@ -198,10 +208,63 @@ export default function HeaderBar() {
     return true;
   }
 
+  const config = {
+    headers: { 
+      authorization: `Bearer ${userToken}`
+    }
+  };
+
+  const getNotification = () => {
+    axios.get(API_GET_NOTIFICATION, config)
+    .then((response) => {
+      console.log(response.data);
+      setNotification(response.data);
+      processNotification(response.data);
+
+    }).catch((err) => {
+        console.log(err)
+    });
+  }
+
+  const processNotification = (notification) => {
+    console.log(notification);
+    let dataload = [];
+    if(notification['invitation']){
+      notification['invitation']['plan'].map((plan) => {
+        dataload.push(['invitation', plan['Plan']['name']]);  
+      });
+    }
+    if(notification['application']){
+      notification['application']['plan'].map((plan) => {
+        dataload.push(['application', plan['Plan']['name'], plan['application_response']]);  
+      });
+      notification['application']['activity'].map((activity) => {
+        dataload.push(['application', activity['Activity']['name'], activity['application_response']]);  
+      });
+    }
+    console.log(dataload);
+    setNewnotification(dataload);
+  }
+
+  useEffect(
+    () => {
+      getNotification();
+      console.log(newnotification)
+    }, []);
 
   const open = Boolean(anchorEl);
   const openAccountList = Boolean(accountAnchor);
   const openLanguageToggl = Boolean(languageAnchor);
+
+  const handleChange = (e) => {
+    setSearchValue(e.target.value);
+ }
+
+  const keyPress = (e, searchValue, filterData = {'type': []}) => {
+    if(e.keyCode == 13){
+      navigate('/search', {state: {filterData: filterData, searchValue: searchValue}});
+    }
+  }
 
 
   // const handleSearchClick = (event) => {
@@ -238,6 +301,9 @@ export default function HeaderBar() {
           <StyledInputBase
             placeholder="搜尋"
             inputProps={{ 'aria-label': 'search' }}
+            value={searchValue}
+            onChange={handleChange}
+            onKeyDown={(e) => {keyPress(e, searchValue, filterData)}}
           />
            <FilterIconWrapper>
             <Badge color="secondary" variant="dot" invisible={isEmptyFilterData(filterData)? true : false}>
@@ -296,14 +362,14 @@ export default function HeaderBar() {
         </IconButton>
         
         <IconButton aria-label="notification" onClick={() => toggleNotification()} >
-          <Badge badgeContent={2} color="secondary" max={99}>
+          <Badge badgeContent={newnotification.length} color="secondary" max={99}>
             <NotificationsIcon color="icon"/>
           </Badge>
         </IconButton>
         {showNotifiaction? 
         <ClickAwayListener onClickAway={() => setShowNotifiaction(false)}>
         <Paper elevation={2} sx={{position: 'fixed', inset: '0px 0px auto auto', m: 0, transform: 'translate(-10px, 70px)', zIndex:2}}>
-          <NotificationList />
+          <NotificationList data={newnotification}/>
         </Paper>
         </ClickAwayListener>: null}
         
