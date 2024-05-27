@@ -18,8 +18,10 @@ import { useTranslation } from 'react-i18next';
 import queryString from "query-string";
 import { getAuthToken, getUserId } from '../utils';
 import { useEffect } from 'react';
-import { API_GET_USER } from '../global/constants';
+import { API_GET_USER, API_CREATE_ACTIVITY, API_CREATE_PLAN } from '../global/constants';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Link from '@mui/material/Link';
 const { useState } = React;
 const parsed = queryString.parse(window.location.search);
 
@@ -79,13 +81,24 @@ function User() {
   const [gender, setGender] = useState('');
   const [tag, setTag] = useState('');
   const [about, setAbout] = useState('');
+  const [myself, setMyself] = useState(false);
   const [following, setFollowing] = useState(false);
+  const [followingNumber, setFollowingNumber] = useState(0);
+  const [activityNumber, setActivityNumber] = useState(0);
+  const [progressNumber, setProgressNumber] = useState(0);
 
   const authtoken = getAuthToken();
+  const userId = getUserId();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUserData();
-    getFollowList();
+    getUserStatisticalData();
+    if(userId == parsed.id){
+      setMyself(true);
+    }else{
+      getFollowList();
+    }
   }, []);
 
   const getUserData = () => {
@@ -112,7 +125,7 @@ function User() {
   };
 
   const getFollowList = () => {
-    axios.get(API_GET_USER + '/' + getUserId() + '/following' , {headers: { 
+    axios.get(API_GET_USER + '/' + userId + '/following' , {headers: { 
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
@@ -126,6 +139,45 @@ function User() {
       console.log(error);
     });
   }
+
+  const getUserStatisticalData = () => {
+    axios.get(API_GET_USER + '/' + parsed.id +'/following', {headers: { 
+      authorization: 'Bearer ' + authtoken
+    }})
+    .then(function (response) {
+      console.log('追蹤人數');
+      console.log(response.data);
+      setFollowingNumber(response.data.length);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+    
+    axios.get(API_CREATE_ACTIVITY + '?mode=owned', {headers: { 
+      authorization: 'Bearer ' + authtoken
+    }})
+    .then(function (response) {
+      console.log('發起活動');
+      console.log(response.data);
+      setActivityNumber(response.data.length);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+    axios.get(API_CREATE_PLAN + '?mode=owned', {headers: { 
+      authorization: 'Bearer ' + authtoken
+    }})
+    .then(function (response) {
+      console.log('發起進度');
+      console.log(response.data);
+      setProgressNumber(response.data.length);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+  
 
   const beenFollowed = (followingIds, id) => {
     if (followingIds.includes(id.toString())) {
@@ -189,26 +241,26 @@ function User() {
                   <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}} >
                   <Typography variant="body1"> {t('追蹤人數')} </Typography>
-                  <Typography variant="body1"> 100 </Typography>
+                  <Typography variant="body1"> {followingNumber} </Typography>
                 </Stack>
                 </Grid>
                 <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}}>
                   <Typography variant="body1"> {t('活動發起')} </Typography>
-                  <Typography variant="body1"> 100 </Typography>
+                  <Typography variant="body1"> {activityNumber} </Typography>
                 </Stack>
                 </Grid>
                 <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}}>
                   <Typography variant="body1"> {t('進度發起')} </Typography>
-                  <Typography variant="body1"> 100 </Typography>
+                  <Typography variant="body1"> {progressNumber} </Typography>
                 </Stack>
                 </Grid>
                 </Grid>
                 <Stack direction="row" spacing={2} sx={{mt:1}}>
-                  {
-                    following ? <Button variant="outlined" fullWidth onClick={unfollow}>{t('追蹤中，取消追蹤')}</Button> : <Button variant="contained" fullWidth onClick={follow}>{t('追蹤')}</Button>
-                  }
+                    {following && !myself && <Button variant="outlined" fullWidth onClick={unfollow}>{t('追蹤中，取消追蹤')}</Button> }
+                    {!following && !myself && <Button variant="contained" fullWidth onClick={follow}>{t('追蹤')}</Button>}
+                    { myself && <Button variant="outlined" fullWidth onClick={() => navigate('/userprofile')}>{t('編輯個人資料')}</Button>}
     
                 </Stack>
                 </Grid>

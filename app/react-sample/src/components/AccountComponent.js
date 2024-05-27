@@ -1,17 +1,8 @@
-// 活動資訊方塊 
-
-import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import {useTheme} from '@mui/material';
-
-import ScheduleIcon from '@mui/icons-material/Schedule';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import PeopleIcon from '@mui/icons-material/People';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useTranslation } from 'react-i18next';
 import Link from '@mui/material/Link';

@@ -12,20 +12,24 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import theme from '../components/Theme'; 
-import { API_LOGIN } from '../global/constants';
+import { API_LOGIN, API_GET_USER, API_GOOGLE_SIGNUP  } from '../global/constants';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import Divider from '@mui/material/Divider';
-import { setAuthToken } from "../utils";
+import { setAuthToken, setUserIdToCookie } from "../utils";
 import Loading from '../components/Loading';
 import React from 'react';
-
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { useEffect } from 'react';
 const { useState } = React;
 
 export default function Login() {
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [ userId, setUserId] = useState('');
+  const [ user, setUser ] = useState([]);
+  const [ profile, setProfile ] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -40,8 +44,8 @@ export default function Login() {
       .then(function (response) {
         setLoading(false);
         setAuthToken(response.data.jwtToken);
-        console.log(response.data.jwtToken);
-        window.location.assign('/');
+        getUserInfo(response.data.jwtToken);
+
       })
       .catch(function (error) {
         setLoading(false);
@@ -49,6 +53,62 @@ export default function Login() {
       });
   };
 
+  const getUserInfo = (token) => {
+    setLoading(true);
+    axios.get(API_GET_USER, { 
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+    .then(function (response) {
+      setUserIdToCookie(response.data.members.user_id.toString());
+      setLoading(false);
+      window.location.assign('/');
+    })
+    .catch(function (error) {
+      console.log(error);
+      setLoading(false);
+    });
+  }
+
+  const sociallogin = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
+
+  const oauthSignup = (userData) => {
+    axios.post(API_GOOGLE_SIGNUP, {
+        email: userData.email,
+        name: userData.name,
+        oauthProvider: "Google",
+        oauthId: userData.id
+    }).then(function (response) {
+        setAuthToken(response.data.token);
+        getUserInfo(response.data.token);
+    }).catch(function (error) {
+        console.log(error);
+    });
+  }
+
+  useEffect(
+    () => {
+        if (user) {
+            axios
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    setProfile(res.data);
+                    oauthSignup(res.data);
+                })
+                .catch((err) => console.log(err));
+        }
+    },
+    [ user ]
+);
   return (
     <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
@@ -99,7 +159,7 @@ export default function Login() {
                 label="Remember me"
               /> */}
               <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
-              <Button variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶登入')}</Button>
+              <Button onClick={() => sociallogin()} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶登入')}</Button>
 
               <Button
                 type="submit"
