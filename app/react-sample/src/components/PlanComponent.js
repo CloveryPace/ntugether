@@ -16,11 +16,12 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import theme from '../components/Theme';
 import { API_GET_USER, API_GET_PLAN_DETAIL } from '../global/constants'; // API 常數
+import { ThemeProvider } from '@mui/material/styles';
+import AvatarGroup from '@mui/material/AvatarGroup';
 
 export default function PlanComponent({data, key}) {
 
   const { t, i18n } = useTranslation();
-
 
   const [userToken, setUserToken] = useState(getAuthToken());
   const navigate = useNavigate();
@@ -70,12 +71,12 @@ useEffect(() => {
             <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名計畫"}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip sx={{ bgcolor: theme.palette.hashtag.review }} label={t(data.need_reviewed ? "需審核" : "不需審核")} />
-                <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.PlanTypes ? data.PlanTypes[0].typeName : "未指定")} />
+                <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.type ? data.type : "未指定")} />
               </Stack >
 
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
                  <div style={{ display: "flex", alignItems: "center" }}>
-                 <Typography variant="body1">目標：</Typography>
+                 <Typography variant="body1">{t("目標")}：</Typography>
                   <Typography variant="body1">{data.goal? data.goal: "尚未設定目標"}</Typography>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
@@ -86,8 +87,21 @@ useEffect(() => {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  <Avatar alt="Remy Sharp"/>
-                </div>
+                  {data.Participants.length > 0 ?
+                    <AvatarGroup
+                    renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
+                    total={data.Participants.length}
+                    >
+                      <div style={{alignSelf: 'center'}}>
+                        <Chip avatar={<Avatar>{data.Participants[0].name? data.Participants[0].name[0]: "未知"}</Avatar>} label={data.Participants[0].name? data.Participants[0].name: "未知"} />
+                      </div>
+                    </AvatarGroup>
+                    :
+                    <div style={{alignSelf: 'center'}}>
+                        尚無參加者
+                    </div>
+                  }
+              </div>
               </Stack>
 
             </div>
@@ -96,3 +110,24 @@ useEffect(() => {
         </Grid>
     );
 }
+//                 <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.PlanTypes ? data.PlanTypes[0].typeName : "未指定")} />
+
+/*
+                  {atendee.length > 0 ? (
+                    atendee.slice(0, 3).map((person) => {
+                      return (
+                        <div style={{alignSelf: 'center'}} key={person.participants}>
+                          <Chip avatar={<Avatar>{person.participants ? person.participants[0] : "未知"}</Avatar>} label={person.participants ? person.participants : "未知"} />
+                        </div>
+                      );
+                    }).concat(atendee.length > 3 ? (
+                      <div style={{alignSelf: 'center'}} key="extra">
+                        和其他 {atendee.length - 3} 人
+                      </div>
+                    ) : [])
+                  ) : (
+                    <div style={{alignSelf: 'center'}}>
+                      尚無參加者
+                    </div>
+                  )}
+                  */

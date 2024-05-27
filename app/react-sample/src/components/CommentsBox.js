@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import { useRef } from "react";
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
+import Link from '@mui/material/Link';
 
 const style = {
   margin: "0.5rem"
@@ -130,10 +131,14 @@ export default function CommentsBox({ id }) {
                 <>
                   <Grid container wrap="nowrap" spacing={2}>
                     <Grid item>
+                      <Link href={'/user?id='+comment.sender_id} underline="none">
                       <Avatar {...stringAvatar(comment.Sender.name?comment.Sender.name: "Unknown")} />
+                      </Link>
                     </Grid>
                     <Grid justifyContent="left" item xs zeroMinWidth>
+                      <Link href={'/user?id='+comment.sender_id} underline="none" sx={{color: '#333'}}>
                       <h4 style={{ margin: 0, textAlign: "left" }}> {comment.Sender.name?comment.Sender.name: "未知"} </h4>
+                      </Link>
                       <p style={{ textAlign: "left" }}>
                         {comment.content? comment.content: "無內容"}{" "}
                       </p>

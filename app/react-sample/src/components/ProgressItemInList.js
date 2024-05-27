@@ -1,27 +1,18 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { ListItem, ListItemText, Paper } from '@mui/material';
+import { ListItem, ListItemText, Paper, Button, Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Radio, RadioGroup, FormControlLabel, Chip } from '@mui/material';
 import { useTheme } from '@mui/material';
-import Button from '@mui/material/Button';
-import { Box } from '@mui/material';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import TextField from '@mui/material/TextField';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Chip from '@mui/material/Chip';
 import axios from 'axios';
 import { API_GET_USER_PROGRESS } from '../global/constants';
 import { getAuthToken } from '../utils';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import dayjs from 'dayjs'; // Import dayjs
+import dayjs from 'dayjs'; 
+import { useTranslation } from 'react-i18next';
 
-export default function ProgressItemInList({ key, item, onUpdate}) {
+export default function ProgressItemInList({ key, item, onUpdate }) {
+  const { t } = useTranslation();
   const [userToken, setUserToken] = useState(getAuthToken());
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -59,7 +50,7 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
       onUpdate();
     } catch (err) {
       console.error('Error saving progress:', err);
-      alert("error");
+      alert(t("error"));
     }
   };
 
@@ -78,8 +69,6 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
     });
   };
 
-  console.log(item);
-
   return (
     <>
       <Paper elevation={3} style={{ marginBottom: '10px', padding: '10px', backgroundColor: theme.palette.primary.light }}>
@@ -87,26 +76,26 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
           <ListItemText 
             primary={
               <>
-                {"進度名稱：" + item.name} 
+                {t("進度名稱") + "：" + item.name} 
                 <br/>
-                {item.is_finished ? "完成時間：" : "預期時間："}{formatDate(item.user_progress_date)}
+                {item.is_finished ? t("完成時間") + "：" : t("預期時間") + "："}{formatDate(item.user_progress_date)}
                 <br/>
-                {"進度細節：" + item.description}
+                {t("進度細節") + "：" + item.description}
               </>
             } 
           />
         </ListItem>
         <div style={{ padding: 5 }}>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button variant="contained" color="primary" onClick={handleClickOpen}>{item.is_finished ? "編輯" : "完成/編輯"}</Button>
+            <Button variant="contained" color="primary" onClick={handleClickOpen}>{item.is_finished ? t("編輯") : t("完成/編輯")}</Button>
           </Box>
         </div>
       </Paper>
 
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle>
-          編輯進度
-          <Chip label={item.is_finished ? "已完成" : "未完成"} 
+          {t("編輯進度")}
+          <Chip label={item.is_finished ? t("已完成") : t("未完成")} 
                 style={{
                   backgroundColor: theme.palette.primary.main,
                   float: 'right'
@@ -115,7 +104,7 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
         <DialogContent>
           <TextField
             margin="dense"
-            label="進度名稱"
+            label={t("進度名稱")}
             type="text"
             fullWidth
             value={progressDetails.name}
@@ -126,31 +115,33 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
           <br/>
           <br/>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
+            <DatePicker
               margin="dense"
               value={progressDetails.user_progress_date}
               onChange={handleDateChange}
               name="user_progress_date"
               fullWidth
-              label={progressDetails.is_finished ? "完成時間" : "預期時間"}
+              label={progressDetails.is_finished ? t("完成時間") : t("預期時間")}
               id="user_progress_date"
-              />
+            />
           </LocalizationProvider>
           <br/>
           <br/>
           <TextField
             margin="dense"
-            label="進度細節"
+            label={t("進度細節")}
             type="text"
             fullWidth
             value={progressDetails.description}
             name="description"
             onChange={handleChange}
           />
+          <br/>
+          <br/>
           {item.need_activity && (
             <TextField
               margin="dense"
-              label="揪團活動參與紀錄"
+              label={t("揪團活動參與紀錄")}
               type="text"
               fullWidth
               value={progressDetails.activity_detail}
@@ -164,13 +155,13 @@ export default function ProgressItemInList({ key, item, onUpdate}) {
             value={progressDetails.is_finished}
             onChange={handleChange}
           >
-            <FormControlLabel value={false} control={<Radio />} label="未完成" />
-            <FormControlLabel value={true} control={<Radio />} label="已完成" />
+            <FormControlLabel value={false} control={<Radio />} label={t("未完成")} />
+            <FormControlLabel value={true} control={<Radio />} label={t("已完成")} />
           </RadioGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="secondary">取消</Button>
-          <Button onClick={handleSave} color="primary">儲存</Button>
+          <Button onClick={handleClose} color="secondary">{t("取消")}</Button>
+          <Button onClick={handleSave} color="primary">{t("儲存")}</Button>
         </DialogActions>
       </Dialog>
     </>

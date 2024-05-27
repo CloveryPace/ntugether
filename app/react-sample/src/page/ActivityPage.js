@@ -22,6 +22,7 @@ import { useEffect } from 'react';
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
+import Link from '@mui/material/Link';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -145,7 +146,9 @@ function ActivityPage() {
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Stack direction="row" spacing={3}>
             <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
-            <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+            <Link href={'/user?id='+data.participants} underline="none">
+              <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+            </Link>
             <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={t(data.is_one_time? "一次性活動": "長期性活動")}/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={t(data.need_reviewed? "需審核": "不需審核")}/>
             <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={t(data.type? data.type: "未指定")}/>
@@ -237,7 +240,9 @@ function ActivityPage() {
             (atendee.map((person) => {
               return (
                 <div style={{alignSelf: 'center'}}>
+                  <Link href={'/user?id='+person.participants} underline="none">
                   <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"} />
+                  </Link>
                 </div>
               );
             }))
