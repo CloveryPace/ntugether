@@ -6,19 +6,24 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
 
-export default function NotificationList() {
+export default function NotificationList({data}) {
+
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      <OneListItem />
 
-      <OneListItem />
+      {
+          data.map((item) => {
+            return <OneListItem item={item}/>
+          })
+        }
     </List>
   );
 }
 
 
-function OneListItem(){
+function OneListItem({item}){
   return (
     <div>
       <ListItem alignItems="flex-start">
@@ -26,7 +31,7 @@ function OneListItem(){
           <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
         </ListItemAvatar>
         <ListItemText
-          primary="Brunch this weekend?"
+          primary={item[0] === 'application' ? '你收到一則申請通知' : '你收到一則邀請通知'}
           secondary={
             <React.Fragment>
               <Typography
@@ -35,9 +40,10 @@ function OneListItem(){
                 variant="body2"
                 color="text.primary"
               >
-                使用者姓名
+                {item[1]}
               </Typography>
-              {" — I'll be in your neighborhood doing errands this…"}
+            
+              {item[0] === 'application' ? '回答：' + item[2] :item[2]}
             </React.Fragment>
           }
         />
