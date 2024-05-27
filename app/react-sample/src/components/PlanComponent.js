@@ -71,7 +71,7 @@ useEffect(() => {
             <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名計畫"}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip sx={{ bgcolor: theme.palette.hashtag.review }} label={t(data.need_reviewed ? "需審核" : "不需審核")} />
-                <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.PlanTypes[0] ? data.PlanTypes[0].typeName : "未指定")} />
+                <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.type ? data.type : "未指定")} />
               </Stack >
 
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
