@@ -2,7 +2,6 @@ import HeaderBar from '../components/HeaderBar';
 import './Common.css';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { cyan, yellow, orange } from '@mui/material/colors';
 import { Grid } from "@material-ui/core";
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,10 +14,12 @@ import UserPageNav from '../components/UserPageNav';
 import theme from '../components/Theme'; 
 import Divider from '@mui/material/Divider';
 import { useTranslation } from 'react-i18next';
-import { USER } from '../global/constants';
+import { API_GET_USER, USER } from '../global/constants';
 import { getAuthToken } from '../utils';
 import axios from 'axios';
 import PasswordAndCheck from '../components/PasswordAndCheck';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { useEffect } from 'react';
 
 const { useState } = React;
 
@@ -31,6 +32,45 @@ function AccountSetting() {
     borderColor: 'divider',
     backgroundColor: 'background.paper',
   };
+
+  const [ user, setUser ] = useState([]);
+  const [ profile, setProfile ] = useState([]);
+
+  const [isBindGoogle, setIsBindGoogle] = useState(false);
+
+  useEffect(
+    () => {
+        if (user && user.access_token) {
+            axios
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.access_token}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    setProfile(res.data);
+                    bindGoogle(res.data);
+                })
+                .catch((err) => console.log(err));
+        }else{
+          console.log('get user')
+          axios.get(API_GET_USER, {
+            headers: { authorization: `Bearer ${getAuthToken()}`}
+          })
+          .then(function (response) {
+            console.log(response.data.members);
+            if(response.data.members.oauthProvider !== null){
+              setIsBindGoogle(true);
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }
+    },
+    [ user ]
+);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -42,7 +82,10 @@ function AccountSetting() {
 
   const { t, i18n } = useTranslation();
 
-
+  const sociallogin = useGoogleLogin({
+    onSuccess: (codeResponse) => setUser(codeResponse),
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
   const [email, setEmail] = useState('MyName');
   const [password, setPassword] = useState('');
@@ -72,6 +115,21 @@ function AccountSetting() {
       alert("error");
     });
  
+  }
+
+  const bindGoogle = (userData) => {
+    const token = userToken;
+    axios.put(API_GET_USER + '/oauthLink', {
+        oauthProvider: "Google",
+        oauthId: userData.id
+    },
+    {
+      headers: { "authorization": `Bearer ${token}`}
+    }).then(function (response) {
+        alert("綁定成功");
+    }).catch(function (error) {
+        alert("綁定失敗");
+    });
   }
 
 
@@ -141,7 +199,11 @@ function AccountSetting() {
                   {t('社群綁定')}
                 </Typography> 
                     <Box sx={{ mt: 1 }} >
-                    <Button variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('綁定 Google 帳號')}</Button>
+                    { !isBindGoogle ?
+                      <Button variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large" onClick={() => sociallogin()}> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('綁定 Google 帳號')}</Button>
+                      : 
+                      <Button variant="outlined" disabled fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large" > <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('您已綁定 Google 帳號')}</Button>
+                      }
                     </Box>
             </Box>
             
