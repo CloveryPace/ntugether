@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import theme from '../components/Theme';
 import { API_GET_USER, API_GET_PLAN_DETAIL } from '../global/constants'; // API 常數
 import { ThemeProvider } from '@mui/material/styles';
-
+import AvatarGroup from '@mui/material/AvatarGroup';
 
 export default function PlanComponent({data, key}) {
 
@@ -87,23 +87,20 @@ useEffect(() => {
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  {data.Participants.length > 0 ? (
-                    data.Participants.slice(0, 3).map((person) => {
-                      return (
-                        <div style={{alignSelf: 'center'}} key={person.name}>
-                          <Chip avatar={<Avatar>{person.name ? person.name[0] : "未知"}</Avatar>} label={person.name ? person.name : "未知"} />
-                        </div>
-                      );
-                    }).concat(data.Participants.length > 3 ? (
-                      <div style={{alignSelf: 'center'}} key="extra">
-                        和其他 {data.Participants.length - 3} 人
+                  {data.Participants.length > 0 ?
+                    <AvatarGroup
+                    renderSurplus={(surplus) => <span>+{surplus.toString()[0]}</span>}
+                    total={data.Participants.length}
+                    >
+                      <div style={{alignSelf: 'center'}}>
+                        <Chip avatar={<Avatar>{data.Participants[0].name? data.Participants[0].name[0]: "未知"}</Avatar>} label={data.Participants[0].name? data.Participants[0].name: "未知"} />
                       </div>
-                    ) : [])
-                  ) : (
+                    </AvatarGroup>
+                    :
                     <div style={{alignSelf: 'center'}}>
-                      尚無參加者
+                        尚無參加者
                     </div>
-                  )}
+                  }
               </div>
               </Stack>
 
