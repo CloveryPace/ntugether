@@ -8,8 +8,9 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 
-export default function ActivityAttendComponent({mode_param}) {
+export default function ActivityStartComponent({mode_param}) {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
   const { t, i18n } = useTranslation();
@@ -20,11 +21,11 @@ export default function ActivityAttendComponent({mode_param}) {
           authorization: `Bearer ${userToken}`,
         },
         params: { 
-          mode: mode_param
+          mode: mode_param,
+          start_date: dayjs().toJSON()
         } 
     };
     //取得活動
-    // "2024-05-25T00:00:00.000Z"
     axios.get(API_CREATE_ACTIVITY, config)
       .then(function (res) {
         console.log(mode_param);
