@@ -485,7 +485,12 @@ exports.getPlanList = async (req, res) => {
         if (type) condition.type = type;
         if (search) {
             searchCondition = {
-                [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }, { introduction: { [Op.like]: '%' + search + '%' } }]
+                [Op.or]: [
+                    { name: { [Op.like]: '%' + search + '%' } },
+                    { introduction: { [Op.like]: '%' + search + '%' } },
+                    { type: { [Op.like]: '%' + search + '%' } }
+
+                ]
             };
             condition = { ...condition, ...searchCondition };
         }

@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?search=cool",
+        url=f"{host}/activity?search=study",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -301,7 +301,7 @@ def send_act_invitation():
 @api_test
 def create_plan():
     payload = json.dumps({
-        "name": "Cow learning Plan",
+        "name": "learning Plan",
         "goal": "A serious mind growing plan",
         "introduction": "Let's do it!",
         "progression": [
@@ -314,7 +314,7 @@ def create_plan():
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
         "application_problem": "hello?",
-        "type": "Learning",
+        "type": "Cow",
         "invitees": [1, 2, 5, 6],
         "need_reviewed": True,
     })

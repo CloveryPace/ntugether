@@ -214,7 +214,12 @@ exports.getActivitiesList = async (req, res) => {
         if (location) condition.location = location;
         if (search) {
             searchCondition = {
-                [Op.or]: [{ name: { [Op.like]: '%' + search + '%' } }, { introduction: { [Op.like]: '%' + search + '%' } }]
+                [Op.or]: [
+                    { name: { [Op.like]: '%' + search + '%' } },
+                    { introduction: { [Op.like]: '%' + search + '%' } },
+                    { type: { [Op.like]: '%' + search + '%' } }
+
+                ]
             };
             condition = { ...condition, ...searchCondition };
         }
