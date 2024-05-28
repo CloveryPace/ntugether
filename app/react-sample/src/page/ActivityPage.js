@@ -279,6 +279,8 @@ function ActivityPage() {
         :
         <></>
       }
+      <br/>
+      <br/>
  
       {(userId === creatorId)? 
           <div style={container}>
