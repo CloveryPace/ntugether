@@ -10,6 +10,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import { useTranslation } from 'react-i18next';
+import Link from '@mui/material/Link';
 
 export default function ProgressAttendee({ progresses, userId }) {
   const [showProgress, setShowProgress] = useState({});
@@ -55,7 +56,8 @@ export default function ProgressAttendee({ progresses, userId }) {
                 <Card variant="outlined">
                   <CardContent sx={{ pb: 0 }}>
                     <br/>
-                    <Chip avatar={<Avatar>{userProgress.user_name ? userProgress.user_name[0] : t("未知")}</Avatar>} label={userProgress.user_name ? userProgress.user_name : t("未知")} />
+                    <Link href={'/user?id='+id} underline="none">
+                    <Chip avatar={<Avatar>{userProgress.user_name ? userProgress.user_name[0] : t("未知")}</Avatar>} label={userProgress.user_name ? userProgress.user_name : t("未知")} /></Link>
                     <br/>
                     <br/>
                     <Typography variant="body1" sx={{ mb: 1.5 }}>
