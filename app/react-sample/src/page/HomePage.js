@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import { useNavigate } from 'react-router-dom';
 
 import { ThemeProvider } from '@mui/material/styles';
-import { Typography} from '@mui/material';
+import { Typography } from '@mui/material';
 
 import theme from '../components/Theme'; 
 
@@ -21,40 +21,34 @@ import TextButtonsPlan from '../components/TextButtonsPlan';
 function HomePage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  
   return (
     <ThemeProvider theme={theme}>
-        
-        <HeaderBar />
-        <div className='Main'>
+      <HeaderBar />
+      <div className='Main'>
         <Typography variant="h4">{t('我的活動與計畫')}</Typography>
-  
 
-          <MainInform />
+        <MainInform />
 
-          <Typography variant="h4">{t('活動類別')}</Typography>
-          <TextButtons />
-          <Stack direction="row" justifyContent="space-between" spacing={2} sx={{mt: 2, mb: 2}}>
+        <Typography variant="h4">{t('活動類別')}</Typography>
+        <TextButtons />
+        <Stack direction="row" justifyContent="space-between" spacing={2} sx={{mt: 2, mb: 2}}>
           <Typography variant="h4">{t('熱門活動')}</Typography>
           <Button variant="contained" color="primary" onClick={() => navigate('/newactivity')}> {t('新增活動')} </Button> 
-          </Stack>
-          <ActivityListComponent />
+        </Stack>
+        <ActivityListComponent />
 
-          <Typography variant="h4">{t('計畫類別')}</Typography>
-          <TextButtonsPlan />
-          <Stack direction="row" justifyContent="space-between" spacing={2} sx={{mt: 2, mb: 2}}>
+        <Typography variant="h4">{t('計畫類別')}</Typography>
+        <TextButtonsPlan />
+        <Stack direction="row" justifyContent="space-between" spacing={2} sx={{mt: 2, mb: 2}}>
           <Typography variant="h4">{t('熱門計畫')}</Typography>
           <Button variant="contained" color="primary" onClick={() => navigate('/planNew')}> {t('新增計畫')} </Button> 
-          </Stack>
-          <PlanListComponent />
+        </Stack>
+        <PlanListComponent filterType="所有" />
+      </div>
 
-          
-          
-        </div>
-
-        <Footer />
-      
-
-      </ThemeProvider>
+      <Footer />
+    </ThemeProvider>
   );
 }
 
