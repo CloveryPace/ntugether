@@ -24,34 +24,35 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import Link from '@mui/material/Link';
+import { getUserId } from '../utils';
 
 const { useState } = React;
 
-const tagTheme = createTheme({
-  palette: {
-    primary: {
-      main: yellow[400],
+// 頭像顏色根據名字變化
+function stringToColor(string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = '#';
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+function stringAvatar(name) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+      width: 128, 
+      height: 128 
     },
-    secondary:{
-      main: cyan[100],
-    },
-    warning:{
-      main: orange[400]
-    }
-  },
-});
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-  });
+    children: `${name[0]}`,
+  };
+}
 
 function UserProfile() {
   const { t, i18n } = useTranslation();
@@ -134,22 +135,19 @@ function UserProfile() {
               alignItems: 'center',
               width: '100%' 
             }}>
+                <Avatar {...stringAvatar(name? name: "未知")}/>
 
-                <Avatar
-                alt="Remy Sharp"
-                src="/static/images/avatar/1.jpg"
-                sx={{ width: 128, height: 128 }}
-                />
+                <Link href={'/user?id='+getUserId()} underline="none">
                 <Button
                     sx={{ mt: 3, mb: 2 }}
                     component="label"
-                    role={undefined}
                     variant="contained"
                     tabIndex={-1}
                     >
-                    Upload file
-                    <VisuallyHiddenInput type="file" />
+                    {t('前往個人主頁')}
+                    
                     </Button>
+                </Link>
             </Box>
                 
         </Grid>

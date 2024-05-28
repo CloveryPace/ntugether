@@ -55,7 +55,7 @@ export default function FilterBar({setFilterData, setFilterIsOpen, filterData}) 
             <ToggleButton size="small" value="今天">{t('今天')}</ToggleButton>
             <ToggleButton size="small"  value="明天">{t('明天')}</ToggleButton>
             <ToggleButton size="small"  value="本週">{t('本週')}</ToggleButton>
-            <ToggleButton size="small"  value="本週末">{t('本週末')}</ToggleButton>
+            <ToggleButton size="small"  value="本月">{t('本月')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
 
@@ -77,7 +77,7 @@ export default function FilterBar({setFilterData, setFilterIsOpen, filterData}) 
             <ToggleButton value="東部">{t('東部')}</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
-        <Button variant="contained" onClick={() => getFilterData()}>套用</Button>
+        <Button variant="contained" onClick={() => getFilterData()}>{t('套用')}</Button>
 
       </Stack>
     </Paper>

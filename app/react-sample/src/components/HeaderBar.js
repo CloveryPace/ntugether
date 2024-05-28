@@ -262,7 +262,7 @@ export default function HeaderBar() {
 
   const keyPress = (e, searchValue, filterData = {'type': []}) => {
     if(e.keyCode == 13){
-      navigate('/search', {state: {filterData: filterData, searchValue: searchValue}});
+      navigate('/search/?q=' + searchValue, {state: {filterData: filterData}});
     }
   }
 

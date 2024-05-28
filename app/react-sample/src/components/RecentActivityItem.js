@@ -13,7 +13,7 @@ function ActivityItem({ item, index }) {
         <ListItemText primary={item.name} 
         secondary={
             <>
-                {item.date} {item.time}
+                {item.date}
                 <br />
                 {item.location}
             </>
