@@ -158,9 +158,24 @@ function PlanPage() {
       }
   };
 
+
   const handleQuit = () => {
-    setAttend(false);
-    alert("退出成功");
+    const token = getAuthToken();
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    };
+    axios.delete(API_GET_PLAN_DETAIL + id + '/leave', config)
+      .then(function (res) {
+          setAttend(false);
+          alert("退出成功");
+          window.location.reload(false);
+        })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+    });
   };
 
   // 檢查當前使用者是否為參加者
@@ -384,6 +399,12 @@ function PlanPage() {
           {data.need_reviewed && !isAttendee && alreadyApply && (
             <Typography variant="h6" color="secondary">加入申請正在審核中，請稍候</Typography>
           )}
+
+          {((userId !== creatorId) && isAttendee)?
+            <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出計畫")} </Button>
+            :
+            <></>
+          }
 
           </Grid>
         </Grid>
