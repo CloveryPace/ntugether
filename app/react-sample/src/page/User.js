@@ -22,6 +22,9 @@ import { API_GET_USER, API_CREATE_ACTIVITY, API_CREATE_PLAN } from '../global/co
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import ActivityComponent from '../components/ActivityComponent';
+import PlanComponent from '../components/PlanComponent';
+
 const { useState } = React;
 const parsed = queryString.parse(window.location.search);
 
@@ -86,6 +89,9 @@ function User() {
   const [followingNumber, setFollowingNumber] = useState(0);
   const [activityNumber, setActivityNumber] = useState(0);
   const [progressNumber, setProgressNumber] = useState(0);
+
+  const [activity, setActivity] = React.useState([]);
+  const [progress, setProgress] = React.useState([]);
 
   const authtoken = getAuthToken();
   const userId = getUserId();
@@ -153,25 +159,27 @@ function User() {
       console.log(error);
     });
     
-    axios.get(API_CREATE_ACTIVITY + '?mode=owned', {headers: { 
+    axios.get(API_CREATE_ACTIVITY + `?target_user=${parsed.id}&mode=owned`, {headers: { 
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
       console.log('發起活動');
       console.log(response.data);
       setActivityNumber(response.data.length);
+      setActivity(response.data);
     })
     .catch(function (error) {
       console.log(error);
     });
 
-    axios.get(API_CREATE_PLAN + '?mode=owned', {headers: { 
+    axios.get(API_CREATE_PLAN + `?target_user=${parsed.id}&mode=owned`, {headers: { 
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
       console.log('發起進度');
       console.log(response.data);
       setProgressNumber(response.data.length);
+      setProgress(response.data);
     })
     .catch(function (error) {
       console.log(error);
@@ -280,22 +288,44 @@ function User() {
               <Tab label={t("進度發起紀錄")} {...a11yProps(2)} />
             </Tabs>
             <CustomTabPanel value={value} index={0}>
-            <Stack direction="row" spacing={1}>
+            {/* <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={"健身"}/>
                 <Chip color="secondary" label={"英文交流"}/>
-              </Stack >
+              </Stack > */}
               <Typography variant='h5'>{t('簡介')}</Typography>
-              <Typography variant='body1'>{about ? about: '目前尚無簡介'}</Typography>
+              <Typography variant='body1'>{about ? about: t('目前尚無簡介')}</Typography>
               
               <Divider />
               <Typography variant='h5'>{t('聯絡方式')}</Typography>
-              <Typography variant='body1'>{email ? email: '目前尚無簡介'}</Typography>
+              <Typography variant='body1'>{email ? email: t('目前無聯絡方式')}</Typography>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              尚無活動紀錄
+            <Grid container spacing={2}>
+                    
+                    { 
+                    activity.length !== 0?
+                    (activity.map((activity) => {
+                       return (
+                         <ActivityComponent data={activity} key={activity.id} />
+                       );
+                     })): <Typography variant="h4">{t('尚無活動紀錄')}</Typography>
+
+                   }
+         
+               </Grid>
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-              尚無進度紀錄
+                <Grid container spacing={2}>
+
+                  {
+                    progress.length !== 0?
+                    (progress.map((plan) => {
+                      return(
+                      <PlanComponent data={plan} key={plan.id} />
+                      )
+                    })): <Typography variant="h4">{t('尚無計畫紀錄')}</Typography>
+                  }
+                </Grid>
             </CustomTabPanel>
           </Box>
           <Box>

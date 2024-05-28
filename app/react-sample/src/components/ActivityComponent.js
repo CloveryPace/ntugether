@@ -11,6 +11,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import { Grid } from '@mui/material';
 import dayjs from 'dayjs';
 import AvatarGroup from '@mui/material/AvatarGroup';
+import { useTranslation } from 'react-i18next';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -37,6 +38,7 @@ function stringAvatar(name) {
 
 export default function ActivityComponent({data}) {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
     const style = { 
       border: '1.5px solid rgba(0, 0, 0, 0.1)',
       padding: '2rem'
@@ -47,21 +49,25 @@ export default function ActivityComponent({data}) {
         <div className="box" style={style}>
           <Stack direction="column">
             <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })} style={{cursor: 'pointer'}}>
-            <Typography variant="h5" gutterBottom>{data.name? data.name: "未命名活動"}</Typography>
+            <Typography variant="h5" gutterBottom>{data.name? data.name: t("未命名活動")}</Typography>
               <Stack direction="row" spacing={1}>
-                <Chip color="secondary" label={data.type || "未指定"}/>
-                <Chip color="secondary" label={data.is_one_time? "一次性":"長期活動"}/>
+                <Chip color="secondary" label={data.type || t("未指定")}/>
+                <Chip color="secondary" label={data.is_one_time? t("一次性"):t("長期活動")}/>
                 <Chip color="secondary" label={data.activity_id? data.activity_id:"ID"}/>
               </Stack >
 
               <Stack direction="column" spacing={2} sx={{ marginTop: '20px', marginBottom: '20px'}}>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <ScheduleIcon color="icon" sx={{ paddingRight: '10px'}} />
-                  <Typography variant="body1">{data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "未指定日期"}</Typography>
+                  {Array.isArray(data.date)?
+                      <Typography variant="body1"> {data.date[0]? dayjs(data.date[0]).format('YYYY/MM/DD h:mm A'): t("尚無活動時間資料")} </Typography>
+                      :
+                      <Typography variant="body1"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): t("尚無活動時間資料")}  </Typography>
+                  }
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <LocationOnIcon color="icon" sx={{ paddingRight: '10px'}}/>
-                  <Typography variant="body1">{data.location? data.location: "未指定地點"}</Typography>
+                  <Typography variant="body1">{data.location? data.location: t("未指定地點")}</Typography>
                 </div>
                 <div style={{ display: "flex", alignItems: "center" }}>
                   <PeopleIcon color="icon" sx={{ paddingRight: '10px'}}/>
@@ -71,12 +77,12 @@ export default function ActivityComponent({data}) {
                     total={data.Participants.length}
                     >
                       <div style={{alignSelf: 'center'}}>
-                        <Chip avatar={<Avatar {...stringAvatar(data.Participants[0].name? data.Participants[0].name: "未知")}/>} label={data.Participants[0].name? data.Participants[0].name: "未知"} />
+                        <Chip avatar={<Avatar {...stringAvatar(data.Participants[0].name? data.Participants[0].name: t("未知"))}/>} label={data.Participants[0].name? data.Participants[0].name: t("未知")} />
                       </div>
                     </AvatarGroup>
                     :
                     <div style={{alignSelf: 'center'}}>
-                        尚無參加者
+                        {t("尚無參加者")}
                     </div>
                   }
                 </div>

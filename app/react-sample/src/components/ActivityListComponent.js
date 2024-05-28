@@ -13,7 +13,12 @@ export default function ActivityList() {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
   const { t, i18n } = useTranslation();
-
+  const initialDisplayCount = 6;
+  const incrementCount = 3;
+  const [displayCount, setDisplayCount] = useState(initialDisplayCount);
+  const handleShowMore = () => {
+    setDisplayCount(prevCount => prevCount + incrementCount);
+  };
 
   useEffect(() => {
     console.log('execute function in useEffect');
@@ -34,29 +39,42 @@ export default function ActivityList() {
             console.log(err);
             alert("error");
           });
-    }, [userToken]);
+    }, []);
   
 
     return (
 
     <div>
       <Grid container spacing={2}>
-                    
+
+          {
+            data.slice(0, displayCount).map((item, index) =>(
+              <ActivityComponent data={item} key={item.id} />
+            )
+            )
+
+          }
+
+      </Grid>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+      {displayCount < data.length && (
+        <Button onClick={handleShowMore}>
+          <Typography>{t('查看更多')}</Typography>
+        </Button>
+      )}
+    </div>
+    </div>
+    );
+  }
+  
+/*
            { (data.map((activity) => {
               return (
                 <ActivityComponent data={activity} key={activity.id} />
               );
             }))
           }
-
-      </Grid>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-      <Button sx={{ my: 2 }}><Typography>{t('查看更多')}</Typography></Button> 
-    </div>
-    </div>
-    );
-  }
-  
+*/
 
 
   // const chemists = people.filter(person =>

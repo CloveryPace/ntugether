@@ -53,14 +53,6 @@ export default function AccountComponent({data}) {
                 ID: {data.followingId}
               </Typography>
             </Grid>
-            <Grid item>
-              <Button variant="contained" onClick={() => navigate('')}>{t('取消追蹤')}</Button>
-            </Grid>
-          </Grid>
-          <Grid item>
-            <Typography variant="subtitle1" component="div">
-              {t('近期活動')}
-            </Typography>
           </Grid>
         </Grid>
       </Grid>

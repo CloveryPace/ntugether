@@ -21,7 +21,7 @@ import ReviewBoxForPlan from '../components/ReviewBoxForPlan';
 import CommentsBoxForPlan from '../components/CommentsBoxForPlan';
 import EditPlanPage from './EditPlanPage';
 import PendingReview from '../components/PendingReviewForPlan';
-
+import Link from '@mui/material/Link';
 import './Common.css';
 
 
@@ -217,7 +217,9 @@ function PlanPage() {
           <Stack direction="row" spacing={2} justifyContent="space-between">
             <Stack direction="row" spacing={3}>
               <Typography variant="h4">{data.name ? data.name : "計畫名稱"}</Typography>
+              <Link href={'/user?id='+data.created_user_id} underline="none">
               <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
+              </Link>
               <Chip sx={{ bgcolor: theme.palette.hashtag.review }} label={t(data.need_reviewed ? "需審核" : "不需審核")} />
               <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.type ? data.type : "未指定")} />
             </Stack>
@@ -296,10 +298,10 @@ function PlanPage() {
           {atendee.length > 0 ? (
               atendee.slice(0, 5).map((person, index) => (
                 <div style={{ alignSelf: 'center' }} key={person.id}>
-                  <Chip 
+                  <Link href={'/user?id='+person.user_id} underline="none"><Chip 
                     avatar={<Avatar>{person.name ? person.name[0] : "未知"}</Avatar>} 
                     label={person.name ? person.name : "未知"} 
-                  />
+                  /></Link>
                 </div>
               ))
             ) : (

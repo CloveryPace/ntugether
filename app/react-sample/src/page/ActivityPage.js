@@ -23,6 +23,7 @@ import { getAuthToken } from '../utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import Link from '@mui/material/Link';
+import InviteActivityComponent from '../components/InviteActivityComponent';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -55,63 +56,70 @@ function ActivityPage() {
   const [userId, setUserId] = useState('');
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
+  const [attend, setAttend] = useState(false); // 是否已參加活動
 
   useEffect(() => {
-        //儲存token
-        const token = getAuthToken();
-        //設定authorization
-        const config = {
-            headers: { 
-              authorization: `Bearer ${token}`
+    //儲存token
+    const token = getAuthToken();
+    //設定authorization
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    };
+    console.log(token);
+
+    //取得活動資訊
+    axios.get(API_GET_ACTIVITY_DETAIL + id, config)
+      .then(function (res) {
+        console.log("取得活動資訊");
+        console.log(res.data);
+        setData(res.data);
+        setCreatorId(res.data.created_user_id);
+        setAtendee(res.data.Participants);
+        //取得使用者id
+        axios.get(API_GET_USER, config)
+          .then(function (response) {
+            setUserId(response.data.members.user_id);
+            for (var i = 0; i < res.data.Participants.length; i++){
+              if( response.data.members.user_id === res.data.Participants[i].user_id ){
+                // 是否已經在參加者名單
+                setAttend(true);
+              }
             }
-        };
-        console.log(token);
-
-        //取得活動資訊
-        axios.get(API_GET_ACTIVITY_DETAIL + id, config)
-          .then(function (res) {
-            console.log(res.data);
-            setData(res.data);
-            setCreatorId(res.data.created_user_id);
-            //取得使用者id
-            axios.get(API_GET_USER, config)
-            .then(function (res) {
-              setUserId(res.data.members['user_id']);
-            })
-            .catch(function (err) {
-              console.log(err);
-              alert("error");
-            });
           })
           .catch(function (err) {
             console.log(err);
             alert("error");
           });
-          console.log("時間")
-          console.log(dayjs(data.date).format('YYYY/MM/DD h:mm A'))
+        })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+    });
 
-
-        //取得參加者
-        axios.get(API_GET_ACTIVITY_DETAIL + id + '/participants', config)
-          .then(function (res) {
-            console.log("取得參加者成功");
-            setAtendee(res.data);
-          })
-          .catch(function (err) {
-            console.log("取得參加者出現錯誤");
-            console.log(err);
-            alert("error");
-          });
-
-      }, [id, data.date]);
+    }, [id]);
 
 
   const [editingShow, setEditingShow] = useState(false);
-  const [attend, setAttend] = useState(false); // 參加活動
 
   const handleQuit = () => {
-    setAttend(false);
-    alert("退出成功");
+    const token = getAuthToken();
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    };
+    axios.delete(API_GET_ACTIVITY_DETAIL + id + '/leave', config)
+      .then(function (res) {
+          setAttend(false);
+          alert("退出成功");
+          window.location.reload(false);
+        })
+      .catch(function (err) {
+        console.log(err);
+        alert("error");
+    });
   };
 
   window.scrollTo(0, 0); //讓進入畫面在上方
@@ -139,7 +147,7 @@ function ActivityPage() {
         <Stack direction="row" spacing={2} justifyContent="space-between">
           <Stack direction="row" spacing={3}>
             <Typography variant="h4">{data.name? data.name: "未命名活動名稱"}</Typography>
-            <Link href={'/user?id='+data.participants} underline="none">
+            <Link href={'/user?id='+data.created_user_id} underline="none">
               <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "未知建立者"}</Avatar>} label={data.Creator? data.Creator.name: "未知建立者"} />
             </Link>
             <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={t(data.is_one_time? "一次性活動": "長期性活動")}/>
@@ -159,17 +167,8 @@ function ActivityPage() {
           <EditActivityPage /** 編輯視窗 */
             show={editingShow}
             onHide={() => setEditingShow(false)}
-            name={data.name? data.name: ""}
-            introduction={data.introduction? data.introduction: ""}
-            date={data.date? data.date: ""}
-            location={data.location? data.location: ""}
-            max_participants={data.max_participants? data.max_participants: ""}
-            ActivityAtendee={atendee}
-            oneTime={data.is_one_time? data.is_one_time: ""}
-            need_reviewed={data.need_reviewed? data.need_reviewed: ""}
-            type={data.type? data.type: "未指定"}
+            data={data}
             id={id}
-            application_problem={data.application_problem? data.application_problem: ""}
           />
           }
       </Box>
@@ -197,7 +196,7 @@ function ActivityPage() {
           }
         </Stack>
         <Stack direction="row" spacing={3}>
-          <Chip avatar={<Avatar>M</Avatar>} label={t(data.Creator? data.Creator.name: "未知建立者")} />
+          <Chip avatar={<Avatar>{data.Creator? data.Creator.name[0]: "M"}</Avatar>} label={t(data.Creator? data.Creator.name: "未知建立者")} />
           <Chip sx={{ bgcolor: theme.palette.hashtag.oneTime}} label={t(data.is_one_time? "一次性活動": "長期性活動")}/>
           <Chip sx={{ bgcolor: theme.palette.hashtag.review}} label={t(data.need_reviewed? "需審核": "不需審核")}/>
           <Chip sx={{ bgcolor: theme.palette.hashtag.type}} label={t(data.type? data.type: "未指定")}/>
@@ -211,7 +210,17 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("活動時間")} </Typography></div>
-        <div><Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography></div>
+        <div>
+        {Array.isArray(data.date)?
+            (data.date.map((D) => {
+              return (
+                <Typography variant="h6"> {D? dayjs(D).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography>
+              );
+            }))
+            :
+            <Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"}  </Typography>
+        }
+        </div>
       </div>
 
       <div style={container}>
@@ -232,8 +241,8 @@ function ActivityPage() {
             (atendee.map((person) => {
               return (
                 <div style={{alignSelf: 'center'}}>
-                  <Link href={'/user?id='+person.participants} underline="none">
-                  <Chip avatar={<Avatar {...stringAvatar(person.User? person.User.name: "未知")}/>} label={person.User? person.User.name: "未知"} />
+                  <Link href={'/user?id='+person.user_id} underline="none">
+                  <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"} />
                   </Link>
                 </div>
               );
@@ -266,6 +275,14 @@ function ActivityPage() {
         <></>
       }
  
+      {(userId === creatorId)? 
+          <div style={container}>
+            <div style={subtitle}><Typography variant="h6"> {t("邀請...")} </Typography></div>
+            <InviteActivityComponent activity_id={id}/>
+          </div>
+          :
+          <p></p>
+      }
       
       <br/>
       <br/>
@@ -277,8 +294,13 @@ function ActivityPage() {
       
       <Grid container justifyContent="center">
         <Grid item>
-          {(userId !== creatorId)?
+          {((userId !== creatorId) && (!attend))?
             <ReviewBox id={id} question={data.application_problem? data.application_problem: ""} need_reviewed={data.need_reviewed}/>
+            :
+            <></>
+          }
+          {((userId !== creatorId) && attend)?
+            <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")} </Button>
             :
             <></>
           }
@@ -291,5 +313,3 @@ function ActivityPage() {
 }
 
 export default ActivityPage;
-
-// <Button variant="contained" color="warning" onClick={handleQuit}> {t("退出活動")}</Button>

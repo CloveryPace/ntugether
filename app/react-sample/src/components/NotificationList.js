@@ -6,19 +6,31 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
-export default function NotificationList() {
+export default function NotificationList({data}) {
+
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-      <OneListItem />
 
-      <OneListItem />
+      {
+        data.length !== 0?(
+          data.map((item) => {
+            return <OneListItem item={item}/>
+          })
+        ):(
+          <OneListItem item={['目前沒有通知', '', '']} />
+        )
+      }
     </List>
   );
 }
 
 
-function OneListItem(){
+function OneListItem({item}){
+  const { t, i18n } = useTranslation();
+
   return (
     <div>
       <ListItem alignItems="flex-start">
@@ -26,7 +38,7 @@ function OneListItem(){
           <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
         </ListItemAvatar>
         <ListItemText
-          primary="Brunch this weekend?"
+          primary={item[0] === 'application' ? t('你收到一則申請通知') : item[0] === 'invitation' ? t('你收到一則邀請通知') : t(item[0])}
           secondary={
             <React.Fragment>
               <Typography
@@ -35,9 +47,10 @@ function OneListItem(){
                 variant="body2"
                 color="text.primary"
               >
-                使用者姓名
+                {item[1]}
               </Typography>
-              {" — I'll be in your neighborhood doing errands this…"}
+            
+              {item[0] === 'application' ? t('回答：') + item[2] :item[2]}
             </React.Fragment>
           }
         />
