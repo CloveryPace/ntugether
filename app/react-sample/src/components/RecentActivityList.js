@@ -12,8 +12,7 @@ export default function RecentActivityList() {
   const { t, i18n } = useTranslation();
   const initialDisplayCount = 2;
   const incrementCount = 3;
-  const token = getAuthToken();
-  const [activity, setActivity] = useState([]);
+  const [recentActivity, setRecentActivity] = useState([]);
 
   const [displayCount, setDisplayCount] = useState(initialDisplayCount);
 
@@ -21,44 +20,29 @@ export default function RecentActivityList() {
     setDisplayCount(prevCount => prevCount + incrementCount);
   };
 
-  const getActivityData = (mode_param) => {
+  useEffect(() => {
+    const token = getAuthToken();
     const config = {
-      headers: { 
-        authorization: `Bearer ${token}`
-      },
-      params: {
-        start_date: dayjs().toJSON(),
-        end_date: dayjs().add(7, 'day').toJSON(),
-        mode: mode_param
-      }
+        headers: { 
+          authorization: `Bearer ${token}`,
+        },
+        params: { 
+          start_date: dayjs().toJSON(),
+          mode: "joined"
+        } 
     };
-
-    //取得活動資訊
+    //取得最近活動
     axios.get(API_CREATE_ACTIVITY, config)
       .then(function (res) {
-
-        res.data.map((item) => {
-          let data = {};
-          data['date'] = dayjs(item.date).format('YYYY/MM/DD h:mm A');
-          data['name'] = item.name;
-          data['location'] = item.llocation;
-          setActivity([
-            ...activity,
-            data
-          ]);
-        });
-
-        console.log(activity);
-        
-        })
+        console.log(res.data);
+        setRecentActivity(res.data);
+      })
       .catch(function (err) {
         console.log(err);
-    });
-}
+        alert("error");
+      });
+    }, []);
 
-  useEffect(() => {
-    getActivityData('joined');
-  }, []);
 
   return (
     <div>
@@ -66,11 +50,11 @@ export default function RecentActivityList() {
         {t('即將來臨的活動')}
       </Typography>
       <List>
-        {activity.slice(0, displayCount).map((item, index) => (
+        {recentActivity.slice(0, displayCount).map((item, index) => (
           <RecentActivityItem key={index} item={item} />
         ))}
       </List>
-      {displayCount < activity.length && (
+      {displayCount < recentActivity.length && (
         <Button onClick={handleShowMore}>
           <Typography>{t('查看更多')}</Typography>
         </Button>
