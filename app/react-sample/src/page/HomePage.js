@@ -17,6 +17,7 @@ import theme from '../components/Theme';
 import { useTranslation } from 'react-i18next';
 
 import TextButtonsPlan from '../components/TextButtonsPlan';
+import DemoAlert from '../components/DemoAlert';
 
 function HomePage() {
   const { t, i18n } = useTranslation();
@@ -46,8 +47,9 @@ function HomePage() {
         </Stack>
         <PlanListComponent filterType="所有" />
       </div>
-
+     
       <Footer />
+      <DemoAlert />
     </ThemeProvider>
   );
 }

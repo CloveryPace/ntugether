@@ -21,6 +21,7 @@ import Loading from '../components/Loading';
 import React from 'react';
 import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { useEffect } from 'react';
+import DemoAlert from '../components/DemoAlert';
 const { useState } = React;
 
 export default function Login() {
@@ -201,6 +202,7 @@ export default function Login() {
         />
       </Grid>
       {loading && <Loading/>}
+      <DemoAlert />
     </ThemeProvider>
   );
 }
