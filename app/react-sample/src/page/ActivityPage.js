@@ -258,7 +258,7 @@ function ActivityPage() {
       <>
         <div style={container}>
           <div style={subtitle}><Typography variant="h6"> {t("審核題目")} </Typography></div>
-          <div><Typography variant="h6"> {data.max_participants? data.max_participants: t("尚無人數上限")} </Typography></div>
+          <div><Typography variant="h6"> {data.application_problem? data.application_problem:""} </Typography></div>
         </div>
         <br/>
         <br/>
