@@ -13,29 +13,6 @@ import dayjs from 'dayjs';
 import AvatarGroup from '@mui/material/AvatarGroup';
 import { useTranslation } from 'react-i18next';
 
-// 頭像顏色根據名字變化
-function stringToColor(string) {
-  let hash = 0;
-  let i;
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  let color = '#';
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  return color;
-}
-function stringAvatar(name) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
-    children: `${name[0]}`,
-  };
-}
-
 export default function ActivityComponent({data}) {
     const navigate = useNavigate();
     const { t, i18n } = useTranslation();
@@ -48,7 +25,13 @@ export default function ActivityComponent({data}) {
         <Grid item xs={12} md={4}>
         <div className="box" style={style}>
           <Stack direction="column">
-            <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })} style={{cursor: 'pointer'}}>
+            <div onClick={
+              () => {
+                navigate(`/activitypage`, { state: {id: data.activity_id } });
+                window.location.reload(false);
+              }
+            } 
+            style={{cursor: 'pointer'}}> 
             <Typography variant="h5" gutterBottom>{data.name? data.name: t("未命名活動")}</Typography>
               <Stack direction="row" spacing={1}>
                 <Chip color="secondary" label={t(data.type) || t("未指定")}/>
@@ -77,7 +60,7 @@ export default function ActivityComponent({data}) {
                     total={data.Participants.length}
                     >
                       <div style={{alignSelf: 'center'}}>
-                        <Chip avatar={<Avatar {...stringAvatar(data.Participants[0].name? data.Participants[0].name: t("未知"))}/>} label={data.Participants[0].name? data.Participants[0].name: t("未知")} />
+                      <Chip avatar={<Avatar>{data.Participants[0].name? data.Participants[0].name[0]: "未知"}</Avatar>} label={data.Participants[0].name? data.Participants[0].name: "未知"} />
                       </div>
                     </AvatarGroup>
                     :

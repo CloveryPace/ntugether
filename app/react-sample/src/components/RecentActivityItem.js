@@ -11,7 +11,13 @@ function ActivityItem({ item, index }) {
   const { t, i18n } = useTranslation();
 
   return (
-    <Paper key={index} elevation={3} style={{ marginBottom: '10px', padding: '10px', height: '90px', backgroundColor: theme.palette.primary.light}} onClick={() => navigate(`/activitypage`, { state: {id: item.activity_id } })}>
+    <Paper key={index} elevation={3} style={{ marginBottom: '10px', padding: '10px', height: '90px', backgroundColor: theme.palette.primary.light}} 
+    onClick={
+      () => {
+        navigate(`/activitypage`, { state: {id: item.activity_id } });
+        window.location.reload(false);
+      }
+      }>
       <ListItem>
         <ListItemText primary={item.name} 
         secondary={
