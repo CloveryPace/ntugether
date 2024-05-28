@@ -16,7 +16,6 @@ function fakeFetch(date, { signal }) {
     const timeout = setTimeout(() => {
       const daysInMonth = date.daysInMonth();
       const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
-
       resolve({ daysToHighlight });
     }, 500);
 
@@ -27,7 +26,7 @@ function fakeFetch(date, { signal }) {
   });
 }
 
-const initialValue = dayjs('2024-04-10');
+const initialValue = dayjs();
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -72,6 +71,8 @@ export default function BasicDateCalendar() {
 
   React.useEffect(() => {
     fetchHighlightedDays(initialValue);
+    console.log("useEffect date")
+    console.log(requestAbortController.current?.abort());
     // abort request on unmount
     return () => requestAbortController.current?.abort();
   }, []);

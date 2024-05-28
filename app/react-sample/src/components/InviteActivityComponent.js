@@ -11,7 +11,7 @@ import List from '@mui/material/List';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import { useTranslation } from 'react-i18next';
 
-export default function InviteActivityComponent({activity_id}) {
+export default function InviteActivityComponent({activity_id, user_id}) {
     const { t, i18n } = useTranslation();
     const [users, setUsers] = useState([]);
     const component_2 = { 
@@ -27,16 +27,16 @@ export default function InviteActivityComponent({activity_id}) {
             authorization: `Bearer ${token}`
           }
       };
-      //取得使用者們
-      axios.get(API_GET_USER + '/allMembers', config)
+      //取得活動創建者追蹤中的用戶
+      axios.get(API_GET_USER + '/' + user_id + '/following', config)
         .then(function (res) {
-            console.log("取得所有使用者成功");
-            console.log(res.data.members);
-            setUsers(res.data.members);
+            console.log("取得追蹤中使用者成功");
+            console.log(res.data);
+            setUsers(res.data);
         })
         .catch(function (err) {
           console.log(err);
-          console.log("取得所有使用者失敗");
+          console.log("取得追蹤中使用者失敗");
         });
 
     }, []);
@@ -48,7 +48,7 @@ export default function InviteActivityComponent({activity_id}) {
           headers: { 
             authorization: `Bearer ${token}`
           }
-      };
+      }; 
       axios.post(API_GET_ACTIVITY_DETAIL + activity_id + '/invitation',{ 
         "invitees": [user]
       }, config)
@@ -75,23 +75,23 @@ export default function InviteActivityComponent({activity_id}) {
             }}
             subheader={<li />}
         >
-            {users.length > 0 ?
+            {users ?
             (users.map((user) => {
             return (
                 <>
                 <ListItem component="div" disablePadding>
                     <ListItemAvatar>
-                        <Avatar> {user.name[0]? user.name[0]: "未知"} </Avatar>
+                        <Avatar> {user.Following.name[0]? user.Following.name[0]: "未知"} </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={user.name? user.name: "未知"}/>
-                    <Button variant="contained" color="primary" onClick={() =>handleInvite(user.user_id)}> {t("邀請")} </Button> 
+                    <ListItemText primary={user.Following.name? user.Following.name: "未知"}/>
+                    <Button variant="contained" color="primary" onClick={() =>handleInvite(user.followingId)}> {t("邀請")} </Button> 
                 </ListItem>
                 <br/>
                 </>
             );
             })):
             <div style = {component_2}>
-                {t("尚無使用者資料")}
+                {t("尚無追蹤中使用者")}
             </div>
             }
         </List>
