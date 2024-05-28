@@ -22,7 +22,7 @@ function PlanList() {
       <HeaderBar />
       <div className='Main'>
       <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2} style={{ marginBottom: '20px' }} >
-        <Typography variant="h4"> 進度計畫列表 </Typography>
+        <Typography variant="h4"> 計畫列表 </Typography>
         <Button variant="contained" color="primary" onClick={() => navigate('/planNew')}> 新增計畫 </Button> 
       </Stack>
       <PlanListComponent/>

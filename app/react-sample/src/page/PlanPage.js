@@ -222,7 +222,7 @@ function PlanPage() {
               <Chip sx={{ bgcolor: theme.palette.hashtag.type }} label={t(data.type ? data.type : "未指定")} />
             </Stack>
             {(userId === creatorId)? 
-            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> {t("編輯活動")} </Button>
+            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> {t("編輯計畫")} </Button>
             : <></>
           }
           </Stack>
@@ -242,7 +242,7 @@ function PlanPage() {
             }}>
             <Typography variant="h4">{data.name ? data.name : "計畫名稱"}</Typography>
             {(userId === creatorId)? 
-            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> {t("編輯活動")} </Button>
+            <Button variant="contained" color="primary" onClick={() => setEditingShow(true)}> {t("編輯計畫")} </Button>
             : <></>
           }
           </Stack>
