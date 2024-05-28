@@ -118,6 +118,7 @@ export default function EditPlanPage({ onHide, show, id, name, goal, introductio
     .catch(function (err) {
       alert(t("更新失敗"));
     });
+
   };
 
   const handleChangeReview = (event) => {

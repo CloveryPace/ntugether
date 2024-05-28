@@ -296,14 +296,6 @@ function PlanNew() {
                                 </Grid>
                             ))}
                         </RadioGroup>
-                        <Typography variant="h6">{t('邀請加入')}</Typography>
-                        <TextField
-                            fullWidth
-                            inputRef={SearchName}
-                            variant="outlined"
-                            autoFocus
-                            label={t('邀請...')}
-                        />
                     </Grid>
                 </Grid>
                 <Divider sx={{my: 4}}/>
