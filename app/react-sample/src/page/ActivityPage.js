@@ -106,6 +106,25 @@ function ActivityPage() {
   const container = { 
     display: "flex" 
   };
+  const container2 = { 
+    display: "flex",
+    overflowY: 'auto',
+    maxHeight: '90vh',
+    width: '80%'
+  };
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto',
+    maxHeight: '90vh',
+    width: '80%',
+  };
 
   return ( 
     <ThemeProvider theme={theme}>
@@ -214,6 +233,7 @@ function ActivityPage() {
         <div style={subtitle}>
           <Typography variant="h6"> {t("參加者")} </Typography>
         </div>
+        <div style={container2}>
         {atendee.length > 0 ?
             (atendee.map((person) => {
               return (
@@ -229,6 +249,7 @@ function ActivityPage() {
               {t("尚無參加者")}
           </div>
         }
+        </div>
       </div>
 
       {(data.need_reviewed && (userId === creatorId))?

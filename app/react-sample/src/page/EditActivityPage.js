@@ -26,6 +26,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -357,7 +358,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                             }}
                         >
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DesktopDateTimePicker
+                                <MobileDateTimePicker
                                 value={dayjs(item)}
                                 onChange={(e) => handleChangeDateMul(index, e)}
                                 name="date"

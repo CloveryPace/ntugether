@@ -118,7 +118,7 @@ export default function CommentsBox({ id }) {
         <Box
         sx={{
           display: 'flex',
-          '@media (max-width: 600px)': {
+          '@media (max-width: 500px)': {
             display: 'block', 
           },
         }}
