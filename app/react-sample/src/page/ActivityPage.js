@@ -25,29 +25,6 @@ import dayjs from 'dayjs';
 import Link from '@mui/material/Link';
 import InviteActivityComponent from '../components/InviteActivityComponent';
 
-// 頭像顏色根據名字變化
-function stringToColor(string) {
-  let hash = 0;
-  let i;
-  for (i = 0; i < string.length; i += 1) {
-    hash = string.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  let color = '#';
-  for (i = 0; i < 3; i += 1) {
-    const value = (hash >> (i * 8)) & 0xff;
-    color += `00${value.toString(16)}`.slice(-2);
-  }
-  return color;
-}
-function stringAvatar(name) {
-  return {
-    sx: {
-      bgcolor: stringToColor(name),
-    },
-    children: `${name[0]}`,
-  };
-}
-
 function ActivityPage() {
   const { t, i18n } = useTranslation();
   const { state } = useLocation();
@@ -57,6 +34,7 @@ function ActivityPage() {
   const [creatorId, setCreatorId] = useState('');
   const [atendee, setAtendee] = useState([]);
   const [attend, setAttend] = useState(false); // 是否已參加活動
+  const [reload, setReload] = useState(true);
 
   useEffect(() => {
     //儲存token
@@ -97,7 +75,6 @@ function ActivityPage() {
         console.log(err);
         alert("error");
     });
-
     }, [id]);
 
 
@@ -242,7 +219,7 @@ function ActivityPage() {
               return (
                 <div style={{alignSelf: 'center'}}>
                   <Link href={'/user?id='+person.user_id} underline="none">
-                  <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: t("未知"))}/>} label={person.name? person.name: t("未知")} />
+                  <Chip avatar={<Avatar>{person.name? person.name[0]: t("未知")}</Avatar>} label={person.name? person.name: t("未知")} />
                   </Link>
                 </div>
               );
