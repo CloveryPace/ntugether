@@ -199,7 +199,7 @@ exports.getActivitiesList = async (req, res) => {
         const is_long_term = req.query.is_long_term;
         const target_user = req.query.target_user || user_id;
         const mode = req.query.mode || "all";
-        const type = req.query.type;
+        var type = req.query.type;
 
         allowModes = ["owned", "joined", "all"];
 
@@ -208,7 +208,16 @@ exports.getActivitiesList = async (req, res) => {
         // set search condition
         var condition = {};
 
-        if (type) condition.type = type;
+        
+        if (type) {
+            // if string, change into Array
+            if (typeof(type) === "string") {
+                type = type.replace(/'/g, '"');
+                type = JSON.parse(type);
+            }
+            condition.type = { [Op.in]: type };
+        }
+        
         if (is_long_term != null) condition.is_one_time = !(is_long_term == "true" || is_long_term == "True");
         if (country) condition.country = country;
         if (location) condition.location = location;
@@ -244,7 +253,7 @@ exports.getActivitiesList = async (req, res) => {
                     model: User,
                     as: 'Creator',
                     attributes: ["user_id", "name", "email", "phoneNum", "photo", "gender"],
-                    where: mode == "owned" ? { user_id: target_user } : null,
+                    where: mode === "owned" ? { user_id: target_user } : null,
                 },
                 {
                     model: User,
@@ -253,7 +262,7 @@ exports.getActivitiesList = async (req, res) => {
                     through: {
                         attributes: [],
                     },
-                    where: mode == "joined" ? { user_id: target_user } : null,
+                    where: mode === "joined" ? { user_id: target_user } : null,
 
                 },
             ],

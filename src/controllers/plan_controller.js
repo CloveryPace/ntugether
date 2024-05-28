@@ -472,7 +472,7 @@ exports.getPlanList = async (req, res) => {
         const search = req.query.search;
         const mode = req.query.mode || "all";
         const target_user = req.query.target_user || user_id;
-        const type = req.query.type;
+        var type = req.query.type;
 
 
         allowModes = ["owned", "joined", "all"];
@@ -482,7 +482,16 @@ exports.getPlanList = async (req, res) => {
         // set search condition
         var condition = {};
 
-        if (type) condition.type = type;
+        if (type) {
+            // if string, change into Array
+            if (typeof(type) === "string") {
+                type = type.replace(/'/g, '"');
+                type = JSON.parse(type);
+            }
+
+            condition.type = { [Op.in]: type };
+        }
+
         if (search) {
             searchCondition = {
                 [Op.or]: [
@@ -508,7 +517,7 @@ exports.getPlanList = async (req, res) => {
             };
         }
 
-
+        console.log(condition);
         const plans = await planModel.Plan.findAll({
             include: [
                 {
