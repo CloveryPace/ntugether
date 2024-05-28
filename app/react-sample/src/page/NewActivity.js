@@ -26,6 +26,7 @@ import { getAuthToken } from '../utils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -364,7 +365,7 @@ function NewActivity() {
                             }}
                         >
                             <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="de">
-                                <DesktopDateTimePicker
+                                <MobileDateTimePicker
                                 onChange={(e) => handleChangeDateMul(index, e)}
                                 name="date"
                                 required
