@@ -3,10 +3,10 @@ import { List, Typography, Button } from '@mui/material';
 import RecentActivityItem from './RecentActivityItem';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
-import { getAuthToken } from '../utils'; 
-import { API_CREATE_ACTIVITY } from '../global/constants';
-import dayjs from 'dayjs';
+import { getAuthToken } from '../utils';
 import axios from 'axios';
+import dayjs from 'dayjs';
+import { API_CREATE_ACTIVITY } from '../global/constants';
 
 export default function RecentActivityList() {
   const { t, i18n } = useTranslation();

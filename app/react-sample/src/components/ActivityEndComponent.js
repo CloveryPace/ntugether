@@ -54,9 +54,6 @@ export default function ActivityEndComponent({mode_param}) {
           }
 
       </Grid>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
-      <Button sx={{ my: 2 }}><Typography>{t('查看更多')}</Typography></Button> 
-    </div>
     </div>
     );
   }

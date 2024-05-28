@@ -22,6 +22,7 @@ function ActivityAttendPage() {
             <ActivityStartComponent mode_param="joined"/>
             <Typography variant="h6"> {t('已結束')} </Typography>
             <ActivityEndComponent mode_param="joined"/>
+            <Typography variant="h6"></Typography>
             <Divider />
             <Typography variant="h5"> {t('發起紀錄')} </Typography>
             <Typography variant="h6"> {t('即將開始')} </Typography>

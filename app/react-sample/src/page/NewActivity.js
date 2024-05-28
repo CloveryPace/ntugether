@@ -25,6 +25,7 @@ import theme from '../components/Theme';
 import { getAuthToken } from '../utils';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.hashtag.oneTime,
@@ -49,6 +50,7 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 
 function NewActivity() {
     const navigate = useNavigate();
+    const { t, i18n } = useTranslation();
 
     // read input
     // useRef()讀值方法：XXXXXXX.current?.value
@@ -242,12 +244,12 @@ function NewActivity() {
         <div className='Main'>
 
             <Stack direction="row" spacing={2}>
-                <Typography variant="h4">新增活動</Typography>
+                <Typography variant="h4"> {t("新增活動")}</Typography>
             </Stack>
             <Box component="form" noValidate onSubmit={createActivity} sx={{ mt: 1 }}>
             <Grid container spacing={10}>
                 <Grid item xs={12} md={6}>
-                <Typography variant="h6">活動名稱</Typography>
+                <Typography variant="h6">{t("活動名稱")}</Typography>
                     <TextField
                         variant="outlined"
                         value={activityData.name}
@@ -255,9 +257,9 @@ function NewActivity() {
                         name="name"
                         autoFocus
                         fullWidth
-                        label="輸入活動名稱"
+                        label={t("輸入活動名稱")}
                     />
-                    <Typography variant="h6"> 活動簡介 </Typography>
+                    <Typography variant="h6"> {t("新增簡介")} </Typography>
                     <TextField
                         variant="outlined"
                         value={activityData.introduction}
@@ -265,9 +267,9 @@ function NewActivity() {
                         name="introduction"
                         autoFocus
                         fullWidth
-                        label="輸入活動簡介"
+                        label={t("輸入活動簡介")}
                     />
-                    <Typography variant="h6"> 一次性活動 </Typography>
+                    <Typography variant="h6"> {t("一次性活動")} </Typography>
                     <RadioGroup aria-label="is_one_time" name="is_one_time" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue="一次性活動">
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
@@ -282,7 +284,7 @@ function NewActivity() {
                         </Grid>
                         ))}
                     </RadioGroup>
-                    <Typography variant="h6"> 加入審核 </Typography>
+                    <Typography variant="h6"> {t("加入審核")} </Typography>
                     <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue="不需審核">
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
@@ -305,9 +307,9 @@ function NewActivity() {
                         fullWidth
                         variant="outlined"
                         autoFocus
-                        label="輸入審核題目"
+                        label={t("輸入審核題目")}
                     />
-                    <Typography variant="h6"> 活動類型 </Typography>
+                    <Typography variant="h6"> {t("活動類型")} </Typography>
                     <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType}>
                         {['運動', '讀書會', "出遊"].map((value) => (
                         <Grid item>
@@ -326,7 +328,7 @@ function NewActivity() {
 
                 <Grid item xs={12} md={6}>
                     <Stack direction="row" spacing={2}>
-                        <Typography variant="h6"> 活動時間 </Typography>
+                        <Typography variant="h6"> {t("活動時間")} </Typography>
                         {(activityData.is_one_time === "true")?
                         <></>
                         :
@@ -367,14 +369,14 @@ function NewActivity() {
                                 name="date"
                                 required
                                 fullWidth
-                                label="輸入活動時間"
+                                label={t("輸入活動時間")}
                                 id="date"
                                 />
                             </LocalizationProvider>
                         </Box>
                         </Box>
                     ))}
-                    <Typography variant="h6"> 活動地點 </Typography>
+                    <Typography variant="h6"> {t("活動地點")} </Typography>
                     <TextField
                         fullWidth
                         value={activityData.location}
@@ -382,9 +384,9 @@ function NewActivity() {
                         name="location"
                         variant="outlined"
                         autoFocus
-                        label="輸入活動地點"
+                        label={t("輸入活動地點")}
                     />
-                    <Typography variant="h6"> 人數上限 </Typography>
+                    <Typography variant="h6"> {t("人數上限")} </Typography>
                     <TextField
                         fullWidth
                         value={activityData.max_participants}
@@ -392,15 +394,7 @@ function NewActivity() {
                         name="max_participants"
                         variant="outlined"
                         autoFocus
-                        label="輸入人數上限"
-                    />
-                    <Typography variant="h6"> 邀請加入 </Typography>
-                    <TextField
-                        fullWidth
-                        inputRef={SearchName}
-                        variant="outlined"
-                        autoFocus
-                        label="邀請..."
+                        label={t("輸入人數上限")}
                     />
                 </Grid>
             </Grid>
@@ -408,8 +402,8 @@ function NewActivity() {
             <Grid container justifyContent="center">
               <Grid item>
                 <Stack direction="row" spacing={2}>
-                    <Button variant="contained" type="submit" color="primary" onClick={createActivity}> 新增 </Button>
-                    <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> 取消 </Button>
+                    <Button variant="contained" type="submit" color="primary" onClick={createActivity}> {t("新增")} </Button>
+                    <Button variant="contained" color="error" onClick={() => navigate('/activitylist')}> {t("取消")} </Button>
                 </Stack>
               </Grid>
             </Grid>
