@@ -51,7 +51,7 @@ export default function ActivityComponent({data}) {
             <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })} style={{cursor: 'pointer'}}>
             <Typography variant="h5" gutterBottom>{data.name? data.name: t("未命名活動")}</Typography>
               <Stack direction="row" spacing={1}>
-                <Chip color="secondary" label={data.type || t("未指定")}/>
+                <Chip color="secondary" label={t(data.type) || t("未指定")}/>
                 <Chip color="secondary" label={data.is_one_time? t("一次性"):t("長期活動")}/>
                 <Chip color="secondary" label={data.activity_id? data.activity_id:"ID"}/>
               </Stack >

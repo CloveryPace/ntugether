@@ -277,7 +277,7 @@ function NewActivity() {
                                 <FormControlLabel
                                     value={value === "一次性活動"}
                                     control={<Radio />}
-                                    label={`${value}`}
+                                    label={t(`${value}`)}
                                     labelPlacement="end"
                                 />
                             </ItemOneTime>
@@ -292,7 +292,7 @@ function NewActivity() {
                                 <FormControlLabel
                                     value={value === "需審核"}
                                     control={<Radio />}
-                                    label={`${value}`}
+                                    label={t(`${value}`)}
                                     labelPlacement="end"
                                 />
                             </ItemReview>
@@ -317,7 +317,7 @@ function NewActivity() {
                                 <FormControlLabel
                                     value={value}
                                     control={<Radio />}
-                                    label={`${value}`}
+                                    label={t(`${value}`)}
                                     labelPlacement="end"
                                 />
                             </ItemTag>
