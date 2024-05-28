@@ -27,6 +27,7 @@ import Search from './page/Search';
 
 import React, { Component } from 'react';
 import PrivateRoute from './components/PrivateRoute';
+import ActivityListType from './page/ActivityListType';
 
 
 // TODO: user沒有jwt時，redirect到login頁面
@@ -47,6 +48,9 @@ function App() {
 
           <Route exact path='/activitylist' element={<PrivateRoute/>}>
             <Route exact path='/activitylist' element={<ActivityList/>}/>
+          </Route>
+          <Route exact path='/activitylisttype' element={<PrivateRoute/>}>
+            <Route exact path='/activitylisttype' element={<ActivityListType/>}/>
           </Route>
           {/* <Route path='/activitylist' element={<ActivityList />} /> */}
           <Route exact path='/activitypage' element={<PrivateRoute/>}>

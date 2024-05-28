@@ -1,8 +1,6 @@
 import * as React from 'react'; 
 import ActivityComponent from './ActivityComponent';
-import Button from '@mui/material/Button';
 import { Grid } from '@mui/material';
-import Typography from '@mui/material/Typography';
 import { API_CREATE_ACTIVITY } from '../global/constants';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
