@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { getAuthToken } from '../utils';
 
-export default function PlanListComponent() {
+export default function PlanListComponent({ filterType = "所有" }) {
   const [data, setData] = useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
   const [visibleItems, setVisibleItems] = useState(6);
@@ -21,7 +21,6 @@ export default function PlanListComponent() {
       }
     };
 
-    //取得計畫列表
     axios.get(API_CREATE_PLAN, config)
       .then(function (res) {
         const today = new Date().toISOString().split('T')[0];
@@ -38,14 +37,16 @@ export default function PlanListComponent() {
     setVisibleItems(prevVisibleItems => prevVisibleItems + 6);
   };
 
+  const filteredData = data.filter(plan => filterType === '所有' || plan.type === filterType);
+
   return (
     <div>
       <Grid container spacing={2}>
-        {data.slice(0, visibleItems).map((plan) => (
+        {filteredData.slice(0, visibleItems).map((plan) => (
           <PlanComponent data={plan} key={plan.id} />
         ))}
       </Grid>
-      {visibleItems < data.length && (
+      {visibleItems < filteredData.length && (
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
           <Button sx={{ my: 2 }} onClick={handleLoadMore}>
             <Typography>{t('查看更多')}</Typography>
