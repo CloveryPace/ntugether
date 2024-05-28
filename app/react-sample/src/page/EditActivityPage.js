@@ -55,6 +55,7 @@ const container = {
   margin: "1rem"
 };
 
+/*
 const style = {
   position: 'absolute',
   top: '50%',
@@ -69,6 +70,21 @@ const style = {
   display: "flex",
   flexDirection: "column",
   height: 700,
+};
+*/
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto',
+    maxHeight: '90vh',
+    width: '80%',
 };
 
 const ItemOneTime = styled(Paper)(({ theme }) => ({
@@ -397,7 +413,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
               <Grid item xs={12} md={6}>
                 <Typography variant="h6"> {t("活動類型")} </Typography>
                   <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={newdata.type}>
-                      {['運動', '讀書會', "出遊"].map((value) => (
+                      {['運動', '學習', "出遊", "其他"].map((value) => (
                       <Grid item>
                           <ItemTag> 
                               <FormControlLabel

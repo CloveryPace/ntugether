@@ -311,7 +311,7 @@ function NewActivity() {
                     />
                     <Typography variant="h6"> {t("活動類型")} </Typography>
                     <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType}>
-                        {['運動', '讀書會', "出遊"].map((value) => (
+                        {['運動', '學習', "出遊", "其他"].map((value) => (
                         <Grid item>
                             <ItemTag> 
                                 <FormControlLabel

@@ -130,7 +130,7 @@ function ActivityPage() {
     display: "flex" 
   };
 
-  return (
+  return ( 
     <ThemeProvider theme={theme}>
       <HeaderBar />
       <div className='Main'>
