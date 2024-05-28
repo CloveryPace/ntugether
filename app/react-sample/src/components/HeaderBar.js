@@ -220,18 +220,21 @@ export default function HeaderBar() {
       console.log(response.data);
       setNotification(response.data);
       processNotification(response.data);
-
     }).catch((err) => {
         console.log(err)
     });
   }
 
   const processNotification = (notification) => {
+    console.log("通知：")
     console.log(notification);
     let dataload = [];
     if(notification['invitation']){
       notification['invitation']['plan'].map((plan) => {
         dataload.push(['invitation', plan['Plan']['name']]);  
+      });
+      notification['invitation']['activity'].map((activity) => {
+        dataload.push(['invitation', activity['Activity']['name'], activity['Activity']['activity_id']]);
       });
     }
     if(notification['application']){

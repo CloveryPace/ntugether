@@ -8,6 +8,11 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { getAuthToken } from '../utils';
+import axios from 'axios';
+import { API_GET_ACTIVITY_DETAIL } from '../global/constants';
 
 export default function NotificationList({data}) {
 
@@ -26,10 +31,34 @@ export default function NotificationList({data}) {
     </List>
   );
 }
-
+// <div onClick={() => navigate(`/activitypage`, { state: {id: data.activity_id } })} style={{cursor: 'pointer'}}>
 
 function OneListItem({item}){
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleAccept = (activity_id) => { 
+    const token = getAuthToken();
+    const config = {
+        headers: { 
+          authorization: `Bearer ${token}`
+        }
+    }
+    axios.put(API_GET_ACTIVITY_DETAIL + activity_id + '/invitation', 
+    {
+      "accepted": true
+    },
+    config)
+      .then(function (res) {
+          console.log(res);
+          alert('成功加入活動');
+          window.location.reload(false);
+      })
+      .catch(function (err) {
+          alert("加入活動失敗");
+          console.log(err);
+    });
+  };
 
   return (
     <div>
@@ -49,8 +78,16 @@ function OneListItem({item}){
               >
                 {item[1]}
               </Typography>
-            
-              {item[0] === 'application' ? t('回答：') + item[2] :item[2]}
+              <p></p>
+              {item[0] === 'invitation' ? 
+                <>
+                <Button variant="contained" onClick={() => navigate(`/activitypage`, { state: {id: item[2] } })}> {t('前往')}</Button>
+                <p></p>
+                <Button variant="contained" onClick={() =>handleAccept(item[2])}> {t('接受邀請')}</Button>
+                </>
+              :
+              <></>}
+              {item[0] === 'application' ? t('回答：') + item[2] :<></>}
             </React.Fragment>
           }
         />
