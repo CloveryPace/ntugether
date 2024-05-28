@@ -205,7 +205,7 @@ function ActivityPage() {
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("活動簡介")} </Typography></div>
-        <div><Typography variant="h6"> {data.introduction? data.introduction: "尚無活動簡介"} </Typography></div>
+        <div><Typography variant="h6"> {data.introduction? data.introduction: t("尚無活動簡介")} </Typography></div>
       </div>
 
       <div style={container}>
@@ -214,23 +214,23 @@ function ActivityPage() {
         {Array.isArray(data.date)?
             (data.date.map((D) => {
               return (
-                <Typography variant="h6"> {D? dayjs(D).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"} </Typography>
+                <Typography variant="h6"> {D? dayjs(D).format('YYYY/MM/DD h:mm A'): t("尚無活動時間資料")} </Typography>
               );
             }))
             :
-            <Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): "尚無活動時間資料"}  </Typography>
+            <Typography variant="h6"> {data.date? dayjs(data.date).format('YYYY/MM/DD h:mm A'): t("尚無活動時間資料")}  </Typography>
         }
         </div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("活動地點")} </Typography></div>
-        <div><Typography variant="h6"> {data.location? data.location: "尚無活動地點資料"} </Typography></div>
+        <div><Typography variant="h6"> {data.location? data.location: t("尚無活動地點資料")} </Typography></div>
       </div>
 
       <div style={container}>
         <div style={subtitle}><Typography variant="h6"> {t("人數上限")} </Typography></div>
-        <div><Typography variant="h6"> {data.max_participants? data.max_participants: "尚無人數上限"} </Typography></div>
+        <div><Typography variant="h6"> {data.max_participants? data.max_participants: t("尚無人數上限")} </Typography></div>
       </div>
 
       <div style={container}>
@@ -242,22 +242,26 @@ function ActivityPage() {
               return (
                 <div style={{alignSelf: 'center'}}>
                   <Link href={'/user?id='+person.user_id} underline="none">
-                  <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"} />
+                  <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: t("未知"))}/>} label={person.name? person.name: t("未知")} />
                   </Link>
                 </div>
               );
             }))
             :
           <div style={{alignSelf: 'center'}}>
-              尚無參加者
+              {t("尚無參加者")}
           </div>
         }
       </div>
-      <br/>
-      <br/>
-
 
       {(data.need_reviewed && (userId === creatorId))?
+      <>
+        <div style={container}>
+          <div style={subtitle}><Typography variant="h6"> {t("審核題目")} </Typography></div>
+          <div><Typography variant="h6"> {data.max_participants? data.max_participants: t("尚無人數上限")} </Typography></div>
+        </div>
+        <br/>
+        <br/>
         <Box
         sx={{
           display: 'flex',
@@ -271,6 +275,7 @@ function ActivityPage() {
           <div style={subtitle}><Typography variant="h6"> {t("加入審核")} </Typography></div>
           <div><PendingReview id={id}/></div>
           </Box>
+        </>
         :
         <></>
       }
