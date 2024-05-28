@@ -258,6 +258,11 @@ function ActivityPage() {
 
 
       {(data.need_reviewed && (userId === creatorId))?
+      <>
+        <div style={container}>
+          <div style={subtitle}><Typography variant="h6"> {t("審核題目")} </Typography></div>
+          <div><Typography variant="h6"> {data.application_problem? data.application_problem: ""} </Typography></div>
+        </div>
         <Box
         sx={{
           display: 'flex',
@@ -271,6 +276,7 @@ function ActivityPage() {
           <div style={subtitle}><Typography variant="h6"> {t("加入審核")} </Typography></div>
           <div><PendingReview id={id}/></div>
           </Box>
+        </>
         :
         <></>
       }

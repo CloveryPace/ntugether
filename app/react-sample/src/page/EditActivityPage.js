@@ -424,7 +424,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                         ))}
                     </RadioGroup>
                     <Typography variant="h6"> 加入審核 </Typography>
-                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
+                    <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
                             <ItemReview> 
