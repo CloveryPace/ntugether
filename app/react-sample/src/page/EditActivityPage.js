@@ -25,6 +25,7 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // 頭像顏色根據名字變化
 function stringToColor(string) {
@@ -92,6 +93,7 @@ const ItemTag = styled(Paper)(({ theme }) => ({
 }));
 
 export default function EditActivityPage({ onHide, show, id, data}) {
+  const { t, i18n } = useTranslation();
   const [ID, setID] = useState(id);
   const [attendee, setAttendee] = useState(data.Participants);
   const [dateitems, setDateitems] = useState((Array.isArray(data.date)? data.date: [data.date]));
@@ -281,8 +283,8 @@ export default function EditActivityPage({ onHide, show, id, data}) {
 
           <Grid container spacing={10}>
             <Grid item xs={12} md={6}>
-              <Button variant="contained" color="error" onClick={handleDelete}> 刪除活動 </Button>
-              <Typography variant="h6">活動名稱</Typography>
+              <Button variant="contained" color="error" onClick={handleDelete}> {t("刪除活動")} </Button>
+              <Typography variant="h6">{t("活動名稱")}</Typography>
                   <TextField
                       variant="outlined"
                       value={newdata.name}
@@ -290,9 +292,9 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       autoFocus
                       fullWidth
                       name="name"
-                      label="輸入活動名稱"
+                      label={t("輸入活動名稱")}
                   />
-                <Typography variant="h6">活動簡介</Typography>
+                <Typography variant="h6">{t("活動簡介")}</Typography>
                   <TextField
                       variant="outlined"
                       value={newdata.introduction}
@@ -300,11 +302,11 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       autoFocus
                       fullWidth
                       name="introduction"
-                      label="輸入活動簡介"
+                      label={t("輸入活動簡介")}
                   />
                   <Typography variant="h6"></Typography>
                   <Stack direction="row" spacing={2}>
-                      <Typography variant="h6"> 活動時間 </Typography>
+                      <Typography variant="h6"> {t("活動時間")} </Typography>
                       {(newdata.is_one_time === "true" || newdata.is_one_time === true)?
                         <></>
                         :
@@ -345,14 +347,14 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                                 name="date"
                                 required
                                 fullWidth
-                                label="輸入活動時間"
+                                label={t("輸入活動時間")}
                                 id="date"
                                 />
                             </LocalizationProvider>
                         </Box>
                         </Box>
                     ))}
-                <Typography variant="h6">活動地點</Typography>
+                <Typography variant="h6">{t("活動地點")}</Typography>
                   <TextField
                       variant="outlined"
                       defaultValue={newdata.location}
@@ -360,9 +362,9 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       autoFocus
                       fullWidth
                       name="location"
-                      label="輸入活動地點"
+                      label={t("輸入活動地點")}
                   />
-                <Typography variant="h6">人數上限</Typography>
+                <Typography variant="h6">{t("人數上限")}</Typography>
                   <TextField
                       variant="outlined"
                       defaultValue={newdata.max_participants}
@@ -370,9 +372,9 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       autoFocus
                       fullWidth
                       name="limitnumber"
-                      label="輸入人數上限"
+                      label={t("輸入人數上限")}
                   />
-                <Typography variant="h6">參加者</Typography>
+                <Typography variant="h6">{t("參加者")}</Typography>
                 <div style={container}>
                   {attendee.length > 0 ?
                     (attendee.map((person) => {
@@ -381,19 +383,19 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                             <IconButton style={{float: 'right'}} onClick={() => handleDeleteAttendee(person.user_id)}>
                               <DeleteIcon/>
                             </IconButton>
-                            <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: "未知")}/>} label={person.name? person.name: "未知"}></Chip>
+                            <Chip avatar={<Avatar {...stringAvatar(person.name? person.name: t("未知"))}/>} label={person.name? person.name: "未知"}></Chip>
                           </div>
                       );
                     }))
                     :
                   <div style={{alignSelf: 'center'}}>
-                      尚無參加者
+                      {t("尚無參加者")}
                   </div>
                 }
                 </div>
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="h6"> 活動類型 </Typography>
+                <Typography variant="h6"> {t("活動類型")} </Typography>
                   <RadioGroup aria-label="type" name="type" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeType} defaultValue={newdata.type}>
                       {['運動', '讀書會', "出遊"].map((value) => (
                       <Grid item>
@@ -408,7 +410,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       </Grid>
                       ))}
                   </RadioGroup>
-                  <Typography variant="h6"> 一次性活動 </Typography>
+                  <Typography variant="h6"> {t("一次性活動")} </Typography>
                     <RadioGroup aria-label="is_one_time" name="is_one_time" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleOneTimeChange} defaultValue={newdata.is_one_time}>
                         {['一次性活動', '長期性活動'].map((value) => (
                         <Grid item>
@@ -423,7 +425,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                         </Grid>
                         ))}
                     </RadioGroup>
-                    <Typography variant="h6"> 加入審核 </Typography>
+                    <Typography variant="h6"> {t("加入審核")} </Typography>
                     <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
@@ -446,7 +448,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                         autoFocus
                         fullWidth
                         name="application_problem"
-                        label="輸入審核題目"
+                        label={t("輸入審核題目")}
                     />
             </Grid>
           </Grid>
@@ -455,8 +457,8 @@ export default function EditActivityPage({ onHide, show, id, data}) {
           <Grid container justifyContent="center">
               <Grid item>
                 <Stack direction="row" spacing={2}>
-                    <Button variant="contained" type="submit" color="primary" onClick={handleUpdate}> 儲存 </Button>
-                    <Button variant="contained" color="error" onClick={onHide}> 取消 </Button>
+                    <Button variant="contained" type="submit" color="primary" onClick={handleUpdate}> {t("儲存")} </Button>
+                    <Button variant="contained" color="error" onClick={onHide}> {t("取消")} </Button>
                 </Stack>
               </Grid>
           </Grid>
