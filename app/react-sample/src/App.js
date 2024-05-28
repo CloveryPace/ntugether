@@ -23,6 +23,7 @@ import FilterBar from './components/FilterBar';
 import ProgressEdit from './page/ProgressEdit';
 import PlanList from './page/PlanList';
 import PlanManage from './page/PlanManage';
+import Search from './page/Search';
 
 import React, { Component } from 'react';
 import PrivateRoute from './components/PrivateRoute';
@@ -96,6 +97,10 @@ function App() {
 
           <Route exact path='/planList' element={<PrivateRoute/>}>
             <Route exact path='/planList' element={<PlanList/>}/>
+          </Route>
+
+          <Route exact path='/search' element={<PrivateRoute/>}>
+            <Route exact path='/search' element={<Search/>}/>
           </Route>
 
 
