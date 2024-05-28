@@ -86,7 +86,7 @@ function User() {
   const [about, setAbout] = useState('');
   const [myself, setMyself] = useState(false);
   const [following, setFollowing] = useState(false);
-  const [followingNumber, setFollowingNumber] = useState(0);
+  const [followerNumber, setFollowerNumber] = useState(0);
   const [activityNumber, setActivityNumber] = useState(0);
   const [progressNumber, setProgressNumber] = useState(0);
 
@@ -105,7 +105,7 @@ function User() {
     }else{
       getFollowList();
     }
-  }, []);
+  }, [followerNumber]);
 
   const getUserData = () => {
     axios.get(API_GET_USER, {
@@ -115,7 +115,6 @@ function User() {
       params: {user_id: parsed.id}
     })
     .then(function (response) {
-      console.log(response.data.members);
         setName(response.data.members.name? response.data.members.name : '');
         setEmail(response.data.members.email);
         setPhone(response.data.members.phoneNum? response.data.members.phoneNum : '');
@@ -147,13 +146,11 @@ function User() {
   }
 
   const getUserStatisticalData = () => {
-    axios.get(API_GET_USER + '/' + parsed.id +'/following', {headers: { 
+    axios.get(API_GET_USER + '/' + parsed.id +'/follower', {headers: { 
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
-      console.log('追蹤人數');
-      console.log(response.data);
-      setFollowingNumber(response.data.length);
+      setFollowerNumber(response.data.length);
     })
     .catch(function (error) {
       console.log(error);
@@ -163,8 +160,6 @@ function User() {
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
-      console.log('發起活動');
-      console.log(response.data);
       setActivityNumber(response.data.length);
       setActivity(response.data);
     })
@@ -176,8 +171,6 @@ function User() {
       authorization: 'Bearer ' + authtoken
     }})
     .then(function (response) {
-      console.log('發起進度');
-      console.log(response.data);
       setProgressNumber(response.data.length);
       setProgress(response.data);
     })
@@ -200,6 +193,7 @@ function User() {
     }}).then(function (response) {
       alert('取消追蹤成功');
       setFollowing(false);
+      setFollowerNumber(followerNumber - 1);
     }).catch(function (error) {
       console.log(error);
     })
@@ -212,6 +206,7 @@ function User() {
     }}).then(function (response) {
       alert('追蹤成功');
       setFollowing(true);
+      setFollowerNumber(followerNumber +1);
     }).catch(function (error) {
       console.log(error);
     })
@@ -248,8 +243,8 @@ function User() {
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
                 <Stack spacing={2} sx={{textAlign: 'center'}} >
-                  <Typography variant="body1"> {t('追蹤人數')} </Typography>
-                  <Typography variant="body1"> {followingNumber} </Typography>
+                  <Typography variant="body1"> {t('粉絲人數')} </Typography>
+                  <Typography variant="body1"> {followerNumber} </Typography>
                 </Stack>
                 </Grid>
                 <Grid item xs={4}>

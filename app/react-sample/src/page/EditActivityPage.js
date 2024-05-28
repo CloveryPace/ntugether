@@ -306,7 +306,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                   />
                   <Typography variant="h6"></Typography>
                   <Stack direction="row" spacing={2}>
-                      <Typography variant="h6"> {t("活動時間")}</Typography>
+                      <Typography variant="h6"> {t("活動時間")} </Typography>
                       {(newdata.is_one_time === "true" || newdata.is_one_time === true)?
                         <></>
                         :
@@ -362,7 +362,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                       autoFocus
                       fullWidth
                       name="location"
-                      label="輸入活動地點"
+                      label={t("輸入活動地點")}
                   />
                 <Typography variant="h6">{t("人數上限")}</Typography>
                   <TextField
@@ -426,7 +426,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                         ))}
                     </RadioGroup>
                     <Typography variant="h6"> {t("加入審核")} </Typography>
-                    <RadioGroup aria-label="review" name="review" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
+                    <RadioGroup aria-label="need_reviewed" name="need_reviewed" sx={{ flexDirection: 'row', gap: 2 }} onChange={handleChangeReview} defaultValue={newdata.need_reviewed}>
                         {['需審核', '不需審核'].map((value) => (
                         <Grid item>
                             <ItemReview> 

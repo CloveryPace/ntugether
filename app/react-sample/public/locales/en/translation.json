@@ -74,7 +74,7 @@
     "取消追蹤": "Unfollow",
     "追蹤": "Follow",
     "近期活動": "Recent activities",
-    "追蹤人數": "Followers",
+    "粉絲人數": "Followers",
     "活動發起": "Activity init",
     "進度發起": "Plan init",
     "活動名稱": "Activity name",
@@ -224,5 +224,6 @@
     "前往": "View",
     "尚無追蹤中使用者": "No following user",
     "讀書會": "Study Group",
-    "出遊": "Have Fun"
+    "出遊": "Have Fun",
+    "編輯個人資料": "Edit personal information"
  }
