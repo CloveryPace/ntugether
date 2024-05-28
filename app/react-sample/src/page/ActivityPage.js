@@ -278,7 +278,7 @@ function ActivityPage() {
       {(userId === creatorId)? 
           <div style={container}>
             <div style={subtitle}><Typography variant="h6"> {t("邀請...")} </Typography></div>
-            <InviteActivityComponent activity_id={id}/>
+            <InviteActivityComponent activity_id={id} user_id={userId}/>
           </div>
           :
           <p></p>
