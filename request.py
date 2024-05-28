@@ -74,15 +74,15 @@ token = signin()
 def create_activity():
     payload = json.dumps(
         {
-            "name": "NEW Activity",
-            "introduction": "Super cool Activity",
-            "date": ["2024-04-27T06:10:00", "2024-04-28T06:10:00"],
+            "name": "Backend Test Activity",
+            "introduction": "Backend Test Activity",
+            "date": "2024-04-27T06:10:00",
             "need_reviewed": False,
             "country": "Taiwan",
             "max_participants": 10,
             "location": "Taipei",
             "application_problem": "Are you happy?",
-            "is_one_time": False,
+            "is_one_time": True,
             "type": "study",
         }
     )
@@ -102,7 +102,7 @@ def create_activity():
 @api_test
 def get_acitvity_list():
     res = requests.get(
-        url=f"{host}/activity?search=study",
+        url=f"{host}/activity?target_user=38&mode=owned",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -127,16 +127,17 @@ def get_acitvity_detail():
 def update_activity():
     payload = json.dumps(
         {
-            "name": "cool Activity",
-            "introduction": "updated Introduction of Activity",
-            "date": "2024-04-27T06:26:48.578Z",
+            "name": "not cool Activity",
+            "introduction": "Actually it is not very cool",
+            # "date": ["2024-04-28", "2024-05-13"],
             "need_reviewed": True,
             "county": "Taiwan",
+            "is_one_time": True,
             "application_problem": "enjoy!"
         }
     )
     res = requests.patch(
-        url=f"{host}/activity/9",
+        url=f"{host}/activity/{activity_id}",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}"
@@ -337,10 +338,10 @@ def update_plan():
         "name": "Not Cool Plan",
         "goal": "fall in love with a cow",
         "introduction": "I hate cow...",
-        "progression": {
-            "english": 10,
-            "chinese": 5,
-        },
+        # "progression": {
+        #     "english": 10,
+        #     "chinese": 5,
+        # },
         "start_date": "2024-03-21",
         "end_date": "2024-09-07",
         "tags": ["Exam"],
@@ -350,7 +351,7 @@ def update_plan():
     })
 
     res = requests.patch(
-        url=f"{host}/plan/1",
+        url=f"{host}/plan/{plan_id}",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -390,7 +391,7 @@ def get_plan_detail():
 @api_test
 def get_plan_list():
     res = requests.get(
-        url=f"{host}/plan?search=cow",
+        url=f"{host}/plan",
         headers={
             "content-type": "application/json",
             "authorization": f"bearer {token}",
@@ -549,7 +550,7 @@ if __name__ == '__main__':
     # send_act_invitation()
     # get_acitvity_list()
     # get_acitvity_detail()
-    # update_activity()
+    update_activity()
     # delete_activity()
     # apply()
     # get_activity_applications()
@@ -561,11 +562,11 @@ if __name__ == '__main__':
     # respond_to_activity_invitations()
     # leave_activity()
 
-    create_plan()
+    # create_plan()
     # update_plan()
     # delete_plan()
     # get_plan_detail()
-    get_plan_list()
+    # get_plan_list()
     # apply_plan()
     # approve_plan()
     # get_plan_application()

@@ -1,6 +1,7 @@
-const { Op, ValidationError } = require('sequelize');
+const { Op, ValidationError, where } = require('sequelize');
 const activityModel = require('../model/activityModel');
 const User = require('../model/userModel');
+const { framework } = require('passport');
 User.sync();
 
 const allowTags = ["exercise", "study"];
@@ -208,16 +209,16 @@ exports.getActivitiesList = async (req, res) => {
         // set search condition
         var condition = {};
 
-        
+
         if (type) {
             // if string, change into Array
-            if (typeof(type) === "string") {
+            if (typeof (type) === "string") {
                 type = type.replace(/'/g, '"');
                 type = JSON.parse(type);
             }
             condition.type = { [Op.in]: type };
         }
-        
+
         if (is_long_term != null) condition.is_one_time = !(is_long_term == "true" || is_long_term == "True");
         if (country) condition.country = country;
         if (location) condition.location = location;
@@ -401,7 +402,7 @@ exports.updateActivity = async (req, res) => {
 
     try {
         const user_id = req.user_id;
-        const activity_id = req.params.activity_id;
+        const activity_id = parseInt(req.params.activity_id);
 
         // Find the activity by ID
         var activity = await activityModel.Activities.findByPk(activity_id);
@@ -417,10 +418,51 @@ exports.updateActivity = async (req, res) => {
             return res.status(403).json({ error: 'You are not authorized to update this activity' });
         }
 
-        const { ...updateParams } = req.body; // NOTE: might use ...updateParams to separate update data and others
-        await activity.update(updateParams);
-        var updatedActivity = await returnActivity(activity_id);
+        const { date, ...updateParams } = req.body; // NOTE: might use ...updateParams to separate update data and others
 
+        if (updateParams.is_one_time != activity.is_one_time && !date) return res.status(400).json({ error: "should not update is_one_time without providing updated date" });
+
+        await activity.update(updateParams);
+
+        // case: update long term activity table to fit is_one_time
+        if (!date) {
+            console.log("there is no date");
+            var updatedActivity = await returnActivity(activity_id);
+            return res.status(200).json(updatedActivity);
+        }
+
+        // case: need to update date
+        try {
+            await activity.update({
+                date: activity.is_one_time ? date : date[0]
+            });
+
+            if (!activity.is_one_time) {
+                console.log("is long term activity");
+
+                await activityModel.LongTermActivities.destroy({
+                    where: {
+                        activity_id: activity_id,
+                    }
+                });
+
+
+                for (var i = 0; i < date.length; i++) {
+                    await activityModel.LongTermActivities.create(
+                        {
+                            activity_id: activity_id,
+                            date: date[i],
+                        }
+                    );
+                }
+            }
+
+        } catch (e) {
+            return res.status(400).json({ error: `invalid date format: ${e.message}` });
+        }
+
+
+        var updatedActivity = await returnActivity(activity_id);
         return res.status(200).json(updatedActivity);
     } catch (error) {
         // If any error occurs, handle it and send a 500 error response
