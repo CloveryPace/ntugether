@@ -403,7 +403,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                               <FormControlLabel
                                   value={value}
                                   control={<Radio />}
-                                  label={`${value}`}
+                                  label={t(`${value}`)}
                                   labelPlacement="end"
                               />
                           </ItemTag>
@@ -418,7 +418,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                                 <FormControlLabel
                                     value={(value === '一次性活動')}
                                     control={<Radio />}
-                                    label={`${value}`}
+                                    label={t(`${value}`)}
                                     labelPlacement="end"
                                 />
                             </ItemOneTime>
@@ -433,7 +433,7 @@ export default function EditActivityPage({ onHide, show, id, data}) {
                                 <FormControlLabel
                                     value={value === "需審核"}
                                     control={<Radio />}
-                                    label={`${value}`}
+                                    label={t(`${value}`)}
                                     labelPlacement="end"
                                 />
                             </ItemReview>
