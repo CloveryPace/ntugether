@@ -72,7 +72,7 @@ export default function Signup() {
     data = new FormData(event.currentTarget);
 
     if (Boolean(error)) {
-      alert(error);
+      console.log(error);
     }else{
     
       axios.get(API_EMAIL_VERIFY, {params:{ 

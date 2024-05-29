@@ -77,7 +77,6 @@ export default function ProgressItemInList({ key, item, onUpdate }) {
       onUpdate();
     } catch (err) {
       console.error('Error saving progress:', err);
-      alert(t("error"));
     }
   };
 

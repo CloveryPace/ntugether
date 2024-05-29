@@ -32,7 +32,6 @@ export default function ActivityStartComponent({mode_param}) {
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
     }, []);
   

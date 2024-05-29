@@ -34,7 +34,6 @@ export default function ActivityEndComponent({mode_param}) {
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
     }, []);
   

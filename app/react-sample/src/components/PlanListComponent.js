@@ -29,7 +29,6 @@ export default function PlanListComponent({ filterType = "所有" }) {
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
   }, [userToken]);
 

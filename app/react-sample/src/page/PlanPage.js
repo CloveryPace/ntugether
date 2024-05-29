@@ -93,12 +93,10 @@ function PlanPage() {
         })
         .catch(function (err) {
           console.log(err);
-          alert("error");
         });
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
 
   }, [id]);
@@ -174,7 +172,6 @@ function PlanPage() {
         })
       .catch(function (err) {
         console.log(err);
-        alert("error");
     });
   };
 
