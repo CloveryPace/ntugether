@@ -48,8 +48,12 @@ export default function Signup() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const [ user, setUser ] = useState([]);
+  const [ user, setUser ] = useState();
   const [ profile, setProfile ] = useState([]);
+
+  const [ otpCompelted, setOtpCompelted ] = useState(false); 
+
+  const [ isGoogleLogin, setIsGoogleLogin ] = useState(false);
 
   let data = new FormData();
 
@@ -86,7 +90,7 @@ export default function Signup() {
         console.log(response);
         setSignupStatus(2);
         setLoading(false);
-        setSignupErrorMsg('');
+        setSignupErrorMsg('已將驗證碼發送到您的信箱');
       })
       .catch(function (error) {
         console.log(error);
@@ -105,7 +109,8 @@ export default function Signup() {
   const handleOTPChange = (newValue) => {
     setOtp(newValue)
   }
-  const handleComplete = (value) => {
+  const handleOtpComplete = (event) => {
+    event.preventDefault();
     setLoading(true);
 
     axios.post(API_SIGN_UP, { 
@@ -113,25 +118,29 @@ export default function Signup() {
       email: email,
       birthday: birthday,
       gender: gender,
-      password: password
-    
+      password: password,
+      code: otp
     })
     .then(function (response) {
-      signupErrorMsg('');
+      setSignupErrorMsg('');
       setLoading(false);
       setSignupStatus(3);
-      setAuthToken(response.data.jwtToken);
-      getUserInfo(response.data.jwtToken);
+      setAuthToken(response.data.token);
+      getUserInfo(response.data.token);
     })
     .catch(function (error) {
+      console.log(error);
       setLoading(false);
-      if(error.response.status == 409){
-        setSignupErrorMsg(t('此信箱已被註冊'));
-      }else if(error.response.status == 401){
-        setSignupErrorMsg(t('驗證碼錯誤，請再試一次'));
-      }else{
-        setSignupErrorMsg(t('註冊失敗，請再試一次'));
+      if(error.response){
+        if(error.response.status == 409){
+          setSignupErrorMsg(t('此信箱已被註冊'));
+        }else if(error.response.status == 401){
+          setSignupErrorMsg(t('驗證碼錯誤，請再試一次'));
+        }else{
+          setSignupErrorMsg(t('註冊失敗，請再試一次'));
+        }
       }
+      
     });
   }
 
@@ -158,15 +167,20 @@ export default function Signup() {
         oauthId: userData.id
     }).then(function (response) {
         setAuthToken(response.data.token);
+        getUserInfo(response.data.token);
         window.location.assign('/');
     }).catch(function (error) {
         console.log(error);
     });
   }
 
+  const showSubmitBtn = () => {
+    setOtpCompelted(true);
+  }
+
   useEffect(
     () => {
-        if (user) {
+        if (user && isGoogleLogin) {
             axios
                 .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
                     headers: {
@@ -301,7 +315,7 @@ export default function Signup() {
               <Divider sx={{mt: 2, mb: 2}}>{t('或者')}</Divider>
               </Grid>
               <Grid item xs={12}>
-              <Button onClick={() => sociallogin()} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶註冊')}</Button>
+              <Button onClick={() => {setIsGoogleLogin(true); sociallogin();}} variant="outlined" fullWidth sx={{color: 'rgba(0, 0, 0, 0.87)'}} size="large"> <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" style={{width: '18px', height: '18px', marginRight: '5px'}} />{t('使用 Google 帳戶註冊')}</Button>
               </Grid>
             </Grid>
             <Button
@@ -323,15 +337,31 @@ export default function Signup() {
           }
               {
                 signupStatus == 2? 
-                <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={handleComplete} length={6}
-                style={{marginTop:20}} />:
+                  <Box>
+                {/* <Typography component="body" variant="body1" align='center'>
+                  {t('已將驗證碼發送到您的信箱：')}{email}</Typography>
+                  <Typography component="body" variant="body1"  align='center'>
+                  {t('請在十分鐘內完成註冊')}</Typography> */}
+                <MuiOtpInput value={otp} onChange={handleOTPChange} onComplete={showSubmitBtn} length={6} style={{marginTop:20}} /></Box>:
                 null
+              }
+              {
+                signupStatus == 2 && otpCompelted? 
+                <Button
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              onClick={handleOtpComplete}
+            >
+              {t('送出驗證碼')}
+            </Button>:
+              null
               }
               {
                 !signupErrorMsg  && signupStatus == 3? 
                 <Box>
                 <Typography component="body" variant="body1">
-                  {t('註冊成功，將在 5 秒後跳轉至登入頁面')}</Typography>
+                  {t('註冊成功，將在 5 秒後跳轉至首頁')}</Typography>
                   <Typography component="body" variant="body1">
                   {t('或是直接前往')}<Link href={'/'}>{t('首頁')}</Link></Typography></Box> : 
                   null
