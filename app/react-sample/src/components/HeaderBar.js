@@ -33,7 +33,7 @@ import axios from 'axios';
 import {API_GET_NOTIFICATION} from '../global/constants';
 import { useState } from 'react';
 import { getAuthToken } from '../utils';
-
+import queryString from 'query-string';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -126,6 +126,8 @@ const StyledMenu = styled((props) => (
 }));
 
 export default function HeaderBar() {
+  const parsed = queryString.parse(window.location.search);
+
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
@@ -140,7 +142,7 @@ export default function HeaderBar() {
   const [showNotifiaction, setShowNotifiaction] = React.useState(false);
   const [filterData, setFilterData] = React.useState({});
 
-  const [searchValue, setSearchValue] = React.useState('');
+  const [searchValue, setSearchValue] = React.useState(parsed.q || '');
   const [notification, setNotification] = React.useState([]);
   const [newnotification, setNewnotification] = React.useState([]);
   const [userToken, setUserToken] = useState(getAuthToken());
@@ -265,7 +267,8 @@ export default function HeaderBar() {
 
   const keyPress = (e, searchValue, filterData = {'type': []}) => {
     if(e.keyCode == 13){
-      navigate('/search/?q=' + searchValue, {state: {filterData: filterData}});
+      navigate('/search/?q=' + searchValue, {state: {filterData: filterData}},  { replace: true });
+      window.location.reload();
     }
   }
 

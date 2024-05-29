@@ -108,7 +108,7 @@ export default function CommentsBox({ id }) {
           window.location.reload(false);
       })
       .catch(function (err) {
-          alert("留言失敗");
+          alert("留言失敗，要先加入才能留言哦！");
           console.log(err);
     });
     };

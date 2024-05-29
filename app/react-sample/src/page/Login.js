@@ -131,6 +131,9 @@ export default function Login() {
             <Typography component="h1" variant="h5">
               {t('登入')}
             </Typography>
+            <Typography component="body" variant="body">
+              {t('歡迎來到 NTUgether，請登入您的帳號')}
+            </Typography>
             {error && <Typography color="error">{t('帳號或密碼錯誤')}</Typography>}
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 ,width: '100%'}}>
               <TextField
