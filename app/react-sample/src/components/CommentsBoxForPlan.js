@@ -80,7 +80,6 @@ export default function CommentsBox({ id }) {
           })
           .catch(function (err) {
             console.log(err);
-            alert("error");
           });
 
     }, [id]);

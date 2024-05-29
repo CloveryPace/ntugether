@@ -50,7 +50,6 @@ useEffect(() => {
         })
         .catch(function (err) {
           console.log(err);
-          alert("error");
         });
 
     // })

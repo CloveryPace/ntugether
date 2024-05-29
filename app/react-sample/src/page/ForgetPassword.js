@@ -61,7 +61,7 @@ export default function ForgetPassword() {
     }
 
     if (error) {
-      alert(error);
+      console.log(error);
     }else{
     axios.post(API_RESET_PASSWORD, { 
         email: email,

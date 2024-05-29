@@ -28,7 +28,6 @@ export default function ActivityListComponentType({ filterType }) {
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
   }, []);
 

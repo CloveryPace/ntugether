@@ -39,7 +39,6 @@ export default function RecentActivityList() {
       })
       .catch(function (err) {
         console.log(err);
-        alert("error");
       });
     }, []);
 

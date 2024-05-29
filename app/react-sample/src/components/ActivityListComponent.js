@@ -37,7 +37,6 @@ export default function ActivityList() {
           })
           .catch(function (err) {
             console.log(err);
-            alert("error");
           });
     }, []);
   
